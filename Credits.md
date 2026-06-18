@@ -2,10 +2,13 @@
 
 ## Team
 
-- **Ernesto De Felice** — Project Lead, Engine & API, Fixed-Point Math, HUD graphics
-- **Pierluca De Felice** — Programming, Background Graphics, Audio (support)
+- **Ernesto De Felice** — Project Lead, Engine & API, Fixed-Point Math, HUD Graphics
+- **Pierluca De Felice** — Programming, Background Graphics, Audio (Support)
 - **Raffaele Aucelli** — Audio (SFX & Music), Game Logic
 - **Raffaele Colamarino** — Audio (SFX & Music), Game Logic, Game Manual
+
+
+All the team contributed to the Game Logic, Game Design and Testing.
 
 ## Third-party assets
 
