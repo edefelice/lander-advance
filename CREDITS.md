@@ -21,7 +21,7 @@ All the team contributed to the Game Logic, Game Design and Testing.
 ## Maxmod
 - **Purpose:** audio and music playback
 - **Author:** Mukunda Johnson (mukunda@maxmod.org)
-- **Source:** https://maxmod.devkitpro.org/
+- **Source:** https://github.com/devkitPro/maxmod
 - **License:** permissive license — Copyright (c) 2008, Mukunda Johnson
 
   Permission to use, copy, modify, and/or distribute this software for any
