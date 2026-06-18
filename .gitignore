@@ -1,0 +1,33 @@
+# devkitARM / GBA
+*.gba
+*.elf
+*.o
+*.d
+*.a
+build/
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+*.lnk
+
+# Linux
+*~
+.fuse_hidden*
+.Trash-*
+.nfs*
+
+# VSCodium / VSCode
+.vscode/
+*.code-workspace
+
+# Editor temporanei
+*.swp
+*.swo
