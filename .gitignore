@@ -28,6 +28,6 @@ $RECYCLE.BIN/
 .vscode/
 *.code-workspace
 
-# Editor temporanei
+# Editor temp files
 *.swp
 *.swo
