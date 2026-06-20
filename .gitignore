@@ -1,5 +1,6 @@
 # devkitARM / GBA
 *.gba
+*.sav
 *.elf
 *.o
 *.d
@@ -8,15 +9,17 @@ build/
 
 # macOS
 .DS_Store
+._*
 .AppleDouble
 .LSOverride
 
 # Windows
 Thumbs.db
 ehthumbs.db
-Desktop.ini
+[Dd]esktop.ini
 $RECYCLE.BIN/
 *.lnk
+*.stackdump
 
 # Linux
 *~
