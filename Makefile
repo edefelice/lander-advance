@@ -39,7 +39,8 @@ GBAFIX := $(DEVKITPRO)/tools/bin/gbafix
 MMUTIL := $(DEVKITPRO)/tools/bin/mmutil
 GRIT   := $(DEVKITPRO)/tools/bin/grit
 
-LIBGBA := $(DEVKITPRO)/libgba
+LIBGBA  := $(DEVKITPRO)/libgba
+LIBTONC := $(DEVKITPRO)/libtonc
 
 # ─────────────────────────────────────────────────────────────────────────────
 # DIRECTORY AUTO-DISCOVERY
@@ -61,6 +62,7 @@ INCLUDEDIRS := $(shell find $(INCLUDE_ROOT) -type d 2>/dev/null)
 ARCH := -mthumb -mcpu=arm7tdmi -mabi=aapcs -mfloat-abi=soft
 
 INCLUDE_FLAGS := $(INCLUDEDIRS:%=-iquote $(CURDIR)/%) \
+				 -I$(LIBTONC)/include \
                  -I$(LIBGBA)/include \
                  -I$(CURDIR)/$(BUILD)
 
@@ -77,9 +79,10 @@ LDFLAGS := $(ARCH) \
             -specs=gba.specs \
             -Wl,--gc-sections \
             -Wl,-Map,$(BUILD)/$(TARGET).map \
+			-L$(LIBTONC)/lib \
             -L$(LIBGBA)/lib \
             -L$(CURDIR) \
-            -lmm -lgba
+            -lmm -ltonc -lgba
 
 # ─────────────────────────────────────────────────────────────────────────────
 # SOURCE COLLECTION (recursive via find)
