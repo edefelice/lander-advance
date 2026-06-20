@@ -27,6 +27,7 @@ $RECYCLE.BIN/
 # VSCodium / VSCode
 .vscode/
 *.code-workspace
+compile_flags.txt
 
 # Editor temp files
 *.swp
