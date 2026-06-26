@@ -114,14 +114,15 @@ GEN_BIN_S := $(BINFILES:%=$(BUILD)/%.S)
 GEN_BIN_H := $(GEN_BIN_S:%.S=%.h)
 
 ifneq ($(strip $(MUSIC)),)
-  GEN_SB_BIN := $(BUILD)/soundbank.bin
-  GEN_SB_H   := $(BUILD)/soundbank.h
-  GEN_SB_S   := $(BUILD)/soundbank.S
+  GEN_SB_BIN      := $(BUILD)/soundbank.bin
+  GEN_SB_H_IDS    := $(BUILD)/soundbank.h
+  GEN_SB_H_DATA   := $(BUILD)/soundbank_bin.h
+  GEN_SB_S        := $(BUILD)/soundbank.S
 endif
 
 # All generated headers: used as an order-only prerequisite of compilation,
 # so they exist before the compiler looks for them.
-GEN_HEADERS := $(GEN_PNG_H) $(GEN_BIN_H) $(if $(strip $(MUSIC)),$(GEN_SB_H),)
+GEN_HEADERS := $(GEN_PNG_H) $(GEN_BIN_H) $(if $(strip $(MUSIC)),$(GEN_SB_H_IDS) $(GEN_SB_H_DATA),)
 
 # ─────────────────────────────────────────────────────────────────────────────
 # OBJECT FILES
@@ -289,14 +290,16 @@ endif
 ifneq ($(strip $(MUSIC)),)
 $(GEN_SB_BIN): $(AUDIOFILES) | $(BUILD)
 	@echo "[MMUTIL] soundbank"
-	@$(MMUTIL) $^ -o$(GEN_SB_BIN) -h$(GEN_SB_H)
+	@$(MMUTIL) $^ -o$(GEN_SB_BIN) -h$(GEN_SB_H_IDS)
 
-$(GEN_SB_H): $(GEN_SB_BIN) ;
+$(GEN_SB_H_IDS): $(GEN_SB_BIN) ;
 
 $(GEN_SB_S): $(GEN_SB_BIN)
 	@echo "[BIN2S]  soundbank.bin"
-	@$(BIN2S) -a 2 -H $(GEN_SB_H) $< > $@
+	@$(BIN2S) -a 2 -H $(GEN_SB_H_DATA) $< > $@
 endif
+
+$(GEN_SB_H_DATA): $(GEN_SB_S) ;
 
 # ─────────────────────────────────────────────────────────────────────────────
 # UTILITY
