@@ -19,53 +19,54 @@ void shell_render_display(void) {
    tte_erase_screen();
    switch (present_state) {
     case STATE_TITLE:
-    pal_bg_mem[1] = COLOR_SILVER;
-    tte_set_pos(30, 80);
+    tte_set_color(COLOR_SILVER);
+    tte_set_pos(75, 80);
     tte_write("LANDER ADVANCE\n");
 
-    pal_bg_mem[1] = COLOR_WHITE;
-    tte_set_pos(30, 100);
+   tte_set_color = COLOR_WHITE;
+    tte_set_pos(69, 100);
     tte_write("Press A to launch");
     break;
 
     case STATE_CELESTIAL_BODY_SELECTION:
-    pal_bg_mem[1] = COLOR_WHITE;
-    tte_set_pos(15, 50);
+    tte_set_color(COLOR_WHITE);
+    tte_set_pos(33, 50);
     tte_write("Set up the flight trajectory\n\n");
 
     break;
 
     case STATE_AREA_SELECTION:
-    pal_bg_mem[1] = COLOR_WHITE;
-    tte_set_pos(15, 50);
+    tte_set_color(COLOR_WHITE);
+    tte_set_pos(48, 50);
     tte_write("Predict the landing area\n\n");
 
     break;
 
     case STATE_CONFIG_SELECTION:
-    pal_bg_mem[1] = COLOR_WHITE;
-    tte_set_pos(5, 50);
-    tte_write("Select the lander and the organic payload\n\n");
+    tte_set_pos(69, 45);
+    tte_write("Select the lander\n");
+    tte_set_pos(51, 57);
+    tte_write("and the organic payload");
 
     break;
 
     case STATE_LANDING:
-    pal_bg_mem[1] = COLOR_BLU;
-    tte_set_pos(15, 80);
+    tte_set_color(COLOR_BLU);
+    tte_set_pos(66, 80);
     tte_write("Landed succesfully\n\n");
 
     break;
 
      case STATE_CRASH:
-    pal_bg_mem[1] = COLOR_RED;
-    tte_set_pos(15, 80);
+     tte_set_color(COLOR_RED);
+    tte_set_pos(33, 80);
     tte_write("ERROR! Reprocessing required.\n\n");
 
     break;
 
      case STATE_FIN:
-    pal_bg_mem[1] = COLOR_SILVER;
-    tte_set_pos(15, 80);
+     tte_set_color(COLOR_SILVER);
+    tte_set_pos(72, 80);
     tte_write("Final Telemetry:\n\n");
 
     break;
