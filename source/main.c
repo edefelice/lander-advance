@@ -44,8 +44,6 @@ int main(void) {
     irq_init(NULL);
     irq_add(II_VBLANK, NULL);
     while(1) {
-        // Configure BG Affine 2
-        bg_rotscale_ex(&affine_bg, &affine_src);
         VBlankIntrWait();
         height += direction;
         position_x += pan_direction<<8;
@@ -62,6 +60,8 @@ int main(void) {
         //affine_src.sx = shrink(min_shrink, max_shrink, height, max_height);
         //affine_src.sy = affine_src.sx;
         //affine_src.alpha += 0x100;
+        // Configure BG Affine 2
+        bg_rotscale_ex(&affine_bg, &affine_src);
         REG_BG_AFFINE[2] = affine_bg;
     }
 }
