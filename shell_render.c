@@ -1,6 +1,6 @@
 #include <tonc.h>
-#include <shell.h>
-#include <shell_render.h>
+#include "shell.h"
+#include "shell_render.h"
 
 #define COLOR_WHITE 0X7FFF
 #define COLOR_RED 0X001F
@@ -21,7 +21,7 @@ void shell_render_display(void) {
     case STATE_TITLE:
     pal_bg_mem[1] = COLOR_SILVER;
     tte_set_pos(30, 80);
-    tte_write("LANDER ADVANCED\n");
+    tte_write("LANDER ADVANCE\n");
 
     pal_bg_mem[1] = COLOR_WHITE;
     tte_set_pos(30, 100);

@@ -4,3 +4,5 @@
 void shell_render_engine_init(void); //Initialization of the render engine
 
 void shell_render_display(void); //Display update based on the current state
+
+#endif

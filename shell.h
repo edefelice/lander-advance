@@ -1,4 +1,4 @@
-//Enumerazione degli stati
+//States enum
 typedef enum {
     STATE_TITLE,
     STATE_CELESTIAL_BODY_SELECTION, //Macro-state
@@ -32,3 +32,7 @@ typedef enum {
 
 
 GameState shell_state(void);
+
+void shell_init(void);
+void main_states_management(void);
+void sub_states_management(void);
