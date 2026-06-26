@@ -56,10 +56,10 @@ int main(void) {
             direction = 1;
         }
         affine_src.tex_x = position_x;
-        //affine_src.tex_y = position_y;
-        //affine_src.sx = shrink(min_shrink, max_shrink, height, max_height);
-        //affine_src.sy = affine_src.sx;
-        //affine_src.alpha += 0x100;
+        affine_src.tex_y = position_y;
+        affine_src.sx = shrink(min_shrink, max_shrink, height, max_height);
+        affine_src.sy = affine_src.sx;
+        affine_src.alpha += 0x100;
         // Configure BG Affine 2
         bg_rotscale_ex(&affine_bg, &affine_src);
         REG_BG_AFFINE[2] = affine_bg;
