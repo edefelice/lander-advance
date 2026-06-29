@@ -31,225 +31,174 @@ void shell_render_display(void) {
     case STATE_CELESTIAL_BODY_SELECTION:
       switch (body_state()){
          case SUB_SHUTTLE_MOVING:
-    tte_set_color(TTE_INK, COLOR_WHITE);
-    tte_set_pos(33, 50);
-    tte_write("Set up the flight trajectory");
-    break;
+         tte_set_color(TTE_INK, COLOR_WHITE);
+         tte_set_pos(33, 50);
+         tte_write("Set up the flight trajectory");
+         break;
 
-    case SUB_BODY_INFO:
-    tte_set_color(TTE_INK, COLOR_SILVER);
-    tte_set_pos(33, 50);
-    tte_write("Body Info");
-    switch (planet_index()) {
-      case 0:
+         case SUB_BODY_INFO:
+         tte_set_color(TTE_INK, COLOR_SILVER);
+         tte_set_pos(33, 50);
+         tte_write("Body Info");
+         switch (planet_index()) {
+           case 0:
+           break;
 
+           case 1:
+           tte_set_color(TTE_INK, COLOR_SILVER);
+           tte_set_pos(33, 50);
+           tte_write("Not available");
+           break;
+
+           case 2:
+           tte_set_color(TTE_INK, COLOR_SILVER);
+           tte_set_pos(33, 50);
+           tte_write("Not available");
+           break;
+
+           case 3:
+           tte_set_color(TTE_INK, COLOR_SILVER);
+           tte_set_pos(33, 50);
+           tte_write("Not available");
+           break;
+
+           case 4:
+           tte_set_color(TTE_INK, COLOR_SILVER);
+           tte_set_pos(33, 50);
+           tte_write("Not available");
+           break;
+
+           case 5:
+           tte_set_color(TTE_INK, COLOR_SILVER);
+           tte_set_pos(33, 50);
+           tte_write("Not available");
+           break;
+
+           case 6:
+           tte_set_color(TTE_INK, COLOR_SILVER);
+           tte_set_pos(33, 50);
+           tte_write("Not available");
+           break;
+
+           case 7:
+           tte_set_color(TTE_INK, COLOR_SILVER);
+           tte_set_pos(33, 50);
+           tte_write("Not available");
+           break;
+
+           case 8:
+           tte_set_color(TTE_INK, COLOR_SILVER);
+           tte_set_pos(33, 50);
+           tte_write("Not available");
+           break;
+
+           case 9:
+           tte_set_color(TTE_INK, COLOR_SILVER);
+           tte_set_pos(33, 50);
+           tte_write("Not available");
+           break;
+         }
+         break;
+      }
       break;
-
-      case 1:
- tte_set_color(TTE_INK, COLOR_SILVER);
-    tte_set_pos(33, 50);
-    tte_write("Not available");
-      break;
-
-      case 2:
-      tte_set_color(TTE_INK, COLOR_SILVER);
-    tte_set_pos(33, 50);
-    tte_write("Not available");
-
-      break;
-
-      case 3:
-      tte_set_color(TTE_INK, COLOR_SILVER);
-    tte_set_pos(33, 50);
-    tte_write("Not available");
-
-      break;
-
-      case 4:
-      tte_set_color(TTE_INK, COLOR_SILVER);
-    tte_set_pos(33, 50);
-    tte_write("Not available");
-
-      break;
-
-      case 5:
-      tte_set_color(TTE_INK, COLOR_SILVER);
-    tte_set_pos(33, 50);
-    tte_write("Not available");
-
-      break;
-
-      case 6:
-      tte_set_color(TTE_INK, COLOR_SILVER);
-    tte_set_pos(33, 50);
-    tte_write("Not available");
-
-      break;
-
-      case 7:
-      tte_set_color(TTE_INK, COLOR_SILVER);
-    tte_set_pos(33, 50);
-    tte_write("Not available");
-
-      break;
-
-      case 8:
-      tte_set_color(TTE_INK, COLOR_SILVER);
-    tte_set_pos(33, 50);
-    tte_write("Not available");
-
-      break;
-
-      case 9:
-      tte_set_color(TTE_INK, COLOR_SILVER);
-    tte_set_pos(33, 50);
-    tte_write("Not available");
-
-      break;
-    }
-   
-    }
-    break;
 
     case STATE_AREA_SELECTION:
-    switch (planet_index()) {
-      case 0:
       switch (area_state()) {
-      case SUB_AREA_POINTER_MOVING:
-        tte_set_color(TTE_INK, COLOR_WHITE);
-    tte_set_pos(48, 50);
-    tte_write("Predict the landing area");
-    }
-    case SUB_AREA_INFO:
-    tte_set_color(TTE_INK, COLOR_SILVER);
-    tte_set_pos(33, 50);
-    tte_write("Landing area Info");
-    switch (area_index()) {
-      case 0:
+         case SUB_AREA_POINTER_MOVING:
+         tte_set_color(TTE_INK, COLOR_SILVER);
+         tte_set_pos(33, 50);
+         tte_write("Predict the landing area");
+         break;
 
+         case SUB_AREA_INFO:
+         tte_set_color(TTE_INK, COLOR_SILVER);
+         tte_set_pos(33, 50);
+         tte_write("Landing area info");
+         switch (planet_index()){
+           case 0:
+             switch (area_index()){
+               case 0:
+               break;
+
+               case 1:
+               break;
+
+               case 2:
+               break;
+             }
+             break;
+
+           case 1:
+             switch (area_index()){
+               case 0:
+               break;
+
+               case 1:
+               break;
+
+               case 2:
+               break;
+             }
+             break;
+
+           case 2:
+             switch (area_index()){
+               case 0:
+               break;
+
+               case 1:
+               break;
+
+               case 2:
+               break;
+             }
+             break;
+
+           case 3:
+             tte_set_color(TTE_INK, COLOR_SILVER);
+             tte_set_pos(33, 50);
+             tte_write("Not available");
+             break;
+
+           case 4:
+             tte_set_color(TTE_INK, COLOR_SILVER);
+             tte_set_pos(33, 50);
+             tte_write("Not available");
+             break;
+
+           case 5:
+             tte_set_color(TTE_INK, COLOR_SILVER);
+             tte_set_pos(33, 50);
+             tte_write("Not available");
+             break;
+
+           case 6:
+             tte_set_color(TTE_INK, COLOR_SILVER);
+             tte_set_pos(33, 50);
+             tte_write("Not available");
+             break;
+
+           case 7:
+             tte_set_color(TTE_INK, COLOR_SILVER);
+             tte_set_pos(33, 50);
+             tte_write("Not available");
+             break;
+
+           case 8:
+             tte_set_color(TTE_INK, COLOR_SILVER);
+             tte_set_pos(33, 50);
+             tte_write("Not available");
+             break;
+
+           case 9:
+             tte_set_color(TTE_INK, COLOR_SILVER);
+             tte_set_pos(33, 50);
+             tte_write("Not available");
+             break;
+         }
+         break;
+      }
       break;
-
-      case 1:
-
-      break;
-
-      case 2:
-
-      break;
-      break;
-
-      case 1:
-      switch (area_state()) {
-      case SUB_AREA_POINTER_MOVING:
-        tte_set_color(TTE_INK, COLOR_WHITE);
-    tte_set_pos(48, 50);
-    tte_write("Predict the landing area");
-    }
-    case SUB_AREA_INFO:
-    tte_set_color(TTE_INK, COLOR_SILVER);
-    tte_set_pos(33, 50);
-    tte_write("Landing area Info");
-    switch (area_index()) {
-      case 0:
-
-      break;
-
-      case 1:
-
-      break;
-
-      case 2:
-
-      break;
-      break;
-
-      case 2:
-      switch (area_state()) {
-      case SUB_AREA_POINTER_MOVING:
-        tte_set_color(TTE_INK, COLOR_WHITE);
-    tte_set_pos(48, 50);
-    tte_write("Predict the landing area");
-    }
-    case SUB_AREA_INFO:
-    tte_set_color(TTE_INK, COLOR_SILVER);
-    tte_set_pos(33, 50);
-    tte_write("Landing area Info");
-    switch (area_index()) {
-      case 0:
-
-      break;
-
-      case 1:
-
-      break;
-
-      case 2:
-
-      break;
-      break;
-
-      case 3:
-      tte_set_color(TTE_INK, COLOR_SILVER);
-    tte_set_pos(33, 50);
-    tte_write("Not available");
-
-      break;
-      break;
-
-      case 4:
-      tte_set_color(TTE_INK, COLOR_SILVER);
-    tte_set_pos(33, 50);
-    tte_write("Not available");
-
-      break;
-      break;
-
-      case 5:
-      tte_set_color(TTE_INK, COLOR_SILVER);
-    tte_set_pos(33, 50);
-    tte_write("Not available");
-
-      break;
-      break;
-
-      case 6:
-      tte_set_color(TTE_INK, COLOR_SILVER);
-    tte_set_pos(33, 50);
-    tte_write("Not available");
-
-      break;
-      break;
-
-      case 7:
-      tte_set_color(TTE_INK, COLOR_SILVER);
-    tte_set_pos(33, 50);
-    tte_write("Not available");
-
-      break;
-      break;
-
-      case 8:
-      tte_set_color(TTE_INK, COLOR_SILVER);
-    tte_set_pos(33, 50);
-    tte_write("Not available");
-
-      break;
-      break;
-
-      case 9:
-      tte_set_color(TTE_INK, COLOR_SILVER);
-    tte_set_pos(33, 50);
-    tte_write("Not available");
-
-      break;
-      break;
-      
-    }
-    
-    }
-
-  
-    break;
 
     case STATE_CONFIG_SELECTION:
     tte_set_color(TTE_INK, COLOR_WHITE);
