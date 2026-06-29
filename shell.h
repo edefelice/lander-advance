@@ -30,8 +30,10 @@ typedef enum {
     SUB_CREW_INFO
 } ConfigSubState;
 
-
+//getter functions
 GameState shell_state(void);
+BodySubState body_state(void);
+int planet_index(void);
 
 void shell_init(void);
 void main_states_management(void);

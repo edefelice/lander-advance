@@ -21,6 +21,9 @@ static int fake_config_x = 0;
 static int fake_config_y = 0;
 int fake_result = 0;       //Removed static for testing
 
+//Time management
+static int frame_counter = 0;
+
 void main_states_management(void) {  //switching between the states logic
     switch (present_state) {
         case STATE_TITLE:
@@ -87,9 +90,20 @@ void sub_states_management(void) { //movement logic for the sub_states
                 case SUB_SHUTTLE_MOVING:
                     if (left_pointer == 1 && fake_planet > 0) {
                         fake_planet--;
+                        frame_counter = 0;
                     }
                     else if (right_pointer == 1 && fake_planet < 9) {
                         fake_planet++;
+                        frame_counter = 0;
+                    }
+                    else if (left_pointer == 0 && right_pointer == 0 && frame_counter == 60 ) {
+                        present_body = SUB_BODY_INFO;
+                        frame_counter = 0;
+                    }
+                    break;
+                case SUB_BODY_INFO:
+                    if (left_pointer == 1 || right_pointer == 1) {
+                        present_body = SUB_SHUTTLE_MOVING;
                     }
                     break;
                 default:
@@ -154,6 +168,15 @@ void shell_init(void) { //initialization of the states and sub_states
     fake_result = 0;
 }
 
+//getter functions
 GameState shell_state(void){
     return present_state;
+}
+
+BodySubState body_state(void) {
+    return present_body;
+}
+
+int planet_index(void) {
+    return fake_planet;
 }

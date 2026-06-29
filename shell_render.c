@@ -29,15 +29,92 @@ void shell_render_display(void) {
     break;
 
     case STATE_CELESTIAL_BODY_SELECTION:
+      switch (body_state()){
+         case SUB_SHUTTLE_MOVING:
     tte_set_color(TTE_INK, COLOR_WHITE);
     tte_set_pos(33, 50);
-    tte_write("Set up the flight trajectory\n\n");
+    tte_write("Set up the flight trajectory");
+    break;
+
+    case SUB_BODY_INFO:
+    tte_set_color(TTE_INK, COLOR_SILVER);
+    tte_set_pos(33, 50);
+    tte_write("Body Info");
+    switch (planet_index()) {
+      case 0:
+
+      break;
+
+      case 1:
+ tte_set_color(TTE_INK, COLOR_SILVER);
+    tte_set_pos(33, 50);
+    tte_write("Not available");
+      break;
+
+      case 2:
+      tte_set_color(TTE_INK, COLOR_SILVER);
+    tte_set_pos(33, 50);
+    tte_write("Not available");
+
+      break;
+
+      case 3:
+      tte_set_color(TTE_INK, COLOR_SILVER);
+    tte_set_pos(33, 50);
+    tte_write("Not available");
+
+      break;
+
+      case 4:
+      tte_set_color(TTE_INK, COLOR_SILVER);
+    tte_set_pos(33, 50);
+    tte_write("Not available");
+
+      break;
+
+      case 5:
+      tte_set_color(TTE_INK, COLOR_SILVER);
+    tte_set_pos(33, 50);
+    tte_write("Not available");
+
+      break;
+
+      case 6:
+      tte_set_color(TTE_INK, COLOR_SILVER);
+    tte_set_pos(33, 50);
+    tte_write("Not available");
+
+      break;
+
+      case 7:
+      tte_set_color(TTE_INK, COLOR_SILVER);
+    tte_set_pos(33, 50);
+    tte_write("Not available");
+
+      break;
+
+      case 8:
+      tte_set_color(TTE_INK, COLOR_SILVER);
+    tte_set_pos(33, 50);
+    tte_write("Not available");
+
+      break;
+
+      case 9:
+      tte_set_color(TTE_INK, COLOR_SILVER);
+    tte_set_pos(33, 50);
+    tte_write("Not available");
+
+      break;
+    }
+   
+    }
     break;
 
     case STATE_AREA_SELECTION:
     tte_set_color(TTE_INK, COLOR_WHITE);
     tte_set_pos(48, 50);
-    tte_write("Predict the landing area\n\n");
+    tte_write("Predict the landing area");
     break;
 
     case STATE_CONFIG_SELECTION:
@@ -51,19 +128,19 @@ void shell_render_display(void) {
     case STATE_LANDING:
     tte_set_color(TTE_INK, COLOR_BLU);
     tte_set_pos(66, 80);
-    tte_write("Landed succesfully\n\n");
+    tte_write("Landed succesfully");
     break;
 
      case STATE_CRASH:
      tte_set_color(TTE_INK, COLOR_RED);
     tte_set_pos(33, 80);
-    tte_write("ERROR! Reprocessing required.\n\n");
+    tte_write("ERROR! Reprocessing required.");
     break;
 
      case STATE_FIN:
      tte_set_color(TTE_INK, COLOR_SILVER);
     tte_set_pos(72, 80);
-    tte_write("Final Telemetry:\n\n");
+    tte_write("Final Telemetry:");
     break;
     
     default:
