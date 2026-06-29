@@ -15,8 +15,7 @@ static int left_pointer = 0;
 static int right_pointer = 0;
 int A_button = 0;          //Removed static for testing
 static int fake_planet = 0;
-static int fake_area_x = 0;
-static int fake_area_y = 0;
+static int selected_area = 0;
 static int fake_config_x = 0;
 static int fake_config_y = 0;
 int fake_result = 0;       //Removed static for testing
@@ -96,7 +95,10 @@ void sub_states_management(void) { //movement logic for the sub_states
                         fake_planet++;
                         frame_counter = 0;
                     }
-                    else if (left_pointer == 0 && right_pointer == 0 && frame_counter == 60 ) {
+                    else {
+                        frame_counter++;
+                    }
+                    if (left_pointer == 0 && right_pointer == 0 && frame_counter == 60 ) {
                         present_body = SUB_BODY_INFO;
                         frame_counter = 0;
                     }
@@ -113,19 +115,25 @@ void sub_states_management(void) { //movement logic for the sub_states
         case STATE_AREA_SELECTION:
             switch (present_area) {
                 case SUB_AREA_POINTER_MOVING:
-                    if (left_pointer == 1 && fake_area_x > 0) {
-                        fake_area_x--;
+                     if (up_pointer == 1 && selected_area > 0) {
+                        selected_area--;
+                        frame_counter = 0;
                     }
-                    else if (right_pointer == 1 && fake_area_x < 20) {
-                        fake_area_x++;
+                    else if (down_pointer == 1 && selected_area < 2) {
+                        selected_area++;
+                        frame_counter = 0;
                     }
-                    else if (up_pointer == 1 && fake_area_y > 0) {
-                        fake_area_y--;
+                    else {
+                        frame_counter++;
                     }
-                    else if (down_pointer == 1 && fake_area_y < 20) {
-                        fake_area_y++;
+                    if (left_pointer == 0 && right_pointer == 0 && up_pointer == 0 && down_pointer == 0 && frame_counter == 60 ) {
+                        present_area = SUB_AREA_INFO;
                     }
                     break;
+                    case SUB_AREA_INFO:
+                    if (left_pointer == 1 || right_pointer == 1 || up_pointer == 1 || down_pointer == 1) {
+                        present_area = SUB_AREA_POINTER_MOVING;
+                    }
                 default:
                     break;
             }
@@ -161,8 +169,7 @@ void shell_init(void) { //initialization of the states and sub_states
     present_area = SUB_AREA_POINTER_MOVING;
     present_config = SUB_CONFIG_POINTER_MOVING;
     fake_planet = 0;
-    fake_area_x = 0;
-    fake_area_y = 0;
+    selected_area = 0;
     fake_config_x = 0;
     fake_config_y = 0;
     fake_result = 0;
@@ -177,6 +184,14 @@ BodySubState body_state(void) {
     return present_body;
 }
 
+AreaSubState area_state(void){
+    return present_area;
+}
+
 int planet_index(void) {
     return fake_planet;
+}
+
+int area_index(void) {
+    return selected_area;
 }
