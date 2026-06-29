@@ -8,22 +8,25 @@ static BodySubState present_body;
 static AreaSubState present_area;
 static ConfigSubState present_config;
 
-//For testing only
+//Pointers placeholders
 static int up_pointer = 0; //Page up for selection
 static int down_pointer = 0;
 static int left_pointer = 0;
 static int right_pointer = 0;
 int A_button = 0;          //Removed static for testing
+
+//variables
 static int fake_planet = 0;
 static int selected_area = 0;
-static int fake_config_x = 0;
-static int fake_config_y = 0;
+static int selected_lander = 0;
+static int selected_crew = 0;
 int fake_result = 0;       //Removed static for testing
 
 //Time management
 static int frame_counter = 0;
 
-void main_states_management(void) {  //switching between the states logic
+//Switching between the states logic
+void main_states_management(void) {  
     switch (present_state) {
         case STATE_TITLE:
             if (A_button == 1) {
@@ -82,7 +85,8 @@ void main_states_management(void) {  //switching between the states logic
     }
 }
 
-void sub_states_management(void) { //movement logic for the sub_states
+//Movement logic for the sub_states
+void sub_states_management(void) { 
     switch (present_state){
         case STATE_CELESTIAL_BODY_SELECTION:
             switch (present_body){
@@ -163,15 +167,16 @@ void sub_states_management(void) { //movement logic for the sub_states
     }
 }
 
-void shell_init(void) { //initialization of the states and sub_states
+//Initialization of the states and sub_states
+void shell_init(void) { 
     present_state = STATE_TITLE;
     present_body = SUB_SHUTTLE_MOVING;
     present_area = SUB_AREA_POINTER_MOVING;
     present_config = SUB_CONFIG_POINTER_MOVING;
     fake_planet = 0;
     selected_area = 0;
-    fake_config_x = 0;
-    fake_config_y = 0;
+    selected_lander = 0;
+    selected_crew = 0;
     fake_result = 0;
 }
 

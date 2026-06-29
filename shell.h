@@ -34,8 +34,11 @@ typedef enum {
 GameState shell_state(void);
 BodySubState body_state(void);
 AreaSubState area_state(void);
+ConfigSubState config_state(void);
 int planet_index(void);
 int area_index(void);
+int lander_index(void);
+int crew_count(void);
 
 void shell_init(void);
 void main_states_management(void);
