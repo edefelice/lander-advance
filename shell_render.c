@@ -41,69 +41,16 @@ void shell_render_display(void) {
          tte_set_pos(33, 50);
          tte_write("Set up the flight trajectory");
          break;
-
+         
          case SUB_BODY_INFO:
+         p_data = planet_data(planet_index());
          tte_set_color(TTE_INK, COLOR_SILVER);
          tte_set_pos(33, 50);
-         tte_write("Body Info");
-         switch (planet_index()) {
-           case 0:
-           break;
-
-           case 1:
-           tte_set_color(TTE_INK, COLOR_SILVER);
-           tte_set_pos(33, 50);
-           tte_write("Not available");
-           break;
-
-           case 2:
-           tte_set_color(TTE_INK, COLOR_SILVER);
-           tte_set_pos(33, 50);
-           tte_write("Not available");
-           break;
-
-           case 3:
-           tte_set_color(TTE_INK, COLOR_SILVER);
-           tte_set_pos(33, 50);
-           tte_write("Not available");
-           break;
-
-           case 4:
-           tte_set_color(TTE_INK, COLOR_SILVER);
-           tte_set_pos(33, 50);
-           tte_write("Not available");
-           break;
-
-           case 5:
-           tte_set_color(TTE_INK, COLOR_SILVER);
-           tte_set_pos(33, 50);
-           tte_write("Not available");
-           break;
-
-           case 6:
-           tte_set_color(TTE_INK, COLOR_SILVER);
-           tte_set_pos(33, 50);
-           tte_write("Not available");
-           break;
-
-           case 7:
-           tte_set_color(TTE_INK, COLOR_SILVER);
-           tte_set_pos(33, 50);
-           tte_write("Not available");
-           break;
-
-           case 8:
-           tte_set_color(TTE_INK, COLOR_SILVER);
-           tte_set_pos(33, 50);
-           tte_write("Not available");
-           break;
-
-           case 9:
-           tte_set_color(TTE_INK, COLOR_SILVER);
-           tte_set_pos(33, 50);
-           tte_write("Not available");
-           break;
-         }
+         tte_write("Body Info\n");
+         tte_set_color(TTE_INK, COLOR_WHITE);
+         snprintf(buffer, sizeof(buffer), "Name: %s \nDescription: %s \nGravity: %d", 
+         p_data->planet_name, p_data->planet_description, p_data->gravity);
+         tte_write(buffer);
          break;
       }
       break;
@@ -117,103 +64,43 @@ void shell_render_display(void) {
          break;
 
          case SUB_AREA_INFO:
+         a_data = area_data(area_index());
          tte_set_color(TTE_INK, COLOR_SILVER);
          tte_set_pos(33, 50);
-         tte_write("Landing area info");
-         switch (planet_index()){
-           case 0:
-             switch (area_index()){
-               case 0:
-               break;
-
-               case 1:
-               break;
-
-               case 2:
-               break;
-             }
-             break;
-
-           case 1:
-             switch (area_index()){
-               case 0:
-               break;
-
-               case 1:
-               break;
-
-               case 2:
-               break;
-             }
-             break;
-
-           case 2:
-             switch (area_index()){
-               case 0:
-               break;
-
-               case 1:
-               break;
-
-               case 2:
-               break;
-             }
-             break;
-
-           case 3:
-             tte_set_color(TTE_INK, COLOR_SILVER);
-             tte_set_pos(33, 50);
-             tte_write("Not available");
-             break;
-
-           case 4:
-             tte_set_color(TTE_INK, COLOR_SILVER);
-             tte_set_pos(33, 50);
-             tte_write("Not available");
-             break;
-
-           case 5:
-             tte_set_color(TTE_INK, COLOR_SILVER);
-             tte_set_pos(33, 50);
-             tte_write("Not available");
-             break;
-
-           case 6:
-             tte_set_color(TTE_INK, COLOR_SILVER);
-             tte_set_pos(33, 50);
-             tte_write("Not available");
-             break;
-
-           case 7:
-             tte_set_color(TTE_INK, COLOR_SILVER);
-             tte_set_pos(33, 50);
-             tte_write("Not available");
-             break;
-
-           case 8:
-             tte_set_color(TTE_INK, COLOR_SILVER);
-             tte_set_pos(33, 50);
-             tte_write("Not available");
-             break;
-
-           case 9:
-             tte_set_color(TTE_INK, COLOR_SILVER);
-             tte_set_pos(33, 50);
-             tte_write("Not available");
-             break;
-         }
+         tte_write("Landing Area Info\n");
+         tte_set_color(TTE_INK, COLOR_WHITE);
+         snprintf(buffer, sizeof(buffer), "Name: %s \nDescription: %s \nDifficulty: %d", 
+         a_data->area_name, a_data->area_description, a_data->difficulty);
+         tte_write(buffer);
          break;
+
       }
       break;
 
     case STATE_CONFIG_SELECTION:
-    tte_set_color(TTE_INK, COLOR_WHITE);
-    tte_set_pos(69, 45);
-    tte_write("Select the lander\n");
-    tte_set_pos(51, 57);
-    tte_write("and the organic payload");
-    break;
-
+    l_data = lander_data(lander_index());
+    switch (config_state()) {
+      case SUB_CONFIG_POINTER_MOVING:
+      tte_set_color(TTE_INK, COLOR_SILVER);
+      tte_set_pos(69, 45);
+      tte_write("Select the lander\n");
+      tte_set_color(TTE_INK, COLOR_WHITE);
+      snprintf(buffer, sizeof(buffer), "Name: %s \nDescription: %s \nMax Crew: %d \nMass: %d kg \nThrust: %d kN",
+       l_data->lander_name, l_data->lander_description, l_data->max_crew, l_data->mass, l_data->thrust);
+       tte_write(buffer);
+         break;
+         
+         case SUB_CREW_INFO
+         tte_set_color(TTE_INK, COLOR_SILVER);
+          tte_set_pos(51, 57);
+          tte_write("Select the organic payload");
+          tte_set_color(TTE_INK, COLOR_WHITE);
+          snprintf(buffer, sizeof(buffer), "Name: %s \nCrew Assigned: %d",
+          l_data->lander_name, crew_count(), max_crew());
+          tte_write(buffer);
+          tt_write("Press A to launch");
+          break;
+z
     case STATE_LANDING:
     tte_set_color(TTE_INK, COLOR_BLU);
     tte_set_pos(66, 80);

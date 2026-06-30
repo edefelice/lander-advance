@@ -21,3 +21,20 @@ static const LanderData landers[1] = { //[] number of landers in database
     {"Baffo", "Big", "2", "333", "9999"} //first number is the max crew, second is the mass, last one is the thrust
 //add more landers
 };
+
+//Getter
+const PlanetData* planet_data(int index) {
+    if (index < 0 || index > 1) return planet_index = 0 //modify when adding new planets
+    return &planets[index];
+}
+
+const AreaData* area_data(int planet_index, int area_index) {
+    if (planet_index < 0 || planet_index > 1) planet_index = 0; //modify when adding new planets
+    if (area_index < 0 || area_index > 2) area_index = 0;
+    return &areas[planet_index][area_index];
+}
+
+const LanderData* lander_data(int index) {
+    if (index < 0 || index > 0) index = 0; //modify when adding more landers
+    return &landers[index];
+}
