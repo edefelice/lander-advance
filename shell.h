@@ -1,3 +1,6 @@
+#ifndef SHELL_H
+#define SHELL_H
+
 //States enum
 typedef enum {
     STATE_TITLE,
@@ -39,7 +42,10 @@ int planet_index(void);
 int area_index(void);
 int lander_index(void);
 int crew_count(void);
+int max_crew(void);
 
 void shell_init(void);
 void main_states_management(void);
 void sub_states_management(void);
+
+#endif

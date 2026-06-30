@@ -1,6 +1,8 @@
 #include <tonc.h>
 #include "shell.h"
 #include "shell_render.h"
+#include <stdio.h>
+#include "game_data.h"
 
 #define COLOR_WHITE 0X7FFF
 #define COLOR_SILVER 0x5EF7
