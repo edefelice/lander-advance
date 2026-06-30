@@ -16,6 +16,10 @@ void shell_render_engine_init(void) { //Initialize engine and set Mode 3 for GBA
 
 void shell_render_display(void) { 
    GameState present_state = shell_state(); //GameState from shell.h
+   char buffer[100];
+   const PlanetData* p_data;
+   const AreaData* a_data;
+   const LanderData* l_data;
    tte_erase_screen();
    
    switch (present_state) {
