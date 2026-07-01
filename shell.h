@@ -38,7 +38,7 @@ typedef enum {
     SUB_RESUME,
     SUB_RESTART,
     SUB_TITLE,
-    SUB_EXIT
+    SUB_CREDITS
 } PauseSubState;
 
 //getter functions
@@ -46,11 +46,13 @@ GameState shell_state(void);
 BodySubState body_state(void);
 AreaSubState area_state(void);
 ConfigSubState config_state(void);
+PauseSubState pause_state(void);
 int planet_index(void);
 int area_index(void);
 int lander_index(void);
 int crew_count(void);
 int max_crew(void);
+int pause_index(void);
 
 void shell_init(void);
 void main_states_management(void);
