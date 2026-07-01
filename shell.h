@@ -33,6 +33,14 @@ typedef enum {
     SUB_CREW_INFO
 } ConfigSubState;
 
+//Sub-states of STATE_PAUSE
+typedef enum {
+    SUB_RESUME,
+    SUB_RESTART,
+    SUB_TITLE,
+    SUB_EXIT
+} PauseSubState;
+
 //getter functions
 GameState shell_state(void);
 BodySubState body_state(void);
