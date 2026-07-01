@@ -7,6 +7,7 @@ static GameState present_state;
 static BodySubState present_body;
 static AreaSubState present_area;
 static ConfigSubState present_config;
+static PauseSubState present_pause;
 
 //Pointers placeholders
 static int up_pointer = 0; //Page up for selection
@@ -15,12 +16,14 @@ static int left_pointer = 0;
 static int right_pointer = 0;
 int A_button = 0;          //Removed static for testing
 static int B_button = 0;
+static int START_button = 0;
 
 //variables
 static int fake_planet = 0;
 static int selected_area = 0;
 static int selected_lander = 0;
 static int selected_crew = 0;
+static int selected_pause = 0;
 int fake_result = 0;       //Removed static for testing
 
 //Time management
@@ -64,6 +67,11 @@ void main_states_management(void) {
             }
             break;
         case STATE_GAMEPLAY:
+        if (START_button == 1){
+            present_state = STATE_PAUSE;
+            START_button = 0;
+            frame_counter = 0;
+        }
             if (fake_result == 1) {
                 present_state = STATE_LANDING;
                 fake_result = 0;
@@ -73,6 +81,26 @@ void main_states_management(void) {
                 fake_result = 0;
             }
             break;
+            case STATE_PAUSE:
+            if (A_button == 1){
+                switch (present_pause){
+                    case SUB_RESUME:
+                    present_state = STATE_GAMEPLAY;
+                }
+                break;
+                case SUB_RESTART:
+                shell_init();
+                present_state = STATE_CELESTIAL_BODY_SELECTION;
+                break;
+                case SUB_TITLE:
+                shell_init();
+                present_state = STATE_TITLE;
+                break;
+                case SUB_CREDITS:
+             
+            }
+
+        
         case STATE_LANDING:
             if (A_button == 1) {
                 present_state = STATE_FIN;
@@ -222,6 +250,10 @@ AreaSubState area_state(void){
 
 ConfigSubState config_state(void){
     return present_config;
+}
+
+PauseSubState pause_state(void) {
+    return present_pause;
 }
 
 int planet_index(void) {
