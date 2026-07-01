@@ -52,11 +52,11 @@ void main_states_management(void) {
             break;
         case STATE_CONFIG_SELECTION:
             if (A_button == 1){
-                if (present_config = SUB_CONFIG_POINTER_MOVING;){
+                if (present_config == SUB_CONFIG_POINTER_MOVING){
                     present_config = SUB_CREW_INFO;
-                    selected_crew = 1;
+                    selected_crew = 2;
                  }
-                 else if (present_config = SUB_CREW_INFO){
+                 else if (present_config == SUB_CREW_INFO){
                     present_state = STATE_GAMEPLAY;
                  }
                 frame_counter = 0;
@@ -239,4 +239,12 @@ int max_crew(void){
         case 2: return 6;
         default: return 2;
     }
-    
+}
+
+int lander_index(void){
+    return selected_lander;
+}
+
+int crew_count(void) {
+    return selected_crew;
+}

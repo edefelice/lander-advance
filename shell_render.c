@@ -64,7 +64,7 @@ void shell_render_display(void) {
          break;
 
          case SUB_AREA_INFO:
-         a_data = area_data(area_index());
+         a_data = area_data(planet_index(), area_index());
          tte_set_color(TTE_INK, COLOR_SILVER);
          tte_set_pos(33, 50);
          tte_write("Landing Area Info\n");
@@ -90,17 +90,18 @@ void shell_render_display(void) {
        tte_write(buffer);
          break;
          
-         case SUB_CREW_INFO
+         case SUB_CREW_INFO:
          tte_set_color(TTE_INK, COLOR_SILVER);
           tte_set_pos(51, 57);
           tte_write("Select the organic payload");
           tte_set_color(TTE_INK, COLOR_WHITE);
-          snprintf(buffer, sizeof(buffer), "Name: %s \nCrew Assigned: %d",
+          snprintf(buffer, sizeof(buffer), "Name: %s \nCrew Assigned: %d / %d",
           l_data->lander_name, crew_count(), max_crew());
           tte_write(buffer);
-          tt_write("Press A to launch");
+          tte_write("Press A to launch");
+    }
           break;
-z
+
     case STATE_LANDING:
     tte_set_color(TTE_INK, COLOR_BLU);
     tte_set_pos(66, 80);
