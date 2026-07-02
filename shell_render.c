@@ -139,6 +139,12 @@ void shell_render_display(void) {
         tte_set_color(TTE_INK, COLOR_SILVER);
         tte_set_pos(72, 80);
         tte_write("Final Telemetry:");
+        tte_set_color(TTE_INK, COLOR_WHITE);
+        snprintf(buffer, sizeof(buffer), "Result: %s\nScore: %d\nCause: %s\n\nPress A to Restart", 
+        result_victory() ? "Congratulations, your score is" : "Reprocessing required",
+        result_score(),
+        result_reason());
+        tte_write(buffer);
         break;
     
     default:

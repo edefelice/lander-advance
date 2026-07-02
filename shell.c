@@ -26,6 +26,14 @@ static int selected_crew = 0;
 static int selected_pause = 0;
 int fake_result = 0;       //Removed static for testing
 
+//GameResult to be replaced with the official one
+struct GameResult {
+    int result;
+    int score;
+    const char* reason;
+}
+static GameResult present_result;
+
 //Time management
 static int frame_counter = 0;
 
@@ -72,11 +80,16 @@ void main_states_management(void) {
                 selected_pause = 0;
                 START_button = 0;
             }
-            if (fake_result == 1) {
+            if (fake_result == 1) { //for testing only
+                present_result.result = 1;
+                present_result.score = 999;
                 present_state = STATE_LANDING;
                 fake_result = 0;
             }
-            else if (fake_result == 2) {
+            else if (fake_result == 2) { //for testing only
+                present_result.result = 2;
+                present_result.score = 0;
+                present_result.reason = "Crash reason TBD";
                 present_state = STATE_CRASH;
                 fake_result = 0;
             }
@@ -90,6 +103,9 @@ void main_states_management(void) {
                     case SUB_RESTART:
                         shell_init();
                         present_state = STATE_CELESTIAL_BODY_SELECTION;
+                        present_result.result = 0;
+                        present_result.score = 0;
+                        present_result.reason = "";
                         break;
                     case SUB_TITLE:
                         shell_init();
@@ -283,4 +299,16 @@ int crew_count(void) {
 
 int pause_index(void) {
     return selected_pause;
+}
+
+int result_victory(void) {
+    return present_result.result = 1;
+}
+
+int result_score(void) {
+    return present_result.score;
+}
+
+const char* result_reason(void) {
+    return present_result.reason;
 }
