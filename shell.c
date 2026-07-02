@@ -31,7 +31,7 @@ struct GameResult {
     int result;
     int score;
     const char* reason;
-}
+};
 static GameResult present_result;
 
 //Time management
@@ -133,6 +133,7 @@ void main_states_management(void) {
             break;
         case STATE_FIN:
             if (A_button == 1) {
+                shell_init();
                 present_state = STATE_TITLE;
                 A_button = 0;
             }
@@ -248,6 +249,12 @@ void shell_init(void) {
     selected_lander = 0;
     selected_crew = 0;
     fake_result = 0;
+
+//reset results
+present_result.result = 0;
+present_result.score = 0;
+present_result.reason = "";
+
 }
 
 //getter functions
@@ -302,7 +309,7 @@ int pause_index(void) {
 }
 
 int result_victory(void) {
-    return present_result.result = 1;
+    return present_result.result == 1;
 }
 
 int result_score(void) {
