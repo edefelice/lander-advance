@@ -10,8 +10,8 @@ static const PlanetData planets[1] = { //[] is the number of planets in the data
 static const AreaData areas [1][3] = { //the first [] is the number of planets in the database, the second [] is the number of areas for each planet
 //areas for planet 0
     {
-        {"Moon area 1", "Crater, dangerous", 3} //the last number is the difficulty value
-        {"Moon area 2", "Flat surface, easy", 1}
+        {"Moon area 1", "Crater, dangerous", 3}, //the last number is the difficulty value
+        {"Moon area 2", "Flat surface, easy", 1},
         {"Moon area 3", "Peak, highly dangerous", 4}
     }
 //add more planets + areas
@@ -25,7 +25,7 @@ static const LanderData landers[1] = { //[] number of landers in database
 
 //Getter
 const PlanetData* planet_data(int index) {
-    if (index < 0 || index >= 1) index = 0 //modify when adding new planets
+    if (index < 0 || index >= 1) index = 0; //modify when adding new planets
     return &planets[index];
 }
 

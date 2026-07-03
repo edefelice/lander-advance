@@ -101,13 +101,24 @@ void shell_render_display(void) {
              tte_set_pos(51, 57);
              tte_write("Select the organic payload\n");
              tte_set_color(TTE_INK, COLOR_WHITE);
-             snprintf(buffer, sizeof(buffer), "Name: %s \nCrew Assigned: %d / %d",
+             snprintf(buffer, sizeof(buffer), "Lander: %s \nCrew Assigned: %d / %d",
              l_data->lander_name, crew_count(), max_crew());
              tte_write(buffer);
-             tte_write("\nPress A to launch");
+             tte_write("\nPress A to launch or B to go back");
              break;
         }
         break;
+        
+        //For testing purposes only
+        case STATE_GAMEPLAY:
+          tte_set_color(TTE_INK, COLOR_SILVER);
+          tte_set_pos(51, 57);
+          tte_write("Gameplay running...\n");
+          tte_write("Press START, aka TAB to open Pause Menu");
+          tte_write("Press R on pc to simulate WIN condition\n");
+          tte_write("Press L on pc to simulate LOSE condition");
+          break;
+
 
     case STATE_PAUSE:
         tte_set_color(TTE_INK, COLOR_SILVER);
@@ -126,13 +137,13 @@ void shell_render_display(void) {
     case STATE_LANDING:
         tte_set_color(TTE_INK, COLOR_BLU);
         tte_set_pos(66, 80);
-        tte_write("Landed succesfully");
+        tte_write("Landed succesfully\n\nPress A for the final telemetry");
         break;
 
     case STATE_CRASH:
         tte_set_color(TTE_INK, COLOR_RED);
         tte_set_pos(33, 80);
-        tte_write("ERROR! Reprocessing required.");
+        tte_write("ERROR! Reprocessing required.\n\nPress A for the final telemetry");
         break;
 
     case STATE_FIN:
@@ -140,7 +151,7 @@ void shell_render_display(void) {
         tte_set_pos(72, 40);
         tte_write("Final Telemetry:");
         tte_set_color(TTE_INK, COLOR_WHITE);
-        snprintf(buffer, sizeof(buffer), "Result: %s\nScore: %d\nCause: %s\n\nPress A to Restart", 
+        snprintf(buffer, sizeof(buffer), "Result: %s\nScore: %d\nCause: %s\n\nPress A to return to Title", 
         result_victory() ? "Congratulations, but you can do better" : "Reprocessing required",
         result_score(),
         result_reason());

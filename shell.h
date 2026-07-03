@@ -2,7 +2,7 @@
 #define SHELL_H
 
 //GameResult
-typedef strcut GameResult GameResult;
+typedef struct GameResult GameResult;
 
 //States enum
 typedef enum {

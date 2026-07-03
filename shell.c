@@ -10,13 +10,13 @@ static ConfigSubState present_config;
 static PauseSubState present_pause;
 
 //Pointers placeholders
-static int up_pointer = 0; //Page up for selection
-static int down_pointer = 0;
-static int left_pointer = 0;
-static int right_pointer = 0;
+int up_pointer = 0; //Page up for selection
+int down_pointer = 0;
+int left_pointer = 0;
+int right_pointer = 0;
 int A_button = 0;          //Removed static for testing
-static int B_button = 0;
-static int START_button = 0;
+int B_button = 0;
+int START_button = 0;
 
 //variables
 static int fake_planet = 0;
