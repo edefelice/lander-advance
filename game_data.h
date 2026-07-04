@@ -2,23 +2,23 @@
 #define GAME_DATA_H
 
 typedef struct {
-    const char* planet_name;
-    const char* planet_description;
-    int gravity; // gravity value for the planet
+    int gravity;
+    char planet_name[20];      //fixed array included directly in the struct instead of the pointers
+    char planet_description[40]; 
 } PlanetData;
 
 typedef struct {
-    const char* area_name;
-    const char* area_description;
-    int difficulty; //difficulty value for the area
+    int difficulty;
+    char area_name[20];      
+    char area_description[40];   
 } AreaData;
 
 typedef struct {
-    const char* lander_name;
-    const char* lander_description;
     int max_crew;
     int mass;
     int thrust;
+    char lander_name[20];        
+    char lander_description[20]; 
 } LanderData;
 
 //getter functions

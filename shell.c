@@ -1,4 +1,5 @@
 #include "shell.h"
+#include "game_data.h"
 
 //State
 static GameState present_state;
@@ -159,6 +160,10 @@ void sub_states_management(void) {
                         present_body = SUB_BODY_INFO;
                         A_button = 0;
                     }
+                    else if (B_button == 1){
+                        present_state = STATE_TITLE;
+                        B_button = 0;
+                    }
                     break;
                 case SUB_BODY_INFO:
                     if (B_button == 1) {
@@ -181,6 +186,11 @@ void sub_states_management(void) {
                         present_area = SUB_AREA_INFO;
                         A_button = 0;
                     }
+                    else if (B_button == 1) {
+                        present_state = STATE_CELESTIAL_BODY_SELECTION;
+                        present_body = SUB_SHUTTLE_MOVING;
+                        B_button = 0;
+                    }
                     break;
                 case SUB_AREA_INFO:
                     if (B_button == 1) {
@@ -196,12 +206,17 @@ void sub_states_management(void) {
                     if (left_pointer == 1 && selected_lander > 0) {
                         selected_lander--;
                     }
-                    else if (right_pointer == 1 && selected_lander < 2){
+                    else if (right_pointer == 1 && selected_lander < 1){ //based on the number of the landers
                         selected_lander++;
                     }
                     else if (A_button == 1) {
                         present_config = SUB_LANDER_INFO;
                         A_button = 0;
+                    }
+                    else if (B_button == 1) {
+                        present_state = STATE_AREA_SELECTION;
+                        present_config = SUB_AREA_POINTER_MOVING;
+                        B_button = 0;
                     }
                     break;
                 case SUB_LANDER_INFO:
@@ -288,13 +303,8 @@ int area_index(void) {
 
 //Max crew for each lander (pilot + others)
 int max_crew(void){
-    switch (selected_lander){
-        case 0: return 2;
-        case 1: return 4;
-        case 2: return 6;
-        default: return 2;
+        return lander_data(selected_lander)->max_crew;
     }
-}
 
 int lander_index(void){
     return selected_lander;
