@@ -103,7 +103,7 @@ void main_states_management(void) {
                         break;
                     case SUB_RESTART:
                         shell_init();
-                        present_state = STATE_CELESTIAL_BODY_SELECTION;
+                        present_state = STATE_GAMEPLAY;
                         present_result.result = 0;
                         present_result.score = 0;
                         present_result.reason = "";
