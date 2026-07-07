@@ -2,7 +2,7 @@
 
 //Planets Database
 static const PlanetData planets[1] = { //[] is the number of planets in the database
-    {333, "Earth's Moon", "Regolith corrosion"} //the first one is the gravity value
+    {1.62, 5000, "Earth's Moon", "Regolith corrosion"} //the first one is the gravity value
 //add more planets
 };
 
@@ -19,7 +19,7 @@ static const AreaData areas [1][3] = { //the first [] is the number of planets i
 
 //Landers Database
 static const LanderData landers[1] = { //[] number of landers in database
-    {4, 333, 9999, "Baffo", "Big"} //first number is the max crew, second is the mass, third is the thrust
+    {2, 6713, 8487, 30000, 440, "Baffo", "Big"} //first number is the max crew, second is the mass, third is the thrust
 //add more landers
 };
 

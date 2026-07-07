@@ -63,8 +63,12 @@ void shell_render_display(void) {
              tte_set_pos(8, 65); tte_write("Gravity: ");
              snprintf(buffer, sizeof(buffer), "%d", p_data->gravity);
              tte_write(buffer);
+
+             tte_set_pos(8, 85); tte_write("Starting: ");
+             snprintf(buffer, sizeof(buffer), "%d m", p_data->starting_altitude);
+             tte_write(buffer);
              
-             tte_set_pos(8, 85); tte_write("Desc: "); tte_write(p_data->planet_description);
+             tte_set_pos(8, 105); tte_write("Desc: "); tte_write(p_data->planet_description);
              break;
       }
       break;
@@ -132,9 +136,17 @@ void shell_render_display(void) {
              tte_set_pos(8, 80); tte_write("Mass: ");
              snprintf(buffer, sizeof(buffer), "%d kg", l_data->mass);
              tte_write(buffer);
+
+             tte_set_pos(8, 100); tte_write("Fuel: ");
+             snprintf(buffer, sizeof(buffer), "%d kg", l_data->fuel);
+             tte_write(buffer);
              
-             tte_set_pos(8, 100); tte_write("Thrust: ");
-             snprintf(buffer, sizeof(buffer), "%d kN", l_data->thrust);
+             tte_set_pos(8, 120); tte_write("Thrust: ");
+             snprintf(buffer, sizeof(buffer), "%d kN", l_data->thrust_main);
+             tte_write(buffer);
+
+             tte_set_pos(8, 140); tte_write("RCS: ");
+             snprintf(buffer, sizeof(buffer), "%d kN", l_data->thrust_rcs);
              tte_write(buffer);
              break;
              

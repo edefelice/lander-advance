@@ -3,6 +3,7 @@
 
 typedef struct {
     int gravity;
+    int starting_altitude;
     char planet_name[20];      //fixed array included directly in the struct instead of the pointers
     char planet_description[40]; 
 } PlanetData;
@@ -16,7 +17,9 @@ typedef struct {
 typedef struct {
     int max_crew;
     int mass;
-    int thrust;
+    int fuel;
+    int thrust_main;
+    int thrust_rcs;
     char lander_name[20];        
     char lander_description[20]; 
 } LanderData;
