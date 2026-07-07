@@ -7,7 +7,7 @@
 
 // Definitions for Gameplay actions
 
-#define MAINT_THR_ON    0x001  
+#define MAIN_THR_ON    0x001  
 #define TOP_THR_ON      0x002   // Lateral thruster top (towards down) ON
 #define LEFT_THR_ON     0x004   // Lateral thruster left (towards right) ON 
 #define BOT_THR_ON      0x008   // Lateral thruster bottom (towards up) ON 

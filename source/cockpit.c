@@ -1,14 +1,14 @@
 #include "cockpit.h"
 
 u16 cpit_input()
-{
+{    
 u16 action = 0;
 
 VBlankIntrWait();   // To remove if already used outside
 key_poll();         // To remove if already used outside
 
 if(key_is_down(KEY_A)){
-    action = action | MAINT_THR_ON;
+    action = action | MAIN_THR_ON;
 }
 if(key_is_down(KEY_UP)){
     action = action | TOP_THR_ON;
