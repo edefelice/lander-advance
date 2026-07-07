@@ -2,8 +2,8 @@
 #define GAME_DATA_H
 
 typedef struct {
-    int gravity;
-    int starting_altitude;
+    char gravity[10];
+    char starting_altitude[10];
     char planet_name[20];      //fixed array included directly in the struct instead of the pointers
     char planet_description[40]; 
 } PlanetData;
