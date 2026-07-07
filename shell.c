@@ -35,9 +35,6 @@ struct GameResult {
 };
 static GameResult present_result;
 
-//Time management
-static int frame_counter = 0;
-
 //Switching between the states logic
 void main_states_management(void) {  
     switch (present_state) {
