@@ -22,9 +22,14 @@ typedef enum
 //Lander struct
 typedef struct {
 
+    //Environment
+    fixed gravity;      //Gravity of the planet (16.16)
+
     //Position
     fixed x;            // Global position x (16.16)
     fixed y;            // Global position y (16.16)
+    
+    //Altitude
     fixed z;            // Altitude (16.16)
     
     //Velocity
@@ -37,14 +42,7 @@ typedef struct {
 
     //propellant
     fixed propellant;   //current prepellant mass (16.16)
-/*
-    //Engine state
-    bool mainEngine;    //Thrust state
-    bool rcsTop;        // Upper RCS firing
-    bool rcsBottom;     // Lower RCS firing
-    bool rcsLeft;       // Left RCS firing
-    bool rcsRight;      // Right RCS firing
-*/
+
     //Lander state
     LanderStatus state;
 
@@ -60,24 +58,37 @@ typedef struct {
 } PlayerInput;
 
 
+// ---------------------------
+// INITIALIZATION
+// ---------------------------
 
-// A PIERLUCA SERVE LA PERCENTUALE DI PROPELLANT MASS RIMANENTE
+void GameplayInit(Lander *lander);                              //initialization of lander data
 
-void GameplayInit(Lander *lander);  //inizializzazione del gioco
+// ---------------------------
+// READ FUNCTIONS
+// ---------------------------
 
-fixed GameplayGetMass(const Lander *lander);    //legge la current mass totale
+fixed GameplayGetMass(const Lander *lander);                    //read the total current mass 
 
-void GameplayUpdate(Lander *lander, const PlayerInput *input);      //richiama le funzioni nel giusto ordine
+fixed GameplayGetPropPercent(const Lander *lander);             //percentage of propellant available
 
-void UpdateMainEngine(Lander *lander, const PlayerInput *input, fixed mass);    //calcola la fisica del main engine
+bool GameplayHasPropellant(const Lander *lander);               //return if there is propellant
 
-void UpdateRCS(Lander *lander, const PlayerInput *input, fixed mass);           //calcola la fisica degli RCS
+// ---------------------------
+// UPDATE FUNCTIONS
+// ---------------------------
 
-void UpdateLinearPhysics(Lander *lander);                           //aggiornamento posizione
+void GameplayUpdate(Lander *lander, const PlayerInput *input);                                  //manage the update functions
 
-void UpdateRotation(Lander *lander, const PlayerInput *input);      //aggiorna theta, cosnumo RCS di rotazione e normalizzazione dell'angolo
+void UpdateMainEngine(Lander *lander, const PlayerInput *input, fixed mass);     //main engine physics
 
-void Collision(Lander *lander);                                     //decide lo stato del lander
+void UpdateRCS(Lander *lander, const PlayerInput *input, fixed mass);                           //RCS engine physics
+
+void UpdateLinearPhysics(Lander *lander);                                                       //position update
+
+void UpdateRotation(Lander *lander, const PlayerInput *input);                                  //aggiorna theta, cosnumo RCS di rotazione e normalizzazione dell'angolo
+
+void UpdateCollision(Lander *lander);                                                            //check the lander state
 
 
 #endif // GAMEPLAY_H
