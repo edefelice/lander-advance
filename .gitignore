@@ -35,3 +35,12 @@ compile_flags.txt
 # Editor temp files
 *.swp
 *.swo
+
+# LaTeX
+*.aux
+*.log
+*.toc
+*.synctex.gz
+*.fdb_latexmk
+*.fls
+*.out
