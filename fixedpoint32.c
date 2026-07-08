@@ -1,7 +1,6 @@
 #include "fixedpoint32.h"
 
 #include <stdint.h>
-#include <assert.h>
 #include <limits.h>
 
 /*
