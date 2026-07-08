@@ -20,7 +20,7 @@ int B_button = 0;
 int START_button = 0;
 
 //variables
-static int fake_planet = 0;
+static int selected_planet = 0;
 static int selected_area = 0;
 static int selected_lander = 0;
 static int selected_crew = 0;
@@ -147,11 +147,11 @@ void sub_states_management(void) {
         case STATE_CELESTIAL_BODY_SELECTION:
             switch (present_body){
                 case SUB_SHUTTLE_MOVING:
-                    if (left_pointer == 1 && fake_planet > 0) {
-                        fake_planet--;
+                    if (left_pointer == 1 && selected_planet > 0) {
+                        selected_planet--;
                     }
-                    else if (right_pointer == 1 && fake_planet < 9) {
-                        fake_planet++;
+                    else if (right_pointer == 1 && selected_planet < 9) {
+                        selected_planet++;
                     }
                     else if (A_button == 1) {
                         present_body = SUB_BODY_INFO;
@@ -256,7 +256,7 @@ void shell_init(void) {
     present_body = SUB_SHUTTLE_MOVING;
     present_area = SUB_AREA_POINTER_MOVING;
     present_config = SUB_CONFIG_POINTER_MOVING;
-    fake_planet = 0;
+    selected_planet = 0;
     selected_area = 0;
     selected_lander = 0;
     selected_crew = 0;
@@ -291,7 +291,7 @@ PauseSubState pause_state(void) {
 }
 
 int planet_index(void) {
-    return fake_planet;
+    return selected_planet;
 }
 
 int area_index(void) {
