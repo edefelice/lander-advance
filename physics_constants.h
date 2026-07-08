@@ -5,24 +5,27 @@
 #include <stdint.h>
 
 /* 
-    Is defined the constants of the physics divided in block
+    Definition of physics constants divided in blocks
     
     V1: definition of moon info
         definition of LEM info
+    
+    Definition of simulation constants
         
 */
 
-//time
-const fixed dt = fixFromFraction(1674 , 100000);            //definition of dt 1/59,73
 
-
-//MOON
+// ---------------------------
+// MOON
+// ---------------------------
 
 //gravity
-#define MOON_G              FIX_FROM_FRACTION(81,50)        //Moon gravity 1.62 m/s^2, readed value 106168
+#define MOON_G              FIX_FROM_FRACTION(81,50)        // Moon gravity (1.62 m/s^2)
 
 
-//LEM info
+// ---------------------------
+// LEM
+// ---------------------------
 
 //Thrust main and RCS
 #define MAIN_THRUST         FIX_FROM_INT(30000)             //Thrust main engine 30000N
@@ -36,6 +39,15 @@ const fixed dt = fixFromFraction(1674 , 100000);            //definition of dt 1
 //mass flow main and RCS (Consumption)
 #define MAIN_CONSUMPTION    FIX_FROM_FRACTION(17,100)       // kg/frame
 #define RCS_CONSUMPTION     FIX_FROM_FRACTION(13,5000)      // kg/frame
+
+
+
+// ---------------------------
+// SIMULATION
+// ---------------------------
+
+//time
+#define SIM_DT              FIX_FROM_FRACTION(1674,100000)  // Simulation timestep (≈1/59.73 s)
 
 
 
