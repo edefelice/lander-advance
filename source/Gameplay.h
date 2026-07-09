@@ -7,7 +7,26 @@
 
 #include "fixedpoint32.h"
 #include "physics_constants.h"
+#include "cockpit.h"        //ci sta lo struct input, non essendoci nella cartella ora, lascio lo struct nel codice (RICORDATI DI CANCELLARLO ALLA FINE)
 
+
+/*
+------------------------------------------------------------
+Gameplay Module
+
+This module implements the physical simulation of the Lunar
+Module (LEM).
+
+Responsibilities:
+- Initialize the lander state.
+- Update translational dynamics.
+- Update rotational dynamics.
+- Manage propellant consumption.
+- Detect landing and crash conditions.
+
+Rendering and HUD management are handled by other modules.
+------------------------------------------------------------
+*/
 
 
 //enumerator define the lander status
@@ -23,25 +42,26 @@ typedef enum
 typedef struct {
 
     //Environment
-    fixed gravity;      //Gravity of the planet (16.16)
+    fixed gravity;      //Gravity of the planet (Q16.16)
 
     //Position
-    fixed x;            // Global position x (16.16)
-    fixed y;            // Global position y (16.16)
+    fixed x;            // Global position x (Q16.16)
+    fixed y;            // Global position y (Q16.16)
     
     //Altitude
-    fixed z;            // Altitude (16.16)
+    fixed z;            // Altitude (Q16.16)
     
     //Velocity
-    fixed vx;           // velocity x axis (16.16)
-    fixed vy;           // velocity y axis (16.16)
-    fixed vz;           // velocity z axis (16.16)
+    fixed vx;           // velocity x axis (Q16.16)
+    fixed vy;           // velocity y axis (Q16.16)
+    fixed vz;           // velocity z axis (Q16.16)
     
     //Rotation
-    uint16_t theta;     //Yaw rotation angle (0-511 GBA units)
+    fixed theta;        //Rotation angle (Q16.16 radians)
+    fixed omega;        //Angular velocity (rad/s, Q16.16)
 
     //propellant
-    fixed propellant;   //current prepellant mass (16.16)
+    fixed propellant;   //current propellant mass (Q16.16)
 
     //Lander state
     LanderStatus state;
@@ -78,17 +98,17 @@ bool GameplayHasPropellant(const Lander *lander);               //return if ther
 // UPDATE FUNCTIONS
 // ---------------------------
 
-void GameplayUpdate(Lander *lander, const PlayerInput *input);                                  //manage the update functions
+void GameplayUpdate(Lander *lander, const PlayerInput *input);                              //manage the update functions
 
-void UpdateMainEngine(Lander *lander, const PlayerInput *input, fixed mass);     //main engine physics
+void UpdateMainEngine(Lander *lander, const PlayerInput *input, fixed mass);                //main engine physics
 
-void UpdateRCS(Lander *lander, const PlayerInput *input, fixed mass);                           //RCS engine physics
+void UpdateRCS(Lander *lander, const PlayerInput *input, fixed mass);                       //RCS engine physics
 
-void UpdateLinearPhysics(Lander *lander);                                                       //position update
+void UpdateLinearPhysics(Lander *lander);                                                   //position update
 
-void UpdateRotation(Lander *lander, const PlayerInput *input);                                  //aggiorna theta, cosnumo RCS di rotazione e normalizzazione dell'angolo
+void UpdateRotation(Lander *lander, const PlayerInput *input, fixed mass);                  //rotation physics
 
-void UpdateCollision(Lander *lander);                                                            //check the lander state
+void UpdateCollision(Lander *lander);                                                       //check the lander state
 
 
 #endif // GAMEPLAY_H
