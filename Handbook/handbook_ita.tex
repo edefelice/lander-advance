@@ -1,4 +1,4 @@
-\documentclass[10pt, twoside]{article}
+\documentclass[9pt, twoside]{article}
 
 %handbook geometry
 \usepackage[
@@ -14,11 +14,16 @@
 \usepackage{graphicx}
 \usepackage{xcolor}
 \usepackage{fancyhdr}
-\usepackage{tcolorbox} 
+\usepackage[most]{tcolorbox} 
 \usepackage{wrapfig}
+\usepackage{titlesec}
 
 %font
 \renewcommand{\familydefault}{\sfdefault}
+
+%Riduzione dimensione titoli per adattarsi al testo piccolo
+\titleformat{\section}{\normalfont\large\bfseries}{\thesection}{1em}{}
+\titleformat{\subsection}{\normalfont\normalsize\bfseries}{\thesubsection}{1em}{}
 
 %palette TBD
 
@@ -26,63 +31,85 @@
 
 \begin{document}
 
-\title{LANDER ADVANCE - MANUALE DI GIOCO}
+\title{\small LANDER ADVANCE - MANUALE DI GIOCO}
 \author{}
 \date{}
 \maketitle
 \newpage
 
----------------------------------------------------------------------------------------------
 \section{Protocollo XXX - Inizializzazione}
-%prologo, il pilota lavora per una corporazione controllata da un pagliaccio
+\begin{quote}\small
+    «Ognuno deve fare la sua parte.»
+\end{quote}
+Ma qual è la mia? \\
+Ho passato anni a inseguire una stella che molti altri hanno raggiunto da un pezzo e, con tutta onestà, non avrei mai pensato che la mia strada potesse odorare di... \\
+\textit{Cos'è questo odore? Zucchero filato?}
 
----------------------------------------------------------------------------------------------
+\vspace{4mm}
+\begin{center}
+    $\ast$ \quad $\ast$ \quad $\ast$
+\end{center}
+\vspace{4mm}
+
+Avevo appena ottenuto la mia licenza da pilota quando sono arrivati, lo avessero fatto un po' prima mi sarei risparmiato tanti grattacapi.\\
+La folla si accalcava davanti al maxischermo al centro della piazza e io, in tutta onestà, neanche ci feci troppo caso, ero abituato a viaggiare nei miei stessi pensieri senza vedere davvero dove stavo mettendo i piedi, o chi ci fosse attorno a me. \\
+"Non è possibile!" disse qualcuno al centro, o qualcosa di decisamente più scurrile, le cuffiette e il risucchio della mia soda non mi permisero di ascoltare bene. \\
+Mi voltai verso lo schermo, aspettandomi l'ennesimo goal mancato da parte di un giocatore che, alla fine, stava solo facendo del proprio meglio. Quanto mi sbagliavo. \\
+Non sul giocatore, anche se, quando hai milioni in banca forse puoi permetterti di non dare del tuo meglio. \\
+Mi riferivo al contenuto; ero cresciuto con storie di fantascienza che parlavano di enormi astronavi tecnologicamente avanzate, in grado di solcare l'infinita e buia marea spaziotemporale in un tempo umanamente accettabile. \\
+Chi viaggerebbe mai senza poter tornare e pubblicare le foto della propria vacanza sui social? \\
+Avevo sentito parlare di luci, di laser, di forme dal dubbio utilizzo e molto aerodinamiche. \\
+\textit{Mia sorella le ha scoperte ben prima degli ingegneri in quei libri.} \\
+Parlavano tutti di voli impossibili, di guerre galattiche, di tipologie di propulsione che, studiando, mi sembravano sogno e follia allo mesmo modo.\\
+Un satellite attorno alla Luna per raccogliere video in alta risoluzione della nostra adorata vicina, e i video li stavano proiettando proprio su questo schermo.\\
+\textit{Quando mai alla gente è interessata così tanto l'esplorazione spaziale?} \\
+Me lo chiesi con sincerità, forse anche un po' di malizia, forse... sì, decisamente un tono accusatorio. \\
+La regolite, i buchi, il LEM, un tendone da circo... \\
+UN TENDONE DA CIRCO?!
+\newpage
+
 \section{Intervista n° 339}
 %discussione con il pagliaccio sugli obiettivi delle missioni; una specie aliena minaccia la Terra e solo facendo ridere i suoi membri, sparsi sui vari corpi celesti, la risparmieranno
+\newpage
 
----------------------------------------------------------------------------------------------
 \section{Traiettoria di volo - Inizializzazione}
 %descrizione del menù di selezione del target e delle difficoltà
 
----------------------------------------------------------------------------------------------
 \subsection{Selezionare il corpo celeste}
 %descrizione ed esempio sulla selezione del target
 
----------------------------------------------------------------------------------------------
 \subsection{Scegliere l'area di atterraggio}
 %descrizione dell'apertura della mappa di atterraggio e delle aree con relativi punteggi
+\newpage
 
----------------------------------------------------------------------------------------------
 \section{Configurazione di volo - Inizializzazione}
 %descrizione del menù di selezione lander e crew
 
----------------------------------------------------------------------------------------------
 \subsection{Selezione del lander}
 %descrizione ed esempio di selezione del lander, con statistiche 
 
----------------------------------------------------------------------------------------------
 \subsection{Selezione delle risorse - FASE CRITICA}
-\begin{tcolorbox}
-ATTENZIONE: XXX non è resposabile della perdita di vite umane, il pilota lo è.
+\begin{tcolorbox}[breakable, width=\linewidth, fontupper=\small]
+ATTENZIONE: XXX non è responsabile della perdita di vite umane, il pilota lo è.
 \end{tcolorbox}
 %descrizione ed esempio di selezione della crew, con statistiche; ogni membro ha una massa diversa ma anche un moltiplicatore punti diverso, che indica quanto è bravo a far ridere (extra: gli ingegneri facilitano l'atterraggio ma fanno meno ridere, i comici lo rendono difficile ma danno più punti)
+\newpage
 
----------------------------------------------------------------------------------------------
 \section{Inizializzazione della simulazione - Resti immobile}
 %core gameplay: scopo, vittoria, sconfitta, punteggio finale
+\newpage
 
----------------------------------------------------------------------------------------------
 \section{Impostazione della plancia}
 %spiegazione dei comandi
+\newpage
 
----------------------------------------------------------------------------------------------
 \section{Inizializzazione HUD}
 %descrizione dell'HUD del pilota
+\newpage
 
----------------------------------------------------------------------------------------------------------------------
-\section{Dichiarazione di limitazione delle responsabilità}
-\begin{tcolorbox}
-Accettando la missione e la destinazione, il pilota dichiara di essere consapevole che ogni corpo celeste comporta dei rischi differentii
+\section{Dichiarazione di limitazione delle respon\-sabi\-lità}
+\begin{tcolorbox}[breakable, width=\linewidth, fontupper=\small]
+Accettando la missione e la destinazione, il pilota dichiara di essere consapevole che ogni corpo celeste comporta dei rischi differenti.
 \end{tcolorbox}
 %descrizione di problematiche improvvise e risoluzione: perdita del sensore ottico
 
