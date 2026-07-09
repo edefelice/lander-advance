@@ -5,18 +5,22 @@
 
 #include <tonc.h>
 
-// Definitions for Gameplay actions
+// Struct for Player Inputs (note: added to follow the one used in gameplay.h, remove the struct from gameplay.h and
+// include this file or remove this struct and add #include <gameplay.h> to this file)
 
-#define MAIN_THR_ON    0x001  
-#define TOP_THR_ON      0x002   // Lateral thruster top (towards down) ON
-#define LEFT_THR_ON     0x004   // Lateral thruster left (towards right) ON 
-#define BOT_THR_ON      0x008   // Lateral thruster bottom (towards up) ON 
-#define RIGHT_THR_ON    0x010   // Lateral thruster right (towards left) ON 
-#define R_ROT_THR_ON    0x020   // Rotation thruster right (counter-clockwise) ON 
-#define L_ROT_THR_ON    0x040   // Rotation thruster left (clockwise) ON
-#define RADAR_ON        0x080 
-#define LIGHT_ON        0x100   
- 
+// Player inputS
+typedef struct {
+
+    int8_t rcs_x;           // -1 (left thruster), 1 (right thruster), 0 (no buttons)
+    int8_t rcs_y;           // -1 (bottom thuster), 1 (upper thruster), 0 (no buttons)
+    int8_t rotate;          // -1 (L, clockwise rotation), 1 (R, counter-clockwise rotation), 0 (no buttons)
+    bool thrust_main;       // 1 if A is pressed (main engine), 0 (no buttons)
+    bool light;             // 0 if off, 1 if on
+    bool radar;             // 0 if off, 1 if on
+    bool pause;             
+    bool popipopi;          // It does... something...
+
+} PlayerInput;
 
 // Definitions for Menus actions
 
