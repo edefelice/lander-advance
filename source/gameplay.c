@@ -204,7 +204,7 @@ void UpdateLinearPhysics(Lander *lander){
 }                               
           
 
-//Define the lander status                     
+//Define the lander status                     // SALVA LE VELOCITà PER IL PUNTEGGIO E DOPO LE METTO A 0 
 void UpdateCollision(Lander *lander){
 
     if (lander->z <= 0) {
@@ -226,7 +226,7 @@ void UpdateCollision(Lander *lander){
             lander->state = LANDER_LANDED;              //Successfully landed 
         }
     }
-   
+    //inserire if per velocità traslazione e vel angolare
 }                                          
 
 
@@ -245,7 +245,7 @@ void GameplayUpdate(Lander *lander, const PlayerInput *input){
 
     else if(lander->state == LANDER_CRASHED){
         return;
-        //funzione motivazione del crash vel elevata e targhet mancato velocità laterale elevata!
+        //funzione motivazione del crash vel elevata e targhet mancato velocità laterale elevata! vel angolare elevata
     }
 
     else if(lander->state == LANDER_LANDED){
