@@ -7,7 +7,7 @@
 
 #include "fixedpoint32.h"
 #include "physics_constants.h"
-#include "cockpit.h"        //ci sta lo struct input, non essendoci nella cartella ora, lascio lo struct nel codice (RICORDATI DI CANCELLARLO ALLA FINE)
+//#include "cockpit.h"        //ci sta lo struct input, non essendoci nella cartella ora, lascio lo struct nel codice (RICORDATI DI CANCELLARLO ALLA FINE)
 
 
 /*
