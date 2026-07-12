@@ -1,5 +1,5 @@
 #include <tonc.h>
-#include "graphics/moon_far_v1.h"
+#include "graphics/moon_far_v2.h"
 
 BG_AFFINE affine_bg;
 AFF_SRC_EX affine_src;
@@ -31,11 +31,11 @@ int main(void) {
     int max_shrink = 0x180;
     int max_height = 1024;
     // Load background tiles in CBB0
-    memcpy16(tile8_mem[0], moon_far_v1Tiles, moon_far_v1TilesLen / 2);
+    memcpy16(tile8_mem[0], moon_far_v2Tiles, moon_far_v2TilesLen / 2);
     // Load background tilemap in SBB 28
-    memcpy16(se_mem[28], moon_far_v1Map, moon_far_v1MapLen / 2);
+    memcpy16(se_mem[28], moon_far_v2Map, moon_far_v2MapLen / 2);
     // Load background palette
-    memcpy16(pal_bg_mem, moon_far_v1Pal, moon_far_v1PalLen / 2);
+    memcpy16(pal_bg_mem, moon_far_v2Pal, moon_far_v2PalLen / 2);
     // Configure BG2 with wrap on
     REG_BG2CNT = BG_CBB(0) | BG_SBB(28) | BG_AFF_64x64 | BG_WRAP;
     // Set affine background (Mode 1, BG2)
