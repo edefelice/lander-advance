@@ -15,7 +15,7 @@
 //Multiplication
 fixed fixMul(fixed a, fixed b)                           //this is needed to go from int64 to int32. We need int64_t to avoid overflow
 {
-    return (fixed)(((int64_t)a * b) >> FIX_SHIFT);
+    return (fixed)(((int64_t)a * b) >> FIX_SHIFT32);
 }
 
 //Division
@@ -27,5 +27,5 @@ fixed fixDiv(fixed a, fixed b)
         // If 'a' is < 0, simulate -infinity
         return (a >= 0) ? INT_MAX : INT_MIN;
     }
-    return (fixed)((((int64_t)a) << FIX_SHIFT) / b);  
+    return (fixed)((((int64_t)a) << FIX_SHIFT32) / b);  
 }

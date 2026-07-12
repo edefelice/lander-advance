@@ -1,0 +1,4 @@
+#
+# 64x64tiles, 8bpp, export map, affine background
+#
+-gt -gB8 -m -mLa
