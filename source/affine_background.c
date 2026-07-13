@@ -8,7 +8,7 @@
 #define MAX_HEIGHT 5000 // TODO: should come from scenario start altitude (Pierluca W7)
 #define PIVOT_X (SCREEN_WIDTH / 2)
 #define PIVOT_Y (SCREEN_HEIGHT / 2)
-#define TEXEL_PER_METRE 1
+#define TEXEL_PER_METRE 13 // TODO: Compute actual value that chanfes with height
 #define MAP_SIZE 512 // moon_far is 64x64 tiles = 512px; TODO: derive from scenario when maps vary
 #define MARGIN 50 //pixels
 #define WORLD_LOW 0
@@ -33,11 +33,11 @@ void lander_to_affine_src(const Lander *lander, AFF_SRC_EX *src) {
     // Pan
     // Shift by 8 bits because the affine matrix uses 8.8 representation.
     // Multiplies TEXEL_PER_METRE to convert: metre->texel
-    // Inverting x and y to match physical axes
-    int pan_x = (lander->y >> 8) * TEXEL_PER_METRE;
+    
+    int pan_x = (lander->x >> 8) * TEXEL_PER_METRE;
     pan_x = clamp(pan_x, WORLD_LOW, WORLD_LIMIT);
     src->tex_x = pan_x;
-    int pan_y = (lander->x >> 8) * TEXEL_PER_METRE;
+    int pan_y = (-lander->y >> 8) * TEXEL_PER_METRE;
     pan_y = clamp(pan_y, WORLD_LOW, WORLD_LIMIT);
     src->tex_y = pan_y;
     // Angle
