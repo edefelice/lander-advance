@@ -8,7 +8,7 @@
 #define MAX_HEIGHT 5000 // TODO: should come from scenario start altitude (Pierluca W7)
 #define PIVOT_X (SCREEN_WIDTH / 2)
 #define PIVOT_Y (SCREEN_HEIGHT / 2)
-#define TEXEL_PER_METRE 1
+#define TEXEL_PER_METRE 13 // TODO: Compute actual value that chanfes with height
 #define MAP_SIZE 512 // moon_far is 64x64 tiles = 512px; TODO: derive from scenario when maps vary
 #define MARGIN 50 //pixels
 #define WORLD_LOW 0
