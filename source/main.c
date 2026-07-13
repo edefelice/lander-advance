@@ -25,7 +25,7 @@ int main(void) {
     while(1) {
         VBlankIntrWait(); // Wait VBlank
         key_poll(); // Check key status
-        // TODO: input control
+        input = cpit_input();
         GameplayUpdate(&lander, &input);
         lander_to_affine_src(&lander, &affine_src);
         // Configure BG Affine 2
