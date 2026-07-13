@@ -173,7 +173,7 @@ void sub_states_management(void) {
         case STATE_AREA_SELECTION:
             switch (present_area) {
                 case SUB_AREA_POINTER_MOVING:
-                     if (up_pointer == 1 && selected_area > 0) {
+                    if (up_pointer == 1 && selected_area > 0) {
                         selected_area--;
                     }
                     else if (down_pointer == 1 && selected_area < 2) {
