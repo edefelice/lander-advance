@@ -3,12 +3,10 @@
 #include "graphics/moon_far_v2.h"
 #include "affine_background.h"
 
-BG_AFFINE affine_bg;
-AFF_SRC_EX affine_src;
-
 
 int main(void) {
-
+    BG_AFFINE affine_bg = {0};
+    AFF_SRC_EX affine_src = {0};
     Lander lander;
     GameplayInit(&lander);
     PlayerInput input = {0};

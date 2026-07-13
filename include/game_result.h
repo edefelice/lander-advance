@@ -12,7 +12,7 @@ typedef enum {
 typedef struct {
     GrOutcome outcome;
     GrReason  reason;
-    int        score;
+    int       score;
 } GameResult;
 
 #endif // GAME_RESULT_H
