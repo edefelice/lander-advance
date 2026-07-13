@@ -6,11 +6,6 @@ PlayerInput cpit_input(){
     PlayerInput inputs = {0, 0, 0, 0, 0, 0, 0, 0};
 
 
-    // Wait for the update of the screen to poll the keys
-    VBlankIntrWait();   // To remove if already used outside
-    key_poll();         // To remove if already used outside
-
-
     // Convert the status of the keys to an intent to be used during flight
     if(key_is_down(KEY_A)){
         inputs.thrust_main = 1;
@@ -59,8 +54,6 @@ u16 menu_input(){
 
     u16 action = 0;
 
-    VBlankIntrWait();   // To remove if already used outside
-    key_poll();         // To remove if already used outside
 
     if(key_hit(KEY_A)){
         action = action | M_CONFIRM;
