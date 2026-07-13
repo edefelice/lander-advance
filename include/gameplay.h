@@ -7,7 +7,7 @@
 
 #include "fixedpoint32.h"
 #include "physics_constants.h"
-//#include "cockpit.h"        //ci sta lo struct input, non essendoci nella cartella ora, lascio lo struct nel codice (RICORDATI DI CANCELLARLO ALLA FINE)
+#include "cockpit.h"        //ci sta lo struct input, non essendoci nella cartella ora, lascio lo struct nel codice (RICORDATI DI CANCELLARLO ALLA FINE)
 
 
 /*
@@ -69,14 +69,14 @@ typedef struct {
 } Lander;
 
 
-// Player input place holder
-typedef struct {
+// Player input place holder - now available in cockpit.h
+/* typedef struct {
     bool thrust_main;       // 1 if A is pressed (main engine), 0 (no buttons)
     int8_t rcs_x;           // -1 (left), 1 (right), 0 (no buttons)
     int8_t rcs_y;           // -1 (down), 1 (up), 0 (no buttons)
     int8_t rotate;          // -1 (L, sx rotation), 1 (R, dx rotation), 0 (no buttons)
 } PlayerInput;
-
+*/
 
 // ---------------------------
 // INITIALIZATION
