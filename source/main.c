@@ -1,9 +1,12 @@
 #include <tonc.h>
 #include "gameplay.h"
+#include "graphics/fuel_pow_bars.h"
 #include "graphics/moon_far_v2.h"
 #include "graphics/DRAFT_UHD_1.h"
 #include "affine_background.h"
+#include "hud.h"
 
+static OBJ_ATTR obj_buffer[128];
 
 int main(void) {
     BG_AFFINE affine_bg = {0};
@@ -23,22 +26,34 @@ int main(void) {
     memcpy16(pal_bg_mem, moon_far_v2Pal, moon_far_v2PalLen / 2);
     // Load hud background palette
     memcpy16(&pal_bg_mem[13], DRAFT_UHD_1Pal, DRAFT_UHD_1PalLen / 2);
+    // Load fuel bar
+    memcpy32(tile_mem_obj[0], fuel_pow_barsTiles, fuel_pow_barsTilesLen / 4);
+    // Load fuel bar palette
+    int n = 0;
+    memcpy16(&pal_obj_mem[n * 16], fuel_pow_barsPal, fuel_pow_barsPalLen / 2);
     // Configure BG1 and priority 0
     REG_BG1CNT = BG_CBB(2) | BG_SBB(30) | BG_8BPP | BG_REG_32x32 | BG_PRIO(0);
     // Configure BG2 with wrap off and priority 3
     REG_BG2CNT = BG_CBB(0) | BG_SBB(28) | BG_AFF_64x64 | BG_PRIO(3);
     // Set affine background (Mode 1, BG2)
-    REG_DISPCNT = DCNT_MODE(1) | DCNT_BG1 | DCNT_BG2;
+    REG_DISPCNT = DCNT_MODE(1) | DCNT_OBJ | DCNT_OBJ_1D | DCNT_BG1 | DCNT_BG2;
+    // Initialize sprites
+    oam_init(obj_buffer, 128);
+    int n_obj = hud_bar_init(obj_buffer, 0);
     irq_init(NULL);
     irq_add(II_VBLANK, NULL);
+    int fuelbar_cols = 0;
     while(1) {
-        VBlankIntrWait(); // Wait VBlank
         key_poll(); // Check key status
         input = cpit_input();
         GameplayUpdate(&lander, &input);
+        fuelbar_cols = hud_propellant_to_cols(&lander);
+        hud_bar_update(obj_buffer, 0, fuelbar_cols);
         lander_to_affine_src(&lander, &affine_src);
         // Configure BG Affine 2
         bg_rotscale_ex(&affine_bg, &affine_src);
+        VBlankIntrWait(); // Wait VBlank
+        oam_copy(oam_mem, obj_buffer, n_obj); // copy sprites in oam
         REG_BG_AFFINE[2] = affine_bg;
     }
 }
