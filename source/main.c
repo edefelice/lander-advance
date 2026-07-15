@@ -28,7 +28,7 @@ int main(void) {
     // Load hud sprites
     hud_load_gfx();
     // Configure BG1 and priority 0
-    REG_BG1CNT = BG_CBB(2) | BG_SBB(30) | BG_8BPP | BG_REG_32x32 | BG_PRIO(0);
+    REG_BG1CNT = BG_CBB(2) | BG_SBB(30) | BG_8BPP | BG_REG_32x32 | BG_PRIO(1);
     // Configure BG2 with wrap off and priority 3
     REG_BG2CNT = BG_CBB(0) | BG_SBB(28) | BG_AFF_64x64 | BG_PRIO(3);
     // Set affine background (Mode 1, BG2)

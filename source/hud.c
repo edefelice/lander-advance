@@ -44,7 +44,7 @@ void hud_bar_update(OBJ_ATTR *buffer, int slot, int cols) {
         else {
             obj_unhide(&buffer[slot + i], ATTR0_REG);
             tile = HUD_FUEL_POW_BASE_BAR + level - 1;
-            buffer[slot + i].attr2 = ATTR2_PALBANK(HUD_PB_FUEL_POW) | ATTR2_PRIO(1) | tile;
+            buffer[slot + i].attr2 = ATTR2_PALBANK(HUD_PB_FUEL_POW) | ATTR2_PRIO(0) | tile;
         }
     }
 }
