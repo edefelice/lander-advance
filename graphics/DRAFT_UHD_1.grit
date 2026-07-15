@@ -1,0 +1,4 @@
+#
+# 32x32tiles, 8bpp, export map, regular background
+#
+-gt -gB4 -m -mLf -mRtf -mp1
