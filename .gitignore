@@ -35,3 +35,6 @@ compile_flags.txt
 # Editor temp files
 *.swp
 *.swo
+
+# Aseprite
+*.aseprite
