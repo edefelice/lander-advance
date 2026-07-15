@@ -1,6 +1,5 @@
 #include <tonc.h>
 #include "gameplay.h"
-#include "graphics/fuel_pow_bars.h"
 #include "graphics/moon_far_v2.h"
 #include "graphics/DRAFT_UHD_1.h"
 #include "affine_background.h"
@@ -26,11 +25,8 @@ int main(void) {
     memcpy16(pal_bg_mem, moon_far_v2Pal, moon_far_v2PalLen / 2);
     // Load hud background palette
     memcpy16(&pal_bg_mem[13], DRAFT_UHD_1Pal, DRAFT_UHD_1PalLen / 2);
-    // Load fuel bar
-    memcpy32(tile_mem_obj[0], fuel_pow_barsTiles, fuel_pow_barsTilesLen / 4);
-    // Load fuel bar palette
-    int n = 0;
-    memcpy16(&pal_obj_mem[n * 16], fuel_pow_barsPal, fuel_pow_barsPalLen / 2);
+    // Load hud sprites
+    hud_load_gfx();
     // Configure BG1 and priority 0
     REG_BG1CNT = BG_CBB(2) | BG_SBB(30) | BG_8BPP | BG_REG_32x32 | BG_PRIO(0);
     // Configure BG2 with wrap off and priority 3
