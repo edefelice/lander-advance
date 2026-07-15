@@ -4,13 +4,13 @@
 #include "physics_constants.h"
 
 #define MIN_SHRINK 0x80
-#define MAX_SHRINK 0x180
+#define MAX_SHRINK 0x190
 #define MAX_HEIGHT 5000 // TODO: should come from scenario start altitude (Pierluca W7)
-#define PIVOT_X (SCREEN_WIDTH / 2)
-#define PIVOT_Y (SCREEN_HEIGHT / 2)
+#define PIVOT_X (103) // Half Porthole width
+#define PIVOT_Y (SCREEN_HEIGHT)
 #define TEXEL_PER_METRE 13 // TODO: Compute actual value that chanfes with height
 #define MAP_SIZE 512 // moon_far is 64x64 tiles = 512px; TODO: derive from scenario when maps vary
-#define MARGIN 50 //pixels
+#define MARGIN 50 // texels
 #define WORLD_LOW 0
 #define WORLD_LIMIT ((MAP_SIZE - MARGIN) << 8) // upper limit for the map clamp interval [0, limit)
 
