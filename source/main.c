@@ -35,16 +35,14 @@ int main(void) {
     REG_DISPCNT = DCNT_MODE(1) | DCNT_OBJ | DCNT_OBJ_1D | DCNT_BG1 | DCNT_BG2;
     // Initialize sprites
     oam_init(obj_buffer, 128);
-    int n_obj = hud_bar_init(obj_buffer, 0);
+    int n_obj = hud_init(obj_buffer, 0);
     irq_init(NULL);
     irq_add(II_VBLANK, NULL);
-    int fuelbar_cols = 0;
     while(1) {
         key_poll(); // Check key status
         input = cpit_input();
         GameplayUpdate(&lander, &input);
-        fuelbar_cols = hud_propellant_to_cols(&lander);
-        hud_bar_update(obj_buffer, 0, fuelbar_cols);
+        hud_update(obj_buffer, 0, &lander);
         lander_to_affine_src(&lander, &affine_src);
         // Configure BG Affine 2
         bg_rotscale_ex(&affine_bg, &affine_src);
