@@ -42,6 +42,7 @@ typedef struct {
 
 enum HudBarId {
     HUD_BAR_FUEL = 0,
+    HUD_BAR_POWER,
     HUD_BAR_VX_POS,
     HUD_BAR_VX_NEG,
     HUD_BAR_VY_POS,
@@ -54,6 +55,8 @@ enum HudBarId {
 static const HudBar bars[] = {
     // Fuel bar
     { 25, 5, 8, 0, 0, 8, HUD_FUEL_POW_BASE_BAR, HUD_PB_FUEL_POW },
+    // Power bar
+    { 112, 5, 9, 0, 0, 6, HUD_FUEL_POW_BASE_BAR, HUD_PB_FUEL_POW },
     // Vx, positive half
     { 44, 145, 8, 0, 0, 3, HUD_HORIZONTAL_BASE_BAR, HUD_PB_SPEED },
     // Vx, negative half
@@ -110,6 +113,9 @@ static int bar_cols(int i, const Lander *lander) {
         case HUD_BAR_FUEL:
             cols = hud_propellant_to_cols(lander);
             break;
+        case HUD_BAR_POWER:
+            cols = lander->available_power * CELL_PX;
+            break;
         case HUD_BAR_VX_POS:
             cols = hud_speed_to_cols(lander->vx, VX_FULL_SCALE);
             break;
@@ -133,10 +139,10 @@ static int bar_cols(int i, const Lander *lander) {
 }
 
 void hud_load_gfx(void) {
-    // Load fuel bar
+    // Load fuel/power bar
     memcpy32(&tile_mem_obj[0][HUD_FUEL_POW_BASE_BAR], fuel_pow_barsTiles,
         fuel_pow_barsTilesLen / 4);
-    // Load fuel bar palette
+    // Load fuel/power bar palette
     memcpy16(&pal_obj_mem[HUD_PB_FUEL_POW * 16], fuel_pow_barsPal, fuel_pow_barsPalLen / 2);
     // Load speed bars
     memcpy32(&tile_mem_obj[0][HUD_HORIZONTAL_BASE_BAR], speedbarsTiles,

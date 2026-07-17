@@ -1,5 +1,5 @@
 #include "gameplay.h"
-
+#include "physics_constants.h"
 
 /*
     gameplay.c
@@ -42,6 +42,9 @@ void GameplayInit(Lander *lander){                  //game initialization
     //propellant
     lander->propellant=PROP_MASS;                   // Full tank (8487 kg)
 
+    //Remaining power
+    lander->available_power = P_USES;
+    
     //Lander state
     lander->state = LANDER_FLYING;
 }

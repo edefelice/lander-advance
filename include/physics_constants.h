@@ -49,7 +49,8 @@
 // Angolar normalization
 #define FIX_TWO_PI          FIX_FROM_FRACTION(628319,100000)    //2π = 6.28319 rad    
 
-
+// Power source
+#define P_USES              6                                   // Number of available uses of the power source     
 // ---------------------------
 // SIMULATION
 // ---------------------------
