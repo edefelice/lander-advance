@@ -95,12 +95,14 @@ static const HudDigits digits[] = {
     { { 16, 111, 5, 0, 0, 2, HUD_DIGIT_SMALL_BASE, HUD_PB_DIGIT_SMALL, 0 }, 1, 1},
     // Vy digits decimal
     { { 28, 111, 5, 0, 0, 2, HUD_DIGIT_SMALL_BASE, HUD_PB_DIGIT_SMALL, 0 }, 1, -1},
-    // w digits int
+    // w digits integer part
     { { 97, 137, 5, 0, 0, 2, HUD_DIGIT_SMALL_BASE, HUD_PB_DIGIT_SMALL, 0 }, 1, 1},
-    // w digits decimal
+    // w digits decimal part
     { { 109, 137, 5, 0, 0, 2, HUD_DIGIT_SMALL_BASE, HUD_PB_DIGIT_SMALL, 0 }, 1, -1},
-    // H (altitude)
-    { { 145, 32, 5, 0, 0, 4, HUD_DIGIT_BIG_BASE + 2, HUD_PB_DIGIT_BIG, 0 }, 1, -1},
+    // H (altitude) integer part
+    { { 145, 32, 5, 0, 0, 4, HUD_DIGIT_BIG_BASE + 2, HUD_PB_DIGIT_BIG, 0 }, 1, 3},
+    // H (altitude) decimal part
+    { { 167, 32, 5, 0, 0, 1, HUD_DIGIT_BIG_BASE + 2, HUD_PB_DIGIT_BIG, 0 }, 1, -1},
     // Vz, integer part
     { { 151, 48, 5, 0, 0, 2, HUD_DIGIT_BIG_BASE + 2, HUD_PB_DIGIT_BIG, 0 }, 1, 1 },
     // Vz, decimal part
@@ -116,7 +118,8 @@ enum HudDigitsId {
     HUD_DIGITS_VY_DEC,
     HUD_DIGITS_W_INT,
     HUD_DIGITS_W_DEC,
-    HUD_DIGITS_H,
+    HUD_DIGITS_H_INT,
+    HUD_DIGITS_H_DEC,
     HUD_DIGITS_VZ_INT,
     HUD_DIGITS_VZ_DEC,
     HUD_DIGITS_VZ_SIGN,
@@ -244,8 +247,12 @@ static int digits_value(int i, const Lander *lander) {
             value = (int64_t)magnitude * 100 / FIX_FROM_INT(1);
             value %= 100;
             break;
-        case HUD_DIGITS_H:
+        case HUD_DIGITS_H_INT:
             value = lander->z / FIX_FROM_INT(1);
+            break;
+        case HUD_DIGITS_H_DEC:
+            value = (int64_t)lander->z * 10 / FIX_FROM_INT(1);
+            value %= 10;
             break;
         case HUD_DIGITS_VZ_INT:
             magnitude = (lander->vz < 0) ? -lander->vz : lander->vz;
