@@ -6,16 +6,15 @@
 #include "graphics/fuel_pow_bars.h"
 #include "graphics/speedbars.h"
 #include "graphics/digit_small.h"
-#include "tonc_core.h"
+#include "graphics/digit_big.h"
 #include "tonc_memdef.h"
-#include "tonc_memmap.h"
 #include "tonc_oam.h"
-#include "tonc_types.h"
 
 #define HUD_FUEL_POW_BASE_BAR 0
 #define HUD_HORIZONTAL_BASE_BAR ((HUD_FUEL_POW_BASE_BAR) + fuel_pow_barsTilesLen / 32)
 #define HUD_VERTICAL_BASE_BAR ((HUD_HORIZONTAL_BASE_BAR) + BAR_LEVELS)
 #define HUD_DIGIT_SMALL_BASE ((HUD_VERTICAL_BASE_BAR) + BAR_LEVELS)
+#define HUD_DIGIT_BIG_BASE ((HUD_DIGIT_SMALL_BASE) + digit_smallTilesLen / 32)
 #define DIGIT_DOT_GLYPHS 10 // index for dotted numbers
 #define FUEL_COLS 60
 #define FUEL_FULL_SCALE (FIX_FROM_INT(100))
@@ -99,7 +98,15 @@ static const HudDigits digits[] = {
     // w digits int
     { { 97, 137, 5, 0, 0, 2, HUD_DIGIT_SMALL_BASE, HUD_PB_DIGIT_SMALL, 0 }, 1, 1},
     // w digits decimal
-    { { 109, 137, 5, 0, 0, 2, HUD_DIGIT_SMALL_BASE, HUD_PB_DIGIT_SMALL, 0 }, 1, -1}
+    { { 109, 137, 5, 0, 0, 2, HUD_DIGIT_SMALL_BASE, HUD_PB_DIGIT_SMALL, 0 }, 1, -1},
+    // H (altitude)
+    { { 145, 32, 5, 0, 0, 4, HUD_DIGIT_BIG_BASE + 2, HUD_PB_DIGIT_BIG, 0 }, 1, -1},
+    // Vz, integer part
+    { { 151, 48, 5, 0, 0, 2, HUD_DIGIT_BIG_BASE + 2, HUD_PB_DIGIT_BIG, 0 }, 1, 1 },
+    // Vz, decimal part
+    { { 163, 48, 5, 0, 0, 2, HUD_DIGIT_BIG_BASE + 2, HUD_PB_DIGIT_BIG, 0 }, 1, -1 },
+    // Vz, sign
+    { { 145, 48, 5, 0, 0, 1, HUD_DIGIT_BIG_BASE, HUD_PB_DIGIT_BIG, 0 }, 1, -1 }
 };
 
 enum HudDigitsId {
@@ -109,6 +116,10 @@ enum HudDigitsId {
     HUD_DIGITS_VY_DEC,
     HUD_DIGITS_W_INT,
     HUD_DIGITS_W_DEC,
+    HUD_DIGITS_H,
+    HUD_DIGITS_VZ_INT,
+    HUD_DIGITS_VZ_DEC,
+    HUD_DIGITS_VZ_SIGN,
     HUD_DIGITS_COUNT
 };
 
@@ -156,6 +167,11 @@ static void hud_digits_update(OBJ_ATTR *buffer, int slot, const HudDigits *d, in
         buffer[slot + j].attr2 = ATTR2_PALBANK(d->bar.palette_bank) | ATTR2_PRIO(d->bar.prio) | tile;
         div /= 10;
     }
+}
+static void hud_sign_update(OBJ_ATTR *buffer, int slot, const HudDigits *d, int value) {
+    obj_unhide(&buffer[slot], ATTR0_REG);
+    int tile = (value >= 0) ? d->bar.base : d->bar.base + 1;
+    buffer[slot].attr2 = ATTR2_PALBANK(d->bar.palette_bank) | ATTR2_PRIO(d->bar.prio) | tile;
 }
 
 static int hud_propellant_to_cols(const Lander *lander) {
@@ -228,6 +244,21 @@ static int digits_value(int i, const Lander *lander) {
             value = (int64_t)magnitude * 100 / FIX_FROM_INT(1);
             value %= 100;
             break;
+        case HUD_DIGITS_H:
+            value = lander->z / FIX_FROM_INT(1);
+            break;
+        case HUD_DIGITS_VZ_INT:
+            magnitude = (lander->vz < 0) ? -lander->vz : lander->vz;
+            value = magnitude / FIX_FROM_INT(1);
+            break;
+        case HUD_DIGITS_VZ_DEC:
+            magnitude = (lander->vz < 0) ? -lander->vz : lander->vz;
+            value = (int64_t)magnitude * 100 / FIX_FROM_INT(1);
+            value %= 100;
+            break;
+        case HUD_DIGITS_VZ_SIGN:
+            value = lander->vz;
+            break;
     }
     return value;
 }
@@ -247,6 +278,10 @@ void hud_load_gfx(void) {
     memcpy32(&tile_mem_obj[0][HUD_DIGIT_SMALL_BASE], digit_smallTiles, digit_smallTilesLen / 4);
     // Load digits (small) palette
     memcpy16(&pal_obj_mem[HUD_PB_DIGIT_SMALL * 16], digit_smallPal, digit_smallPalLen / 2);
+    // Load digits (big) tiles
+    memcpy32(&tile_mem_obj[0][HUD_DIGIT_BIG_BASE], digit_bigTiles, digit_bigTilesLen / 4);
+    // Load digits (big) palette
+    memcpy16(&pal_obj_mem[HUD_PB_DIGIT_BIG * 16], digit_bigPal, digit_bigPalLen / 2);
 }
 
 int hud_init(OBJ_ATTR *buffer, int slot) {
@@ -254,7 +289,7 @@ int hud_init(OBJ_ATTR *buffer, int slot) {
     for (int i = 0; i < HUD_BAR_COUNT; i++) {
         s += hud_bar_init(buffer, s, &bars[i]);
     }
-    for(int j = 0; j < HUD_DIGITS_COUNT; j++) {
+    for(int j = 0; j < HUD_DIGITS_COUNT; j++) { // Includes the sign cell: init positions every cell
         s += hud_bar_init(buffer, s, &digits[j].bar);
     }
     return (s - slot);
@@ -266,8 +301,9 @@ void hud_update(OBJ_ATTR *buffer, int slot, const Lander *lander) {
         hud_bar_update(buffer, s, &bars[i],bar_cols(i, lander));
         s += bars[i].cells;
     }
-    for (int j = 0; j < HUD_DIGITS_COUNT; j++) {
+    for (int j = 0; j < HUD_DIGITS_VZ_SIGN; j++) { // Sign is last: handled after the loop, not as a digit
         hud_digits_update(buffer, s, &digits[j], digits_value(j, lander));
         s += digits[j].bar.cells;
     }
+    hud_sign_update(buffer, s, &digits[HUD_DIGITS_VZ_SIGN], digits_value(HUD_DIGITS_VZ_SIGN, lander));
 }
