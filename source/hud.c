@@ -5,10 +5,18 @@
 #include "gameplay.h"
 #include "graphics/fuel_pow_bars.h"
 #include "graphics/speedbars.h"
+#include "graphics/digit_small.h"
+#include "tonc_core.h"
+#include "tonc_memdef.h"
+#include "tonc_memmap.h"
+#include "tonc_oam.h"
+#include "tonc_types.h"
 
 #define HUD_FUEL_POW_BASE_BAR 0
 #define HUD_HORIZONTAL_BASE_BAR ((HUD_FUEL_POW_BASE_BAR) + fuel_pow_barsTilesLen / 32)
 #define HUD_VERTICAL_BASE_BAR ((HUD_HORIZONTAL_BASE_BAR) + BAR_LEVELS)
+#define HUD_DIGIT_SMALL_BASE ((HUD_VERTICAL_BASE_BAR) + BAR_LEVELS)
+#define DIGIT_DOT_GLYPHS 10 // index for dotted numbers
 #define FUEL_COLS 60
 #define FUEL_FULL_SCALE (FIX_FROM_INT(100))
 #define VX_FULL_SCALE (FIX_FROM_INT(12)) // m/s in Q16.16 TODO: check when fine tuning
@@ -73,6 +81,37 @@ static const HudBar bars[] = {
 
 };
 
+typedef struct {
+    HudBar bar;
+    int stride; // 1 = digit_small, 2 = digit_big
+    int dot_cell; // dotted-digit cell index, -1 = no dot
+} HudDigits;
+
+static const HudDigits digits[] = {
+    // Vx digits int
+    { { 33, 137, 5, 0, 0, 2, HUD_DIGIT_SMALL_BASE, HUD_PB_DIGIT_SMALL, 0 }, 1, 1},
+    // Vx digits decimal
+    { { 45, 137, 5, 0, 0, 2, HUD_DIGIT_SMALL_BASE, HUD_PB_DIGIT_SMALL, 0 }, 1, -1},
+    // Vy digits int
+    { { 16, 111, 5, 0, 0, 2, HUD_DIGIT_SMALL_BASE, HUD_PB_DIGIT_SMALL, 0 }, 1, 1},
+    // Vy digits decimal
+    { { 28, 111, 5, 0, 0, 2, HUD_DIGIT_SMALL_BASE, HUD_PB_DIGIT_SMALL, 0 }, 1, -1},
+    // w digits int
+    { { 97, 137, 5, 0, 0, 2, HUD_DIGIT_SMALL_BASE, HUD_PB_DIGIT_SMALL, 0 }, 1, 1},
+    // w digits decimal
+    { { 109, 137, 5, 0, 0, 2, HUD_DIGIT_SMALL_BASE, HUD_PB_DIGIT_SMALL, 0 }, 1, -1}
+};
+
+enum HudDigitsId {
+    HUD_DIGITS_VX_INT = 0,
+    HUD_DIGITS_VX_DEC,
+    HUD_DIGITS_VY_INT,
+    HUD_DIGITS_VY_DEC,
+    HUD_DIGITS_W_INT,
+    HUD_DIGITS_W_DEC,
+    HUD_DIGITS_COUNT
+};
+
 static int hud_bar_init(OBJ_ATTR *buffer, int slot, const HudBar *bar) {
     for (int i = 0; i < bar->cells; i++){
         obj_set_attr(&buffer[slot + i], ATTR0_SQUARE | ATTR0_HIDE, ATTR1_SIZE_8x8 | bar->flip,
@@ -97,6 +136,25 @@ static void hud_bar_update(OBJ_ATTR *buffer, int slot, const HudBar *bar, int co
             tile = bar->base + level - 1;
             buffer[slot + i].attr2 = ATTR2_PALBANK(bar->palette_bank) | ATTR2_PRIO(bar->prio) | tile;
         }
+    }
+}
+
+static void hud_digits_update(OBJ_ATTR *buffer, int slot, const HudDigits *d, int value) {
+    int div = 1;
+    for (int i = 0; i < d->bar.cells - 1; i++) {
+        div *= 10;
+    }
+    int digit = 0;
+    int tile = 0;
+    for(int j = 0; j < d->bar.cells; j++) {
+        obj_unhide(&buffer[slot + j], ATTR0_REG);
+        digit = value / div % 10;
+        tile = d->bar.base + d->stride * digit;
+        if (j == d->dot_cell) {
+            tile += DIGIT_DOT_GLYPHS * d->stride;
+        }
+        buffer[slot + j].attr2 = ATTR2_PALBANK(d->bar.palette_bank) | ATTR2_PRIO(d->bar.prio) | tile;
+        div /= 10;
     }
 }
 
@@ -139,6 +197,41 @@ static int bar_cols(int i, const Lander *lander) {
     return cols;
 }
 
+static int digits_value(int i, const Lander *lander) {
+    fixed magnitude = 0;
+    int value = 0;
+    switch (i) {
+        case HUD_DIGITS_VX_INT:
+            magnitude = (lander->vx < 0) ? -lander->vx : lander->vx;
+            value = magnitude / FIX_FROM_INT(1);
+            break;
+        case HUD_DIGITS_VX_DEC:
+            magnitude = (lander->vx < 0) ? -lander->vx : lander->vx;
+            value = (int64_t)magnitude * 100 / FIX_FROM_INT(1);
+            value %= 100;
+            break;
+        case HUD_DIGITS_VY_INT:
+            magnitude = (lander->vy < 0) ? -lander->vy : lander->vy;
+            value = magnitude / FIX_FROM_INT(1);
+            break;
+        case HUD_DIGITS_VY_DEC:
+            magnitude = (lander->vy < 0) ? -lander->vy : lander->vy;
+            value = (int64_t)magnitude * 100 / FIX_FROM_INT(1);
+            value %= 100;
+            break;
+        case HUD_DIGITS_W_INT:
+            magnitude = (lander->omega < 0) ? -lander->omega : lander->omega;
+            value = magnitude / FIX_FROM_INT(1);
+            break;
+        case HUD_DIGITS_W_DEC:
+            magnitude = (lander->omega < 0) ? -lander->omega : lander->omega;
+            value = (int64_t)magnitude * 100 / FIX_FROM_INT(1);
+            value %= 100;
+            break;
+    }
+    return value;
+}
+
 void hud_load_gfx(void) {
     // Load fuel/power bar
     memcpy32(&tile_mem_obj[0][HUD_FUEL_POW_BASE_BAR], fuel_pow_barsTiles,
@@ -150,12 +243,19 @@ void hud_load_gfx(void) {
         speedbarsTilesLen / 4);
     // Load speed bars palette
     memcpy16(&pal_obj_mem[HUD_PB_SPEED * 16], speedbarsPal, speedbarsPalLen / 2);
+    // Load digits (small) tiles
+    memcpy32(&tile_mem_obj[0][HUD_DIGIT_SMALL_BASE], digit_smallTiles, digit_smallTilesLen / 4);
+    // Load digits (small) palette
+    memcpy16(&pal_obj_mem[HUD_PB_DIGIT_SMALL * 16], digit_smallPal, digit_smallPalLen / 2);
 }
 
 int hud_init(OBJ_ATTR *buffer, int slot) {
     int s = slot;
     for (int i = 0; i < HUD_BAR_COUNT; i++) {
         s += hud_bar_init(buffer, s, &bars[i]);
+    }
+    for(int j = 0; j < HUD_DIGITS_COUNT; j++) {
+        s += hud_bar_init(buffer, s, &digits[j].bar);
     }
     return (s - slot);
 }
@@ -165,5 +265,9 @@ void hud_update(OBJ_ATTR *buffer, int slot, const Lander *lander) {
     for (int i = 0; i < HUD_BAR_COUNT; i++) {
         hud_bar_update(buffer, s, &bars[i],bar_cols(i, lander));
         s += bars[i].cells;
+    }
+    for (int j = 0; j < HUD_DIGITS_COUNT; j++) {
+        hud_digits_update(buffer, s, &digits[j], digits_value(j, lander));
+        s += digits[j].bar.cells;
     }
 }
