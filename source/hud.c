@@ -12,7 +12,8 @@
 #define FUEL_COLS 60
 #define FUEL_FULL_SCALE (FIX_FROM_INT(100))
 #define VX_FULL_SCALE (FIX_FROM_INT(12)) // m/s in Q16.16
-#define VX_COLS 24
+#define VY_FULL_SCALE (FIX_FROM_INT(12)) // m/s in Q16.16
+#define SPEED_COLS 24
 #define CELL_PX 8
 #define BAR_LEVELS 8
 
@@ -42,6 +43,8 @@ enum HudBarId {
     HUD_BAR_FUEL = 0,
     HUD_BAR_VX_POS,
     HUD_BAR_VX_NEG,
+    HUD_BAR_VY_POS,
+    HUD_BAR_VY_NEG,
     HUD_BAR_COUNT
 };
 
@@ -51,8 +54,16 @@ static const HudBar bars[] = {
     // Vx, positive half
     { 44, 145, 8, 0, 0, 3, HUD_HORIZONTAL_BASE_BAR, HUD_PB_SPEED },
     // Vx, negative half
-    { 35, 145, -8, 0, ATTR1_HFLIP, 3,
-        HUD_HORIZONTAL_BASE_BAR, HUD_PB_SPEED }
+    { 35, 145, -8, 0, ATTR1_HFLIP, 3, HUD_HORIZONTAL_BASE_BAR, HUD_PB_SPEED },
+    // Vy, positive half
+    { 7, 108, 0, -8, 0, 3, HUD_VERTICAL_BASE_BAR, HUD_PB_SPEED },
+    // Vy, negative half
+    { 7, 117, 0,  8, ATTR1_VFLIP, 3, HUD_VERTICAL_BASE_BAR, HUD_PB_SPEED },
+    // w, positive half
+    { 108, 145,  8, 0, 0, 3, HUD_HORIZONTAL_BASE_BAR, HUD_PB_SPEED },
+    // w, negative half
+    {  99, 145, -8, 0, ATTR1_HFLIP,  3, HUD_HORIZONTAL_BASE_BAR, HUD_PB_SPEED }
+
 };
 
 static int hud_bar_init(OBJ_ATTR *buffer, int slot, const HudBar *bar) {
@@ -86,8 +97,8 @@ static int hud_propellant_to_cols(const Lander *lander) {
     return (int64_t)GameplayGetPropPercent(lander) * FUEL_COLS / FUEL_FULL_SCALE;
 }
 
-static int hud_speed_to_cols(fixed v) {
-    return (int64_t)v * VX_COLS / VX_FULL_SCALE;
+static int hud_speed_to_cols(fixed v, fixed full_scale) {
+    return (int64_t)v * SPEED_COLS / full_scale;
 }
 
 static int bar_cols(int i, const Lander *lander) {
@@ -97,10 +108,16 @@ static int bar_cols(int i, const Lander *lander) {
             cols = hud_propellant_to_cols(lander);
             break;
         case HUD_BAR_VX_POS:
-            cols = hud_speed_to_cols(lander->vx);
+            cols = hud_speed_to_cols(lander->vx, VX_FULL_SCALE);
             break;
         case HUD_BAR_VX_NEG:
-            cols = hud_speed_to_cols(-lander->vx);
+            cols = hud_speed_to_cols(-lander->vx, VX_FULL_SCALE);
+            break;
+        case HUD_BAR_VY_POS:
+            cols = hud_speed_to_cols(lander->vy, VY_FULL_SCALE);
+            break;
+        case HUD_BAR_VY_NEG:
+            cols = hud_speed_to_cols(-lander->vy, VY_FULL_SCALE);
             break;
     }
     return cols;
@@ -112,10 +129,10 @@ void hud_load_gfx(void) {
         fuel_pow_barsTilesLen / 4);
     // Load fuel bar palette
     memcpy16(&pal_obj_mem[HUD_PB_FUEL_POW * 16], fuel_pow_barsPal, fuel_pow_barsPalLen / 2);
-    // Load vx bar
+    // Load speed bars
     memcpy32(&tile_mem_obj[0][HUD_HORIZONTAL_BASE_BAR], speedbarsTiles,
         speedbarsTilesLen / 4);
-    // Load vx bar palette
+    // Load speed bars palette
     memcpy16(&pal_obj_mem[HUD_PB_SPEED * 16], speedbarsPal, speedbarsPalLen / 2);
 }
 
