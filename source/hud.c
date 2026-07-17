@@ -35,9 +35,10 @@ typedef struct {
     int dx;
     int dy;
     int flip; // attr1 mask
-    int cells; // cells number
+    int cells; // Number of cells
     int base; // 1st tile index
     int palette_bank;
+    int prio; // Priority
 } HudBar;
 
 enum HudBarId {
@@ -54,28 +55,28 @@ enum HudBarId {
 
 static const HudBar bars[] = {
     // Fuel bar
-    { 25, 5, 8, 0, 0, 8, HUD_FUEL_POW_BASE_BAR, HUD_PB_FUEL_POW },
+    { 25, 5, 8, 0, 0, 8, HUD_FUEL_POW_BASE_BAR, HUD_PB_FUEL_POW, 0 },
     // Power bar
-    { 112, 5, 9, 0, 0, 6, HUD_FUEL_POW_BASE_BAR, HUD_PB_FUEL_POW },
+    { 112, 5, 9, 0, 0, 6, HUD_FUEL_POW_BASE_BAR, HUD_PB_FUEL_POW, 0 },
     // Vx, positive half
-    { 44, 145, 8, 0, 0, 3, HUD_HORIZONTAL_BASE_BAR, HUD_PB_SPEED },
+    { 44, 145, 8, 0, 0, 3, HUD_HORIZONTAL_BASE_BAR, HUD_PB_SPEED, 0 },
     // Vx, negative half
-    { 35, 145, -8, 0, ATTR1_HFLIP, 3, HUD_HORIZONTAL_BASE_BAR, HUD_PB_SPEED },
+    { 35, 145, -8, 0, ATTR1_HFLIP, 3, HUD_HORIZONTAL_BASE_BAR, HUD_PB_SPEED, 0 },
     // Vy, positive half
-    { 7, 108, 0, -8, 0, 3, HUD_VERTICAL_BASE_BAR, HUD_PB_SPEED },
+    { 7, 108, 0, -8, 0, 3, HUD_VERTICAL_BASE_BAR, HUD_PB_SPEED, 0 },
     // Vy, negative half
-    { 7, 117, 0,  8, ATTR1_VFLIP, 3, HUD_VERTICAL_BASE_BAR, HUD_PB_SPEED },
+    { 7, 117, 0,  8, ATTR1_VFLIP, 3, HUD_VERTICAL_BASE_BAR, HUD_PB_SPEED, 0 },
     // w, positive half
-    { 108, 145,  8, 0, 0, 3, HUD_HORIZONTAL_BASE_BAR, HUD_PB_SPEED },
+    { 108, 145,  8, 0, 0, 3, HUD_HORIZONTAL_BASE_BAR, HUD_PB_SPEED, 0 },
     // w, negative half
-    {  99, 145, -8, 0, ATTR1_HFLIP,  3, HUD_HORIZONTAL_BASE_BAR, HUD_PB_SPEED }
+    {  99, 145, -8, 0, ATTR1_HFLIP,  3, HUD_HORIZONTAL_BASE_BAR, HUD_PB_SPEED, 0 }
 
 };
 
 static int hud_bar_init(OBJ_ATTR *buffer, int slot, const HudBar *bar) {
     for (int i = 0; i < bar->cells; i++){
         obj_set_attr(&buffer[slot + i], ATTR0_SQUARE | ATTR0_HIDE, ATTR1_SIZE_8x8 | bar->flip,
-        ATTR2_PALBANK(bar->palette_bank) | ATTR2_PRIO(0) | bar->base);
+        ATTR2_PALBANK(bar->palette_bank) | ATTR2_PRIO(bar->prio) | bar->base);
     obj_set_pos(&buffer[slot + i], bar->x + i * bar->dx, bar->y + i * bar->dy);
     }
     return bar->cells;
@@ -94,7 +95,7 @@ static void hud_bar_update(OBJ_ATTR *buffer, int slot, const HudBar *bar, int co
         else {
             obj_unhide(&buffer[slot + i], ATTR0_REG);
             tile = bar->base + level - 1;
-            buffer[slot + i].attr2 = ATTR2_PALBANK(bar->palette_bank) | ATTR2_PRIO(0) | tile;
+            buffer[slot + i].attr2 = ATTR2_PALBANK(bar->palette_bank) | ATTR2_PRIO(bar->prio) | tile;
         }
     }
 }
