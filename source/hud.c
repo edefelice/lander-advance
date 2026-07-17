@@ -11,8 +11,9 @@
 #define HUD_VERTICAL_BASE_BAR ((HUD_HORIZONTAL_BASE_BAR) + BAR_LEVELS)
 #define FUEL_COLS 60
 #define FUEL_FULL_SCALE (FIX_FROM_INT(100))
-#define VX_FULL_SCALE (FIX_FROM_INT(12)) // m/s in Q16.16
-#define VY_FULL_SCALE (FIX_FROM_INT(12)) // m/s in Q16.16
+#define VX_FULL_SCALE (FIX_FROM_INT(12)) // m/s in Q16.16 TODO: check when fine tuning
+#define VY_FULL_SCALE (FIX_FROM_INT(12)) // m/s in Q16.16 TODO: check when fine tuning
+#define W_FULL_SCALE (FIX_FROM_INT(6)) // rad/s in Q16.16 TODO: check when fine tuning
 #define SPEED_COLS 24
 #define CELL_PX 8
 #define BAR_LEVELS 8
@@ -45,6 +46,8 @@ enum HudBarId {
     HUD_BAR_VX_NEG,
     HUD_BAR_VY_POS,
     HUD_BAR_VY_NEG,
+    HUD_BAR_W_POS,
+    HUD_BAR_W_NEG,
     HUD_BAR_COUNT
 };
 
@@ -118,6 +121,12 @@ static int bar_cols(int i, const Lander *lander) {
             break;
         case HUD_BAR_VY_NEG:
             cols = hud_speed_to_cols(-lander->vy, VY_FULL_SCALE);
+            break;
+        case HUD_BAR_W_POS:
+            cols = hud_speed_to_cols(lander->omega, W_FULL_SCALE);
+            break;
+        case HUD_BAR_W_NEG:
+            cols = hud_speed_to_cols(-lander->omega, W_FULL_SCALE);
             break;
     }
     return cols;
