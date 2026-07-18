@@ -1,5 +1,6 @@
 #include "shell.h"
 #include "game_data.h"
+#include "game_result.h"
 
 //State
 static GameState present_state;
@@ -27,12 +28,16 @@ static int selected_crew = 0;
 static int selected_pause = 0;
 //int fake_result = 0;       //Removed static for testing
 
+/*
 //GameResult to be replaced with the official one
 struct GameResult {
     int result;
     int score;
     const char* reason;
 };
+static GameResult present_result;
+*/
+
 static GameResult present_result;
 
 //Switching between the states logic
@@ -103,9 +108,9 @@ void main_states_management(void) {
                     case SUB_RESTART:
                         shell_init();
                         present_state = STATE_GAMEPLAY;
-                        present_result.result = 0;
+                        present_result.outcome = GR_WIN;
                         present_result.score = 0;
-                        present_result.reason = "";
+                        present_result.reason = GR_REASON_NONE;
                         break;
                     case SUB_TITLE:
                         shell_init();
@@ -265,9 +270,9 @@ void shell_init(void) {
     //fake_result = 0;
 
 //reset results
-present_result.result = 0;
+present_result.outcome = GR_WIN;
 present_result.score = 0;
-present_result.reason = "";
+present_result.reason = GR_REASON_NONE;
 
 }
 
@@ -318,13 +323,13 @@ int pause_index(void) {
 }
 
 int result_victory(void) {
-    return present_result.result == 1;
+    return present_result.outcome == 0;
 }
 
 int result_score(void) {
     return present_result.score;
 }
 
-const char* result_reason(void) {
+const GrReason result_reason(void) {
     return present_result.reason;
 }
