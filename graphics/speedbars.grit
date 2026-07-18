@@ -1,0 +1,4 @@
+#
+# 8x8tiles, 4bpp, no tile reduction
+#
+-gt -gB4 -m! -pn16

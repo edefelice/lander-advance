@@ -6,7 +6,6 @@
 #include <tonc.h>
 
 #include "fixedpoint32.h"
-#include "physics_constants.h"
 #include "cockpit.h"        //ci sta lo struct input, non essendoci nella cartella ora, lascio lo struct nel codice (RICORDATI DI CANCELLARLO ALLA FINE)
 
 
@@ -62,6 +61,9 @@ typedef struct {
 
     //propellant
     fixed propellant;   //current propellant mass (Q16.16)
+
+    //Remaining power
+    u8 available_power; //current power available
 
     //Lander state
     LanderStatus state;
