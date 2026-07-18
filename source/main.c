@@ -4,6 +4,10 @@
 #include "graphics/HUD_1.h"
 #include "affine_background.h"
 #include "hud.h"
+#include "maxmod.h"
+#include "mm_types.h"
+#include "soundbank.h"
+#include "soundbank_bin.h"
 
 static OBJ_ATTR obj_buffer[128];
 
@@ -37,7 +41,9 @@ int main(void) {
     oam_init(obj_buffer, 128);
     int n_obj = hud_init(obj_buffer, 0);
     irq_init(NULL);
-    irq_add(II_VBLANK, NULL);
+    irq_add(II_VBLANK, mmVBlank);
+    mmInitDefault((mm_addr)soundbank_bin, 8); // TODO: check when adding audio files
+    //mmEffect(SFX_TEST_TONE); // Change with true SFX name
     while(1) {
         key_poll(); // Check key status
         input = cpit_input();
@@ -47,6 +53,7 @@ int main(void) {
         // Configure BG Affine 2
         bg_rotscale_ex(&affine_bg, &affine_src);
         VBlankIntrWait(); // Wait VBlank
+        mmFrame();
         oam_copy(oam_mem, obj_buffer, n_obj); // copy sprites in oam
         REG_BG_AFFINE[2] = affine_bg;
     }
