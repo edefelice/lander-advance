@@ -25,7 +25,7 @@ static int selected_area = 0;
 static int selected_lander = 0;
 static int selected_crew = 0;
 static int selected_pause = 0;
-int fake_result = 0;       //Removed static for testing
+//int fake_result = 0;       //Removed static for testing
 
 //GameResult to be replaced with the official one
 struct GameResult {
@@ -78,6 +78,7 @@ void main_states_management(void) {
                 selected_pause = 0;
                 START_button = 0;
             }
+            /*
             if (fake_result == 1) { //for testing only
                 present_result.result = 1;
                 present_result.score = 999;
@@ -91,6 +92,7 @@ void main_states_management(void) {
                 present_state = STATE_CRASH;
                 fake_result = 0;
             }
+            */
             break;
         case STATE_PAUSE:
             if (A_button == 1){
@@ -260,7 +262,7 @@ void shell_init(void) {
     selected_area = 0;
     selected_lander = 0;
     selected_crew = 0;
-    fake_result = 0;
+    //fake_result = 0;
 
 //reset results
 present_result.result = 0;

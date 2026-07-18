@@ -163,7 +163,7 @@ void shell_render_display(void) {
              break;
         }
         break;
-
+/*
     case STATE_GAMEPLAY:
         tte_set_color(TTE_INK, COLOR_BLU); 
         tte_set_pos(25, 40); tte_write("--- GAMEPLAY ACTIVE ---");
@@ -171,7 +171,7 @@ void shell_render_display(void) {
         tte_set_color(TTE_INK, COLOR_WHITE);
         tte_set_pos(8, 70); tte_write("TAB:Pause | R:Win | L:Lose");
         break;
-
+*/
     case STATE_PAUSE: 
         tte_set_color(TTE_INK, COLOR_SILVER);
         tte_set_pos(8, 20); tte_write("PAUSE");
