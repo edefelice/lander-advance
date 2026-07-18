@@ -43,7 +43,7 @@ int main(void) {
     irq_init(NULL);
     irq_add(II_VBLANK, mmVBlank);
     mmInitDefault((mm_addr)soundbank_bin, 8); // TODO: check when adding audio files
-    //mmEffect(SFX_TEST_TONE); // Change with true SFX name
+    //mmEffect(SFX_TEST_TONE); // Added just for test. Change when adding audio.
     while(1) {
         key_poll(); // Check key status
         input = cpit_input();
