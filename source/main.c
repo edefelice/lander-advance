@@ -18,13 +18,13 @@ int main(void) {
     GameplayInit(&lander);
     PlayerInput input = {0};
     // Load background tiles in CBB0
-    memcpy16(tile8_mem[0], moon_far_v2Tiles, moon_far_v2TilesLen / 2);
+    memcpy32(tile8_mem[0], moon_far_v2Tiles, moon_far_v2TilesLen / 4);
     // Load hud background tiles in CBB2
     memcpy32(tile8_mem[2], HUD_1Tiles, HUD_1TilesLen / 4);
     // Load background tilemap in SBB 28
     memcpy16(se_mem[28], moon_far_v2Map, moon_far_v2MapLen / 2);
     // Load hud background tilemap in SBB 30
-    memcpy32(se_mem[30], HUD_1Map, HUD_1MapLen / 4);
+    memcpy16(se_mem[30], HUD_1Map, HUD_1MapLen / 2);
     // Load background palette
     memcpy16(pal_bg_mem, moon_far_v2Pal, moon_far_v2PalLen / 2);
     // Load hud background palette
