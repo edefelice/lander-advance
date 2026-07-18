@@ -24,7 +24,7 @@ int main(void) {
     // Load background palette
     memcpy16(pal_bg_mem, moon_far_v2Pal, moon_far_v2PalLen / 2);
     // Load hud background palette
-    memcpy16(&pal_bg_mem[13], DRAFT_UHD_1Pal, DRAFT_UHD_1PalLen / 2);
+    memcpy16(&pal_bg_mem[HUD_BACKGROUND_PAL_BASE], DRAFT_UHD_1Pal, DRAFT_UHD_1PalLen / 2);
     // Load hud sprites
     hud_load_gfx();
     // Configure BG1 and priority 0
@@ -42,7 +42,7 @@ int main(void) {
         key_poll(); // Check key status
         input = cpit_input();
         GameplayUpdate(&lander, &input);
-        hud_update(obj_buffer, 0, &lander);
+        hud_update(obj_buffer, 0, &lander, &input);
         lander_to_affine_src(&lander, &affine_src);
         // Configure BG Affine 2
         bg_rotscale_ex(&affine_bg, &affine_src);

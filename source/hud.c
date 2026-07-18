@@ -3,12 +3,12 @@
 #include "hud.h"
 #include "fixedpoint32.h"
 #include "gameplay.h"
+#include "graphics/DRAFT_UHD_1.h"
 #include "graphics/fuel_pow_bars.h"
 #include "graphics/speedbars.h"
 #include "graphics/digit_small.h"
 #include "graphics/digit_big.h"
-#include "tonc_memdef.h"
-#include "tonc_oam.h"
+#include "cockpit.h"
 
 #define HUD_FUEL_POW_BASE_BAR 0
 #define HUD_HORIZONTAL_BASE_BAR ((HUD_FUEL_POW_BASE_BAR) + fuel_pow_barsTilesLen / 32)
@@ -24,6 +24,11 @@
 #define SPEED_COLS 24
 #define CELL_PX 8
 #define BAR_LEVELS 8
+
+#define HUD_LAMP_PAL_BASE 18   // first live palette index of the lamps
+#define HUD_LAMP_ON_STEP  10   // lit colour = unlit colour + 10
+#define HUD_LAMP_OFF ((HUD_LAMP_PAL_BASE) - (HUD_BACKGROUND_PAL_BASE))
+#define HUD_LAMP_ON  ((HUD_LAMP_OFF) + (HUD_LAMP_ON_STEP))
 
 // Palbank map
 enum HudPalbank {
@@ -124,6 +129,20 @@ enum HudDigitsId {
     HUD_DIGITS_VZ_DEC,
     HUD_DIGITS_VZ_SIGN,
     HUD_DIGITS_COUNT
+};
+
+enum HudLampId {
+    HUD_LAMP_DANGER = 0,
+    HUD_LAMP_MAIN,
+    HUD_LAMP_TRANS_L,
+    HUD_LAMP_TRANS_R,
+    HUD_LAMP_TRANS_UP,
+    HUD_LAMP_TRANS_DOWN,
+    HUD_LAMP_ROT_L,
+    HUD_LAMP_ROT_R,
+    HUD_LAMP_RADAR,
+    HUD_LAMP_LIGHT,
+    HUD_LAMP_COUNT
 };
 
 static int hud_bar_init(OBJ_ATTR *buffer, int slot, const HudBar *bar) {
@@ -270,6 +289,43 @@ static int digits_value(int i, const Lander *lander) {
     return value;
 }
 
+static bool lamp_on(int k, const Lander *lander, const PlayerInput *input) {
+    bool on = false;
+    switch(k) {
+        case HUD_LAMP_DANGER:
+            on = false; // TODO: needs crash condition from gameplay
+            break;
+        case HUD_LAMP_MAIN:
+            on = input->thrust_main;
+            break;
+        case HUD_LAMP_TRANS_L:
+            on = (input->rcs_x == -1);
+            break;
+        case HUD_LAMP_TRANS_R:
+            on = (input->rcs_x == 1);
+            break;
+        case HUD_LAMP_TRANS_UP:
+            on = (input->rcs_y == 1);
+            break;
+        case HUD_LAMP_TRANS_DOWN:
+            on = (input->rcs_y == -1);
+            break;
+        case HUD_LAMP_ROT_L:
+            on = (input->rotate == -1);
+            break;
+        case HUD_LAMP_ROT_R:
+            on = (input->rotate == 1);
+            break;
+        case HUD_LAMP_RADAR:
+            on = input->radar;
+            break;
+        case HUD_LAMP_LIGHT:
+            on = input->light;
+            break;
+    }
+    return on;
+}
+
 void hud_load_gfx(void) {
     // Load fuel/power bar
     memcpy32(&tile_mem_obj[0][HUD_FUEL_POW_BASE_BAR], fuel_pow_barsTiles,
@@ -302,7 +358,7 @@ int hud_init(OBJ_ATTR *buffer, int slot) {
     return (s - slot);
 }
 
-void hud_update(OBJ_ATTR *buffer, int slot, const Lander *lander) {
+void hud_update(OBJ_ATTR *buffer, int slot, const Lander *lander, const PlayerInput *input) {
     int s = slot;
     for (int i = 0; i < HUD_BAR_COUNT; i++) {
         hud_bar_update(buffer, s, &bars[i],bar_cols(i, lander));
@@ -313,4 +369,8 @@ void hud_update(OBJ_ATTR *buffer, int slot, const Lander *lander) {
         s += digits[j].bar.cells;
     }
     hud_sign_update(buffer, s, &digits[HUD_DIGITS_VZ_SIGN], digits_value(HUD_DIGITS_VZ_SIGN, lander));
+
+    for (int k = 0; k < HUD_LAMP_COUNT; k++) {
+        pal_bg_mem[18 + k] = DRAFT_UHD_1Pal[(lamp_on(k, lander, input) ? HUD_LAMP_ON : HUD_LAMP_OFF) + k];
+    }
 }
