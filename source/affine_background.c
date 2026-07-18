@@ -31,7 +31,7 @@ void lander_to_affine_src(const Lander *lander, AFF_SRC_EX *src) {
     fixed z_cam = clamp(lander->z, 0, FIX_FROM_INT(MAX_HEIGHT) + 1);
     src->sx = shrink((fixed)(MAX_SHRINK << 8), z_cam, FIX_FROM_INT(MAX_HEIGHT)) >> 8;
     src->sy = src->sx;
-    // Clamp limits
+    // Clamp limits TODO: evaluate wether to keep the "radius law" or simplify it
     int lo = MAX_RADIUS * src->sx;
     int hi = (MAP_SIZE << 8) - lo;
     // Pan

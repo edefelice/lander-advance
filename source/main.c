@@ -1,7 +1,7 @@
 #include <tonc.h>
 #include "gameplay.h"
 #include "graphics/moon_far_v2.h"
-#include "graphics/DRAFT_UHD_1.h"
+#include "graphics/HUD_1.h"
 #include "affine_background.h"
 #include "hud.h"
 
@@ -16,15 +16,15 @@ int main(void) {
     // Load background tiles in CBB0
     memcpy16(tile8_mem[0], moon_far_v2Tiles, moon_far_v2TilesLen / 2);
     // Load hud background tiles in CBB2
-    memcpy32(tile8_mem[2], DRAFT_UHD_1Tiles, DRAFT_UHD_1TilesLen / 4);
+    memcpy32(tile8_mem[2], HUD_1Tiles, HUD_1TilesLen / 4);
     // Load background tilemap in SBB 28
     memcpy16(se_mem[28], moon_far_v2Map, moon_far_v2MapLen / 2);
     // Load hud background tilemap in SBB 30
-    memcpy32(se_mem[30], DRAFT_UHD_1Map, DRAFT_UHD_1MapLen / 4);
+    memcpy32(se_mem[30], HUD_1Map, HUD_1MapLen / 4);
     // Load background palette
     memcpy16(pal_bg_mem, moon_far_v2Pal, moon_far_v2PalLen / 2);
     // Load hud background palette
-    memcpy16(&pal_bg_mem[HUD_BACKGROUND_PAL_BASE], DRAFT_UHD_1Pal, DRAFT_UHD_1PalLen / 2);
+    memcpy16(&pal_bg_mem[HUD_BACKGROUND_PAL_BASE], HUD_1Pal, HUD_1PalLen / 2);
     // Load hud sprites
     hud_load_gfx();
     // Configure BG1 and priority 0

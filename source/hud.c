@@ -3,7 +3,7 @@
 #include "hud.h"
 #include "fixedpoint32.h"
 #include "gameplay.h"
-#include "graphics/DRAFT_UHD_1.h"
+#include "graphics/HUD_1.h"
 #include "graphics/fuel_pow_bars.h"
 #include "graphics/speedbars.h"
 #include "graphics/digit_small.h"
@@ -105,15 +105,15 @@ static const HudDigits digits[] = {
     // w digits decimal part
     { { 109, 137, 5, 0, 0, 2, HUD_DIGIT_SMALL_BASE, HUD_PB_DIGIT_SMALL, 0 }, 1, -1},
     // H (altitude) integer part
-    { { 145, 32, 5, 0, 0, 4, HUD_DIGIT_BIG_BASE + 2, HUD_PB_DIGIT_BIG, 0 }, 1, 3},
+    { { 171, 27, 5, 0, 0, 4, HUD_DIGIT_BIG_BASE + 2, HUD_PB_DIGIT_BIG, 0 }, 1, 3},
     // H (altitude) decimal part
-    { { 167, 32, 5, 0, 0, 1, HUD_DIGIT_BIG_BASE + 2, HUD_PB_DIGIT_BIG, 0 }, 1, -1},
+    { { 193, 27, 5, 0, 0, 1, HUD_DIGIT_BIG_BASE + 2, HUD_PB_DIGIT_BIG, 0 }, 1, -1},
     // Vz, integer part
-    { { 151, 48, 5, 0, 0, 2, HUD_DIGIT_BIG_BASE + 2, HUD_PB_DIGIT_BIG, 0 }, 1, 1 },
+    { { 176, 39, 5, 0, 0, 2, HUD_DIGIT_BIG_BASE + 2, HUD_PB_DIGIT_BIG, 0 }, 1, 1 },
     // Vz, decimal part
-    { { 163, 48, 5, 0, 0, 2, HUD_DIGIT_BIG_BASE + 2, HUD_PB_DIGIT_BIG, 0 }, 1, -1 },
+    { { 188, 39, 5, 0, 0, 2, HUD_DIGIT_BIG_BASE + 2, HUD_PB_DIGIT_BIG, 0 }, 1, -1 },
     // Vz, sign
-    { { 145, 48, 5, 0, 0, 1, HUD_DIGIT_BIG_BASE, HUD_PB_DIGIT_BIG, 0 }, 1, -1 }
+    { { 170, 39, 5, 0, 0, 1, HUD_DIGIT_BIG_BASE, HUD_PB_DIGIT_BIG, 0 }, 1, -1 }
 };
 
 enum HudDigitsId {
@@ -190,6 +190,7 @@ static void hud_digits_update(OBJ_ATTR *buffer, int slot, const HudDigits *d, in
         div /= 10;
     }
 }
+
 static void hud_sign_update(OBJ_ATTR *buffer, int slot, const HudDigits *d, int value) {
     obj_unhide(&buffer[slot], ATTR0_REG);
     int tile = (value >= 0) ? d->bar.base : d->bar.base + 1;
@@ -371,6 +372,6 @@ void hud_update(OBJ_ATTR *buffer, int slot, const Lander *lander, const PlayerIn
     hud_sign_update(buffer, s, &digits[HUD_DIGITS_VZ_SIGN], digits_value(HUD_DIGITS_VZ_SIGN, lander));
 
     for (int k = 0; k < HUD_LAMP_COUNT; k++) {
-        pal_bg_mem[18 + k] = DRAFT_UHD_1Pal[(lamp_on(k, lander, input) ? HUD_LAMP_ON : HUD_LAMP_OFF) + k];
+        pal_bg_mem[18 + k] = HUD_1Pal[(lamp_on(k, lander, input) ? HUD_LAMP_ON : HUD_LAMP_OFF) + k];
     }
 }
