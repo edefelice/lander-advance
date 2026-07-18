@@ -10,10 +10,8 @@
 #define COLOR_BLU 0x7C00
 
 void shell_render_engine_init(void) {
-   REG_DISPCNT = DCNT_MODE3 | DCNT_BG2;
-   
    //font and tte init
-   tte_init_bmp_default(3);
+   tte_init_se_default(0, BG_CBB(1) | BG_SBB(15) | BG_4BPP | BG_PRIO(0));
 }
 
 void shell_render_display(void) { 
