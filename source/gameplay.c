@@ -101,53 +101,7 @@ void UpdateMainEngine(Lander *lander, const PlayerInput *input, fixed mass){
     }
 
 }       
-
-/*
-//Manage the RCS engine data
-void UpdateRCS(Lander *lander, const PlayerInput *input, fixed mass){
-
-    fixed a= fixDiv(RCS_THRUST , mass); 
-
-    //X AXIS
-    if(input->rcs_x == 1 && GameplayHasPropellant(lander)) {
-
-        lander->vx -= fixMul(a, SIM_DT);
-        lander->propellant -= RCS_CONSUMPTION;
-
-        if(lander->propellant < 0)
-            lander->propellant = 0;
-
-    }
-
-    else if(input->rcs_x == -1 && GameplayHasPropellant(lander)) {
-
-        lander->vx += fixMul(a, SIM_DT);
-        lander->propellant -= RCS_CONSUMPTION;
-
-        if(lander->propellant < 0)
-            lander->propellant = 0;        
-    }
-
-    //Y AXIS
-    if(input->rcs_y == 1 && GameplayHasPropellant(lander)) {
-
-        lander->vy -= fixMul(a, SIM_DT);
-        lander->propellant -= RCS_CONSUMPTION;
-
-        if(lander->propellant < 0)
-            lander->propellant = 0;
-    }
-
-    else if(input->rcs_y == -1 && GameplayHasPropellant(lander)) {
-
-        lander->vy += fixMul(a, SIM_DT);
-        lander->propellant -= RCS_CONSUMPTION;
-
-        if(lander->propellant < 0)
-            lander->propellant = 0;        
-    }
-
-}  */              
+ 
 
 //Manage the RCS engine data
 void UpdateRCS(Lander *lander, const PlayerInput *input, fixed mass){
@@ -200,7 +154,7 @@ void UpdateRotation(Lander *lander, const PlayerInput *input, fixed mass){
 
     // Calculate angular acceleration
     fixed torque = fixMul(RCS_THRUST, LEM_RADIUS);
-    fixed inertia = fixMul (fixMul(INERTIA_FACTOR, mass), fixMul(LEM_RADIUS, LEM_RADIUS));
+    fixed inertia = fixMul (fixMul(INERTIA_FACTOR, mass), fixMul(LEM_RADIUS, LEM_RADIUS)); //va in overflow e quindi si gira dall'altra parte perché cambia segno 
     fixed alpha = fixDiv(torque, inertia);
 
     //Press L, clockwise rotation
