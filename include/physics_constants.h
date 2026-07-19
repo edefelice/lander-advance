@@ -21,6 +21,8 @@
 
 //gravity
 #define MOON_G              FIX_FROM_FRACTION(81,50)        // Moon gravity (1.62 m/s^2)
+//altitude
+#define MOON_H              FIX_FROM_INT(3000)              // Moon starting altitude (3000 m)
 
 
 // ---------------------------

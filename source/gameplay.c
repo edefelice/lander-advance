@@ -31,7 +31,7 @@ void GameplayInit(Lander *lander){                  //game initialization
     //Position
     lander->x = FIX_FROM_INT(0);
     lander->y = FIX_FROM_INT(0);
-    lander->z = FIX_FROM_INT(3000);                 //Initial altitude 5000m
+    lander->z = MOON_H;                             //Initial altitude 3000m
     
     //Velocity
     lander->vx = 0;
