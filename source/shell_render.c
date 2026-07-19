@@ -59,11 +59,11 @@ void shell_render_display(void) {
              tte_set_pos(8, 45); tte_write("Name: "); tte_write(p_data->planet_name);
              
              tte_set_pos(8, 65); tte_write("Gravity: ");
-             snprintf(buffer, sizeof(buffer), "%s", p_data->gravity);
+             snprintf(buffer, sizeof(buffer), "%d.%02d", p_data->gravity_int, p_data->gravity_dec);
              tte_write(buffer);
 
              tte_set_pos(8, 85); tte_write("Starting: ");
-             snprintf(buffer, sizeof(buffer), "%s m", p_data->starting_altitude);
+             snprintf(buffer, sizeof(buffer), "%d m", p_data->starting_altitude);
              tte_write(buffer);
              
              tte_set_pos(8, 105); tte_write("Desc: "); tte_write(p_data->planet_description);
