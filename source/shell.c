@@ -18,7 +18,7 @@ static int up_pointer = 0; //Page up for selection
 static int down_pointer = 0;
 static int left_pointer = 0;
 static int right_pointer = 0;
-static int A_button = 0;          //Removed static for testing
+static int A_button = 0;
 static int B_button = 0;
 static int START_button = 0;
 
@@ -106,9 +106,9 @@ void main_states_management(void) {
                     case SUB_RESTART:
                         shell_init();
                         present_state = STATE_GAMEPLAY;
-                        present_result.outcome = GR_WIN;
+                        present_result.outcome = GR_LOSE;
                         present_result.score = 0;
-                        present_result.reason = GR_REASON_NONE;
+                        present_result.reason = GR_REASON_NONE;                        
                         break;
                     case SUB_TITLE:
                         shell_init();
@@ -217,7 +217,7 @@ void sub_states_management(void) {
                     }
                     else if (B_button == 1) {
                         present_state = STATE_AREA_SELECTION;
-                        present_config = SUB_AREA_POINTER_MOVING;
+                        present_area = SUB_AREA_POINTER_MOVING;
                         B_button = 0;
                     }
                     break;
@@ -265,12 +265,11 @@ void shell_init(void) {
     selected_area = 0;
     selected_lander = 0;
     selected_crew = 0;
-    //fake_result = 0;
 
-//reset results
-present_result.outcome = GR_LOSE;
-present_result.score = 0;
-present_result.reason = GR_REASON_NONE;
+    //reset results
+    present_result.outcome = GR_LOSE;
+    present_result.score = 0;
+    present_result.reason = GR_REASON_NONE;
 
 }
 
@@ -354,6 +353,15 @@ void shell_feed_input(u16 action) {
             break;
         case PAUSE:
             START_button = 1;
+            break;
+        default:
+            A_button = 0;
+            B_button = 0;
+            up_pointer = 0;
+            right_pointer = 0;
+            down_pointer = 0;
+            left_pointer = 0;
+            START_button = 0;
             break;
     }
 }

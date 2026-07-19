@@ -2,7 +2,7 @@
 
 //Planets Database
 static const PlanetData planets[1] = { //[] is the number of planets in the database
-    {"1.62", "5000", "Earth's Moon", "Regolith corrosion"} //the first one is the gravity value
+    {"1.62", "3000", "Earth's Moon", "Regolith corrosion"} //the first one is the gravity value
 //add more planets
 };
 

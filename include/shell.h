@@ -1,7 +1,7 @@
 #ifndef SHELL_H
 #define SHELL_H
 
-//GameResult
+//GameResult stub, to be deleted
 //typedef struct GameResult GameResult;
 
 //States enum

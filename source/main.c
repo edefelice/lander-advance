@@ -1,4 +1,6 @@
 #include <tonc.h>
+#include "cockpit.h"
+#include "game_result.h"
 #include "gameplay.h"
 #include "graphics/moon_far_v2.h"
 #include "graphics/HUD_1.h"
@@ -6,8 +8,12 @@
 #include "hud.h"
 #include "maxmod.h"
 #include "mm_types.h"
+#include "shell.h"
+#include "shell_render.h"
 #include "soundbank.h"
 #include "soundbank_bin.h"
+#include "tonc_memmap.h"
+#include "tonc_tte.h"
 
 static OBJ_ATTR obj_buffer[128];
 
@@ -16,6 +22,9 @@ int main(void) {
     AFF_SRC_EX affine_src = {0};
     Lander lander;
     GameplayInit(&lander);
+    shell_init();
+    GameState prev_state = shell_state();
+    shell_render_engine_init();
     PlayerInput input = {0};
     // Load background tiles in CBB0
     memcpy32(tile8_mem[0], moon_far_v2Tiles, moon_far_v2TilesLen / 4);
@@ -27,6 +36,7 @@ int main(void) {
     memcpy16(se_mem[30], HUD_1Map, HUD_1MapLen / 2);
     // Load background palette
     memcpy16(pal_bg_mem, moon_far_v2Pal, moon_far_v2PalLen / 2);
+    pal_bg_mem[0] = 0x0; // remove in final version
     // Load hud background palette
     memcpy16(&pal_bg_mem[HUD_BACKGROUND_PAL_BASE], HUD_1Pal, HUD_1PalLen / 2);
     // Load hud sprites
@@ -36,7 +46,7 @@ int main(void) {
     // Configure BG2 with wrap off and priority 3
     REG_BG2CNT = BG_CBB(0) | BG_SBB(28) | BG_AFF_64x64 | BG_PRIO(3);
     // Set affine background (Mode 1, BG2)
-    REG_DISPCNT = DCNT_MODE(1) | DCNT_OBJ | DCNT_OBJ_1D | DCNT_BG1 | DCNT_BG2;
+    REG_DISPCNT = DCNT_MODE(1) | DCNT_BG0;
     // Initialize sprites
     oam_init(obj_buffer, 128);
     int n_obj = hud_init(obj_buffer, 0);
@@ -44,14 +54,65 @@ int main(void) {
     irq_add(II_VBLANK, mmVBlank);
     mmInitDefault((mm_addr)soundbank_bin, 8); // TODO: check when adding audio files
     //mmEffect(SFX_TEST_TONE); // Added just for test. Change when adding audio.
+    bool result_sent = false;
+    GameResult result;
+    PauseSubState last_pause_choice = SUB_RESUME;
     while(1) {
+        GameState cur_state = shell_state();
+        bool entered_gameplay = cur_state == STATE_GAMEPLAY && prev_state != STATE_GAMEPLAY;
+        bool fresh_start = entered_gameplay && (prev_state == STATE_CONFIG_SELECTION || last_pause_choice == SUB_RESTART);
         key_poll(); // Check key status
-        input = cpit_input();
-        GameplayUpdate(&lander, &input);
-        hud_update(obj_buffer, 0, &lander, &input);
-        lander_to_affine_src(&lander, &affine_src);
-        // Configure BG Affine 2
-        bg_rotscale_ex(&affine_bg, &affine_src);
+        if (cur_state == STATE_GAMEPLAY || cur_state == STATE_PAUSE) {
+            REG_DISPCNT |= DCNT_OBJ | DCNT_OBJ_1D | DCNT_BG1 | DCNT_BG2;
+        } else {
+            REG_DISPCNT &= ~(DCNT_OBJ | DCNT_OBJ_1D | DCNT_BG1 | DCNT_BG2);
+        }
+        if (entered_gameplay) {
+            tte_erase_screen();
+            pal_bg_mem[0] = moon_far_v2Pal[0]; // remove in final version
+        }
+
+        if (fresh_start) {
+            tte_erase_screen();
+            GameplayInit(&lander);
+            result_sent = false;
+        }
+        
+        switch (shell_state()) {
+            case STATE_GAMEPLAY:
+                input = cpit_input();
+                shell_feed_input(menu_input());
+                GameplayUpdate(&lander, &input);
+                if (lander.state != LANDER_FLYING && !result_sent) {
+                    // for testing
+                    result.outcome = (lander.state == LANDER_LANDED) ? GR_WIN : GR_LOSE;
+                    result.reason = GR_REASON_NONE;
+                    result.score = 0;
+                    shell_submit_result(&result);
+                    result_sent = true;
+                }
+                main_states_management();
+                hud_update(obj_buffer, 0, &lander, &input);
+                lander_to_affine_src(&lander, &affine_src);
+                // Configure BG Affine 2
+                bg_rotscale_ex(&affine_bg, &affine_src);
+                break;
+            case STATE_PAUSE:
+                shell_render_display();
+                shell_feed_input(menu_input());
+                main_states_management();
+                sub_states_management();
+                last_pause_choice = pause_state();
+                break;
+            default:
+                pal_bg_mem[0] = 0x0; // remove in final version
+                shell_render_display();
+                shell_feed_input(menu_input());
+                main_states_management();
+                sub_states_management();
+                break;
+        }
+        prev_state = cur_state;
         VBlankIntrWait(); // Wait VBlank
         mmFrame();
         oam_copy(oam_mem, obj_buffer, n_obj); // copy sprites in oam
