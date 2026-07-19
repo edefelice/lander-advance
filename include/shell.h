@@ -6,6 +6,8 @@
 
 //States enum
 #include "game_result.h"
+#include <tonc.h>
+
 typedef enum {
     STATE_TITLE,
     STATE_CELESTIAL_BODY_SELECTION, //Macro-state
@@ -59,10 +61,13 @@ int max_crew(void);
 int pause_index(void);
 int result_victory(void);
 int result_score(void);
-const GrReason result_reason(void);
+const char* result_reason(void);
 
 void shell_init(void);
 void main_states_management(void);
 void sub_states_management(void);
+
+void shell_feed_input(u16 action);
+void shell_submit_result(const GameResult *result);
 
 #endif

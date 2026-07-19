@@ -1,6 +1,8 @@
 #include "shell.h"
 #include "game_data.h"
 #include "game_result.h"
+#include "cockpit.h"
+#include <stdbool.h>
 
 //State
 static GameState present_state;
@@ -12,13 +14,13 @@ static ConfigSubState present_config;
 static PauseSubState present_pause;
 
 //Pointers placeholders
-int up_pointer = 0; //Page up for selection
-int down_pointer = 0;
-int left_pointer = 0;
-int right_pointer = 0;
-int A_button = 0;          //Removed static for testing
-int B_button = 0;
-int START_button = 0;
+static int up_pointer = 0; //Page up for selection
+static int down_pointer = 0;
+static int left_pointer = 0;
+static int right_pointer = 0;
+static int A_button = 0;          //Removed static for testing
+static int B_button = 0;
+static int START_button = 0;
 
 //variables
 static int selected_planet = 0;
@@ -26,7 +28,14 @@ static int selected_area = 0;
 static int selected_lander = 0;
 static int selected_crew = 0;
 static int selected_pause = 0;
-//int fake_result = 0;       //Removed static for testing
+static bool result_pending = false;
+
+// Reason descriptor for losing
+static const char* const reason_text[] = {
+    [GR_REASON_NONE] = "N/A",
+    [GR_REASON_TOO_FAST] = "Excessive speed",
+    [GR_REASON_OUT_OF_PAD] = "Out of pad"
+};
 
 /*
 //GameResult to be replaced with the official one
@@ -35,7 +44,6 @@ struct GameResult {
     int score;
     const char* reason;
 };
-static GameResult present_result;
 */
 
 static GameResult present_result;
@@ -83,21 +91,11 @@ void main_states_management(void) {
                 selected_pause = 0;
                 START_button = 0;
             }
-            /*
-            if (fake_result == 1) { //for testing only
-                present_result.result = 1;
-                present_result.score = 999;
-                present_state = STATE_LANDING;
-                fake_result = 0;
+            
+            if (result_pending == true) {
+                present_state = (present_result.outcome == GR_WIN) ? STATE_LANDING : STATE_CRASH;
+                result_pending = false;
             }
-            else if (fake_result == 2) { //for testing only
-                present_result.result = 2;
-                present_result.score = 0;
-                present_result.reason = "Crash reason TBD";
-                present_state = STATE_CRASH;
-                fake_result = 0;
-            }
-            */
             break;
         case STATE_PAUSE:
             if (A_button == 1){
@@ -270,7 +268,7 @@ void shell_init(void) {
     //fake_result = 0;
 
 //reset results
-present_result.outcome = GR_WIN;
+present_result.outcome = GR_LOSE;
 present_result.score = 0;
 present_result.reason = GR_REASON_NONE;
 
@@ -330,6 +328,37 @@ int result_score(void) {
     return present_result.score;
 }
 
-const GrReason result_reason(void) {
-    return present_result.reason;
+const char* result_reason(void) {
+    return reason_text[present_result.reason];
+}
+
+void shell_feed_input(u16 action) {
+    switch (action) {
+        case M_CONFIRM:
+            A_button = 1;
+            break;
+        case M_RETURN:
+            B_button = 1;
+            break;
+        case M_UP:
+            up_pointer = 1;
+            break;
+        case M_RIGHT:
+            right_pointer = 1;
+            break;
+        case M_DOWN:
+            down_pointer = 1;
+            break;
+        case M_LEFT:
+            left_pointer = 1;
+            break;
+        case PAUSE:
+            START_button = 1;
+            break;
+    }
+}
+
+void shell_submit_result(const GameResult *result) {
+    present_result = *result;
+    result_pending = true;
 }
