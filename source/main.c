@@ -18,6 +18,7 @@
 static OBJ_ATTR obj_buffer[128];
 
 int main(void) {
+    // Initialization
     BG_AFFINE affine_bg = {0};
     AFF_SRC_EX affine_src = {0};
     Lander lander;
@@ -45,7 +46,7 @@ int main(void) {
     REG_BG1CNT = BG_CBB(2) | BG_SBB(30) | BG_8BPP | BG_REG_32x32 | BG_PRIO(1);
     // Configure BG2 with wrap off and priority 3
     REG_BG2CNT = BG_CBB(0) | BG_SBB(28) | BG_AFF_64x64 | BG_PRIO(3);
-    // Set affine background (Mode 1, BG2)
+    // Set regular background (Mode 1, BG0)
     REG_DISPCNT = DCNT_MODE(1) | DCNT_BG0;
     // Initialize sprites
     oam_init(obj_buffer, 128);
@@ -53,69 +54,73 @@ int main(void) {
     irq_init(NULL);
     irq_add(II_VBLANK, mmVBlank);
     mmInitDefault((mm_addr)soundbank_bin, 8); // TODO: check when adding audio files
-    //mmEffect(SFX_TEST_TONE); // Added just for test. Change when adding audio.
+    //mmEffect(SFX_TEST_TONE); // Just for test. Change when adding audio.
     bool result_sent = false;
     GameResult result;
     PauseSubState last_pause_choice = SUB_RESUME;
     while(1) {
-        GameState cur_state = shell_state();
+        GameState cur_state = shell_state(); // Update Current state
+        // True = in play state coming from title/config/pause screen
         bool entered_gameplay = cur_state == STATE_GAMEPLAY && prev_state != STATE_GAMEPLAY;
+        // True = in play state after restarting game
         bool fresh_start = entered_gameplay && (prev_state == STATE_CONFIG_SELECTION || last_pause_choice == SUB_RESTART);
         key_poll(); // Check key status
-        if (cur_state == STATE_GAMEPLAY || cur_state == STATE_PAUSE) {
-            REG_DISPCNT |= DCNT_OBJ | DCNT_OBJ_1D | DCNT_BG1 | DCNT_BG2;
-        } else {
+        if (cur_state == STATE_GAMEPLAY || cur_state == STATE_PAUSE) { // In play state or in pause state
+            REG_DISPCNT |= DCNT_OBJ | DCNT_OBJ_1D | DCNT_BG1 | DCNT_BG2; // Set affine background (Mode 1, BG2)
+        }
+        else { // Deactivate hud and level background
             REG_DISPCNT &= ~(DCNT_OBJ | DCNT_OBJ_1D | DCNT_BG1 | DCNT_BG2);
         }
+
         if (entered_gameplay) {
-            tte_erase_screen();
-            pal_bg_mem[0] = moon_far_v2Pal[0]; // remove in final version
+            tte_erase_screen(); // Hide shell
+            pal_bg_mem[0] = moon_far_v2Pal[0]; // Remove in final version
         }
 
         if (fresh_start) {
-            tte_erase_screen();
+            tte_erase_screen(); // Hide shell
             GameplayInit(&lander);
             result_sent = false;
         }
-        
+
         switch (shell_state()) {
             case STATE_GAMEPLAY:
                 input = cpit_input();
-                shell_feed_input(menu_input());
+                shell_feed_input(menu_input()); // Checks if player pushes Start button
                 GameplayUpdate(&lander, &input);
                 if (lander.state != LANDER_FLYING && !result_sent) {
-                    // for testing
+                    // For testing
                     result.outcome = (lander.state == LANDER_LANDED) ? GR_WIN : GR_LOSE;
                     result.reason = GR_REASON_NONE;
                     result.score = 0;
                     shell_submit_result(&result);
                     result_sent = true;
                 }
-                main_states_management();
+                main_states_management(); // Changes game state to "pause" when Start button is pressed
                 hud_update(obj_buffer, 0, &lander, &input);
-                lander_to_affine_src(&lander, &affine_src);
                 // Configure BG Affine 2
+                lander_to_affine_src(&lander, &affine_src);
                 bg_rotscale_ex(&affine_bg, &affine_src);
                 break;
             case STATE_PAUSE:
                 shell_render_display();
-                shell_feed_input(menu_input());
-                main_states_management();
-                sub_states_management();
-                last_pause_choice = pause_state();
+                shell_feed_input(menu_input()); // Reads input
+                main_states_management(); // Changes game state (Title/Gameplay/Pause)
+                sub_states_management(); // Changes game substate (Resume/Restart/Title/Credits)
+                last_pause_choice = pause_state(); // Save current substate
                 break;
             default:
-                pal_bg_mem[0] = 0x0; // remove in final version
+                pal_bg_mem[0] = 0x0; // Remove in final version
                 shell_render_display();
                 shell_feed_input(menu_input());
                 main_states_management();
                 sub_states_management();
                 break;
         }
-        prev_state = cur_state;
+        prev_state = cur_state; // Update previous state
         VBlankIntrWait(); // Wait VBlank
         mmFrame();
-        oam_copy(oam_mem, obj_buffer, n_obj); // copy sprites in oam
-        REG_BG_AFFINE[2] = affine_bg;
+        oam_copy(oam_mem, obj_buffer, n_obj); // Copy sprites in oam
+        REG_BG_AFFINE[2] = affine_bg; // Update affine bg register
     }
 }
