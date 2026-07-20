@@ -19,6 +19,8 @@ static int down_pointer = 0;
 static int left_pointer = 0;
 static int right_pointer = 0;
 static int A_button = 0;
+//Tracks A_button from the previous frame, avoiding that the key can be held on the 1st gameplay frame
+static int A_button_prev = 0;
 static int B_button = 0;
 static int START_button = 0;
 
@@ -72,7 +74,7 @@ void main_states_management(void) {
             }
             break;
         case STATE_CONFIG_SELECTION:
-            if (A_button == 1){
+            if (A_button_prev == 1 && A_button == 0){
                 if (present_config == SUB_LANDER_INFO){
                     present_config = SUB_CREW_INFO;
                     selected_crew = 2; //Starting value also identified as minimum value (pilot + 1 eqip)
@@ -98,7 +100,7 @@ void main_states_management(void) {
             }
             break;
         case STATE_PAUSE:
-            if (A_button == 1){
+            if (A_button_prev == 1 && A_button == 0){
                 switch (present_pause){
                     case SUB_RESUME:
                         present_state = STATE_GAMEPLAY;
@@ -119,7 +121,6 @@ void main_states_management(void) {
                         present_state = STATE_TITLE; //Temporary, to be implemented with the Credits file maybe(?)
                         break;
                 }
-                A_button = 0;
             }     
             break;
         case STATE_LANDING:
@@ -304,8 +305,8 @@ int area_index(void) {
 
 //Max crew for each lander (pilot + others)
 int max_crew(void){
-        return lander_data(selected_lander)->max_crew;
-    }
+    return lander_data(selected_lander)->max_crew;
+}
 
 int lander_index(void){
     return selected_lander;
@@ -369,4 +370,8 @@ void shell_feed_input(u16 action) {
 void shell_submit_result(const GameResult *result) {
     present_result = *result;
     result_pending = true;
+}
+
+void shell_commit_input(void) {
+    A_button_prev = A_button;
 }
