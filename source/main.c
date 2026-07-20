@@ -12,17 +12,16 @@
 #include "shell_render.h"
 #include "soundbank.h"
 #include "soundbank_bin.h"
-#include "tonc_memmap.h"
-#include "tonc_tte.h"
 
-static OBJ_ATTR obj_buffer[128];
+static OBJ_ATTR obj_buffer[MAX_SPRITES];
 
 int main(void) {
+    int post_fuel_power_idx = hud_post_fuel_power_slot();
+    int digit_sprite_idx_end = hud_digit_slot_end();
     // Initialization
     BG_AFFINE affine_bg = {0};
     AFF_SRC_EX affine_src = {0};
     Lander lander;
-    GameplayInit(&lander);
     shell_init();
     GameState prev_state = shell_state();
     shell_render_engine_init();
@@ -37,9 +36,10 @@ int main(void) {
     memcpy16(se_mem[30], HUD_1Map, HUD_1MapLen / 2);
     // Load background palette
     memcpy16(pal_bg_mem, moon_far_v2Pal, moon_far_v2PalLen / 2);
-    pal_bg_mem[0] = 0x0; // remove in final version
+    pal_bg_mem[0] = 0x0; // TODO: remove when loading title graphics
     // Load hud background palette
     memcpy16(&pal_bg_mem[HUD_BACKGROUND_PAL_BASE], HUD_1Pal, HUD_1PalLen / 2);
+    pal_bg_mem[HUD_SPEED_RULER_PAL_IDX] = 0x0; // Black
     // Load hud sprites
     hud_load_gfx();
     // Configure BG1 and priority 0
@@ -49,7 +49,7 @@ int main(void) {
     // Set regular background (Mode 1, BG0)
     REG_DISPCNT = DCNT_MODE(1) | DCNT_BG0;
     // Initialize sprites
-    oam_init(obj_buffer, 128);
+    oam_init(obj_buffer, MAX_SPRITES);
     int n_obj = hud_init(obj_buffer, 0);
     irq_init(NULL);
     irq_add(II_VBLANK, mmVBlank);
@@ -58,6 +58,8 @@ int main(void) {
     bool result_sent = false;
     GameResult result;
     PauseSubState last_pause_choice = SUB_RESUME;
+    // Prevents A held during menu confirm from triggering thrust on gameplay entry
+    bool suppress_thrust_until_release = false;
     while(1) {
         GameState cur_state = shell_state(); // Update Current state
         // True = in play state coming from title/config/pause screen
@@ -65,20 +67,41 @@ int main(void) {
         // True = in play state after restarting game
         bool fresh_start = entered_gameplay && (prev_state == STATE_CONFIG_SELECTION || last_pause_choice == SUB_RESTART);
         key_poll(); // Check key status
-        if (cur_state == STATE_GAMEPLAY || cur_state == STATE_PAUSE) { // In play state or in pause state
-            REG_DISPCNT |= DCNT_OBJ | DCNT_OBJ_1D | DCNT_BG1 | DCNT_BG2; // Set affine background (Mode 1, BG2)
+        if (cur_state != STATE_TITLE) {
+            REG_DISPCNT |= DCNT_BG1;
+        }
+        else {
+            REG_DISPCNT &= ~(DCNT_BG1 | DCNT_OBJ | DCNT_OBJ_1D);
+        }
+
+        if(cur_state == STATE_GAMEPLAY) {
+            pal_bg_mem[HUD_SPEED_RULER_PAL_IDX] = HUD_1Pal[25];
+            REG_DISPCNT |= DCNT_OBJ | DCNT_OBJ_1D | DCNT_BG2; // Set affine background (Mode 1, BG2)
+            for (int i = post_fuel_power_idx; i < digit_sprite_idx_end; i++) {
+                obj_unhide(&obj_buffer[i], ATTR0_REG);
+            }
         }
         else { // Deactivate hud and level background
-            REG_DISPCNT &= ~(DCNT_OBJ | DCNT_OBJ_1D | DCNT_BG1 | DCNT_BG2);
+            pal_bg_mem[0] = 0x0;
+            pal_bg_mem[HUD_SPEED_RULER_PAL_IDX] = 0x0;
+            for (int i = post_fuel_power_idx; i < MAX_SPRITES; i++) {
+                obj_hide(&obj_buffer[i]);
+            }
+            REG_DISPCNT &= ~DCNT_BG2;
         }
 
         if (entered_gameplay) {
-            tte_erase_screen(); // Hide shell
-            pal_bg_mem[0] = moon_far_v2Pal[0]; // Remove in final version
+            tte_erase_screen(); // Hide menu
+            pal_bg_mem[0] = moon_far_v2Pal[0];
+            pal_bg_mem[HUD_SPEED_RULER_PAL_IDX] = HUD_1Pal[25];
+            for (int i = 0; i < digit_sprite_idx_end; i++) {
+                obj_unhide(&obj_buffer[i], ATTR0_REG);
+            }
+            suppress_thrust_until_release = true;
         }
 
         if (fresh_start) {
-            tte_erase_screen(); // Hide shell
+            tte_erase_screen(); // Hide menu
             GameplayInit(&lander);
             result_sent = false;
         }
@@ -86,7 +109,13 @@ int main(void) {
         switch (shell_state()) {
             case STATE_GAMEPLAY:
                 input = cpit_input();
-                shell_feed_input(menu_input()); // Checks if player pushes Start button
+                if (suppress_thrust_until_release) {
+                    input.thrust_main = false;
+                    if (!key_is_down(KEY_A)) {
+                        suppress_thrust_until_release = false;
+                    }
+                }
+                shell_feed_input(menu_input()); // To read the Start button
                 GameplayUpdate(&lander, &input);
                 if (lander.state != LANDER_FLYING && !result_sent) {
                     // For testing
@@ -97,6 +126,7 @@ int main(void) {
                     result_sent = true;
                 }
                 main_states_management(); // Changes game state to "pause" when Start button is pressed
+                shell_commit_input();
                 hud_update(obj_buffer, 0, &lander, &input);
                 // Configure BG Affine 2
                 lander_to_affine_src(&lander, &affine_src);
@@ -107,14 +137,15 @@ int main(void) {
                 shell_feed_input(menu_input()); // Reads input
                 main_states_management(); // Changes game state (Title/Gameplay/Pause)
                 sub_states_management(); // Changes game substate (Resume/Restart/Title/Credits)
+                shell_commit_input();
                 last_pause_choice = pause_state(); // Save current substate
                 break;
             default:
-                pal_bg_mem[0] = 0x0; // Remove in final version
                 shell_render_display();
                 shell_feed_input(menu_input());
                 main_states_management();
                 sub_states_management();
+                shell_commit_input();
                 break;
         }
         prev_state = cur_state; // Update previous state
