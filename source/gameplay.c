@@ -152,7 +152,7 @@ void UpdateRCS(Lander *lander, const PlayerInput *input, fixed mass){
 //Manage the RCS engine data
 void UpdateRCS(Lander *lander, const PlayerInput *input, fixed mass){
 
-    fixed a= fixDiv(RCS_THRUST , mass);
+    fixed a = fixDiv(RCS_THRUST , mass);
     fixed a_body_x = 0;
     fixed a_body_y = 0; 
 

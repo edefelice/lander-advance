@@ -12,6 +12,7 @@
 #include "shell_render.h"
 #include "soundbank.h"
 #include "soundbank_bin.h"
+#include "tonc_memdef.h"
 
 static OBJ_ATTR obj_buffer[MAX_SPRITES];
 
@@ -44,8 +45,8 @@ int main(void) {
     hud_load_gfx();
     // Configure BG1 and priority 0
     REG_BG1CNT = BG_CBB(2) | BG_SBB(30) | BG_8BPP | BG_REG_32x32 | BG_PRIO(1);
-    // Configure BG2 with wrap off and priority 3
-    REG_BG2CNT = BG_CBB(0) | BG_SBB(28) | BG_AFF_64x64 | BG_PRIO(3);
+    // Configure BG2 with wrap on and priority 3
+    REG_BG2CNT = BG_CBB(0) | BG_SBB(28) | BG_AFF_64x64 | BG_WRAP | BG_PRIO(3);
     // Set regular background (Mode 1, BG0)
     REG_DISPCNT = DCNT_MODE(1) | DCNT_BG0;
     // Initialize sprites
