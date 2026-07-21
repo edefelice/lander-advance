@@ -31,7 +31,7 @@ void GameplayInit(Lander *lander){                  //game initialization
     //Position
     lander->x = FIX_FROM_INT(0);
     lander->y = FIX_FROM_INT(0);
-    lander->z = FIX_FROM_INT(3000);                 //Initial altitude 5000m
+    lander->z = MOON_H;                             //Initial altitude 3000m
     
     //Velocity
     lander->vx = 0;
@@ -152,7 +152,7 @@ void UpdateRCS(Lander *lander, const PlayerInput *input, fixed mass){
 //Manage the RCS engine data
 void UpdateRCS(Lander *lander, const PlayerInput *input, fixed mass){
 
-    fixed a= fixDiv(RCS_THRUST , mass);
+    fixed a = fixDiv(RCS_THRUST , mass);
     fixed a_body_x = 0;
     fixed a_body_y = 0; 
 

@@ -1,5 +1,8 @@
 #include "shell.h"
 #include "game_data.h"
+#include "game_result.h"
+#include "cockpit.h"
+#include <stdbool.h>
 
 //State
 static GameState present_state;
@@ -11,13 +14,15 @@ static ConfigSubState present_config;
 static PauseSubState present_pause;
 
 //Pointers placeholders
-int up_pointer = 0; //Page up for selection
-int down_pointer = 0;
-int left_pointer = 0;
-int right_pointer = 0;
-int A_button = 0;          //Removed static for testing
-int B_button = 0;
-int START_button = 0;
+static int up_pointer = 0; //Page up for selection
+static int down_pointer = 0;
+static int left_pointer = 0;
+static int right_pointer = 0;
+static int A_button = 0;
+//Tracks A_button from the previous frame, avoiding that the key can be held on the 1st gameplay frame
+static int A_button_prev = 0;
+static int B_button = 0;
+static int START_button = 0;
 
 //variables
 static int selected_planet = 0;
@@ -25,14 +30,24 @@ static int selected_area = 0;
 static int selected_lander = 0;
 static int selected_crew = 0;
 static int selected_pause = 0;
-int fake_result = 0;       //Removed static for testing
+static bool result_pending = false;
 
+// Reason descriptor for losing
+static const char* const reason_text[] = {
+    [GR_REASON_NONE] = "N/A",
+    [GR_REASON_TOO_FAST] = "Excessive speed",
+    [GR_REASON_OUT_OF_PAD] = "Out of pad"
+};
+
+/*
 //GameResult to be replaced with the official one
 struct GameResult {
     int result;
     int score;
     const char* reason;
 };
+*/
+
 static GameResult present_result;
 
 //Switching between the states logic
@@ -59,7 +74,7 @@ void main_states_management(void) {
             }
             break;
         case STATE_CONFIG_SELECTION:
-            if (A_button == 1){
+            if (A_button_prev == 1 && A_button == 0){
                 if (present_config == SUB_LANDER_INFO){
                     present_config = SUB_CREW_INFO;
                     selected_crew = 2; //Starting value also identified as minimum value (pilot + 1 eqip)
@@ -78,22 +93,14 @@ void main_states_management(void) {
                 selected_pause = 0;
                 START_button = 0;
             }
-            if (fake_result == 1) { //for testing only
-                present_result.result = 1;
-                present_result.score = 999;
-                present_state = STATE_LANDING;
-                fake_result = 0;
-            }
-            else if (fake_result == 2) { //for testing only
-                present_result.result = 2;
-                present_result.score = 0;
-                present_result.reason = "Crash reason TBD";
-                present_state = STATE_CRASH;
-                fake_result = 0;
+            
+            if (result_pending == true) {
+                present_state = (present_result.outcome == GR_WIN) ? STATE_LANDING : STATE_CRASH;
+                result_pending = false;
             }
             break;
         case STATE_PAUSE:
-            if (A_button == 1){
+            if (A_button_prev == 1 && A_button == 0){
                 switch (present_pause){
                     case SUB_RESUME:
                         present_state = STATE_GAMEPLAY;
@@ -101,9 +108,9 @@ void main_states_management(void) {
                     case SUB_RESTART:
                         shell_init();
                         present_state = STATE_GAMEPLAY;
-                        present_result.result = 0;
+                        present_result.outcome = GR_LOSE;
                         present_result.score = 0;
-                        present_result.reason = "";
+                        present_result.reason = GR_REASON_NONE;                        
                         break;
                     case SUB_TITLE:
                         shell_init();
@@ -114,7 +121,6 @@ void main_states_management(void) {
                         present_state = STATE_TITLE; //Temporary, to be implemented with the Credits file maybe(?)
                         break;
                 }
-                A_button = 0;
             }     
             break;
         case STATE_LANDING:
@@ -212,7 +218,7 @@ void sub_states_management(void) {
                     }
                     else if (B_button == 1) {
                         present_state = STATE_AREA_SELECTION;
-                        present_config = SUB_AREA_POINTER_MOVING;
+                        present_area = SUB_AREA_POINTER_MOVING;
                         B_button = 0;
                     }
                     break;
@@ -260,12 +266,11 @@ void shell_init(void) {
     selected_area = 0;
     selected_lander = 0;
     selected_crew = 0;
-    fake_result = 0;
 
-//reset results
-present_result.result = 0;
-present_result.score = 0;
-present_result.reason = "";
+    //reset results
+    present_result.outcome = GR_LOSE;
+    present_result.score = 0;
+    present_result.reason = GR_REASON_NONE;
 
 }
 
@@ -300,8 +305,8 @@ int area_index(void) {
 
 //Max crew for each lander (pilot + others)
 int max_crew(void){
-        return lander_data(selected_lander)->max_crew;
-    }
+    return lander_data(selected_lander)->max_crew;
+}
 
 int lander_index(void){
     return selected_lander;
@@ -316,7 +321,7 @@ int pause_index(void) {
 }
 
 int result_victory(void) {
-    return present_result.result == 1;
+    return present_result.outcome == 0;
 }
 
 int result_score(void) {
@@ -324,5 +329,49 @@ int result_score(void) {
 }
 
 const char* result_reason(void) {
-    return present_result.reason;
+    return reason_text[present_result.reason];
+}
+
+void shell_feed_input(u16 action) {
+    switch (action) {
+        case M_CONFIRM:
+            A_button = 1;
+            break;
+        case M_RETURN:
+            B_button = 1;
+            break;
+        case M_UP:
+            up_pointer = 1;
+            break;
+        case M_RIGHT:
+            right_pointer = 1;
+            break;
+        case M_DOWN:
+            down_pointer = 1;
+            break;
+        case M_LEFT:
+            left_pointer = 1;
+            break;
+        case PAUSE:
+            START_button = 1;
+            break;
+        default:
+            A_button = 0;
+            B_button = 0;
+            up_pointer = 0;
+            right_pointer = 0;
+            down_pointer = 0;
+            left_pointer = 0;
+            START_button = 0;
+            break;
+    }
+}
+
+void shell_submit_result(const GameResult *result) {
+    present_result = *result;
+    result_pending = true;
+}
+
+void shell_commit_input(void) {
+    A_button_prev = A_button;
 }

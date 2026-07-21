@@ -1,10 +1,10 @@
 #ifndef SHELL_H
 #define SHELL_H
 
-//GameResult
-typedef struct GameResult GameResult;
-
 //States enum
+#include "game_result.h"
+#include <tonc.h>
+
 typedef enum {
     STATE_TITLE,
     STATE_CELESTIAL_BODY_SELECTION, //Macro-state
@@ -63,5 +63,16 @@ const char* result_reason(void);
 void shell_init(void);
 void main_states_management(void);
 void sub_states_management(void);
+
+//Reads input
+void shell_feed_input(u16 action);
+//Reads GameResult to print the result on screen
+void shell_submit_result(const GameResult *result);
+/*
+  Must be called after main_states_management()/sub_states_management()
+  in the main loop, so A_button_prev reflects the previous frame's
+  value when the state machine reads it, not the current one.
+*/
+void shell_commit_input(void);
 
 #endif

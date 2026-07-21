@@ -11,19 +11,19 @@
 #include "cockpit.h"
 
 #define HUD_FUEL_POW_BASE_BAR 0
+#define DIGIT_DOT_GLYPHS 10 // index for dotted numbers
+#define FUEL_COLS 60
+#define SPEED_COLS 24
+#define CELL_PX 8
+#define BAR_LEVELS 8
 #define HUD_HORIZONTAL_BASE_BAR ((HUD_FUEL_POW_BASE_BAR) + fuel_pow_barsTilesLen / 32)
 #define HUD_VERTICAL_BASE_BAR ((HUD_HORIZONTAL_BASE_BAR) + BAR_LEVELS)
 #define HUD_DIGIT_SMALL_BASE ((HUD_VERTICAL_BASE_BAR) + BAR_LEVELS)
 #define HUD_DIGIT_BIG_BASE ((HUD_DIGIT_SMALL_BASE) + digit_smallTilesLen / 32)
-#define DIGIT_DOT_GLYPHS 10 // index for dotted numbers
-#define FUEL_COLS 60
 #define FUEL_FULL_SCALE (FIX_FROM_INT(100))
 #define VX_FULL_SCALE (FIX_FROM_INT(12)) // m/s in Q16.16 TODO: check when fine tuning
 #define VY_FULL_SCALE (FIX_FROM_INT(12)) // m/s in Q16.16 TODO: check when fine tuning
 #define W_FULL_SCALE (FIX_FROM_INT(6)) // rad/s in Q16.16 TODO: check when fine tuning
-#define SPEED_COLS 24
-#define CELL_PX 8
-#define BAR_LEVELS 8
 
 #define HUD_LAMP_PAL_BASE 18   // first live palette index of the lamps
 #define HUD_LAMP_ON_STEP  10   // lit colour = unlit colour + 10
@@ -372,6 +372,18 @@ void hud_update(OBJ_ATTR *buffer, int slot, const Lander *lander, const PlayerIn
     hud_sign_update(buffer, s, &digits[HUD_DIGITS_VZ_SIGN], digits_value(HUD_DIGITS_VZ_SIGN, lander));
 
     for (int k = 0; k < HUD_LAMP_COUNT; k++) {
-        pal_bg_mem[18 + k] = HUD_1Pal[(lamp_on(k, lander, input) ? HUD_LAMP_ON : HUD_LAMP_OFF) + k];
+        pal_bg_mem[HUD_LAMP_PAL_BASE + k] = HUD_1Pal[(lamp_on(k, lander, input) ? HUD_LAMP_ON : HUD_LAMP_OFF) + k];
     }
+}
+
+int hud_post_fuel_power_slot(void) {
+    return bars[HUD_BAR_FUEL].cells + bars[HUD_BAR_POWER].cells;
+}
+
+int hud_digit_slot_end(void) {
+    int s = 0;
+    for (int i = 0; i < HUD_DIGITS_COUNT; i++) {
+        s += digits[i].bar.cells;
+    }
+    return s;
 }

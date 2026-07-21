@@ -11,7 +11,7 @@
 #define PIVOT_X 103 // Pivot x-coordinate on screen at half porthole width
 #define PIVOT_Y (SCREEN_HEIGHT) // Pivot y-coordinate on screen
 #define MAP_SIZE 512 // moon_far is 64x64 tiles = 512px; TODO: derive from scenario when maps vary
-#define MAX_RADIUS 163 // sqrt((PORTHOLE_W/2)² + PORTHOLE_H²), pivot at bottom centre
+#define MAX_RADIUS 137 // porthole height + bottom frame
 
 /*
     shrink(...)
