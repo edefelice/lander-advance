@@ -16,5 +16,5 @@ static const char* const credits_lines[LINES_COUNT] = {
     "SFX, Dev",
     "",
     "R. Colamarino:",
-    "SFX, Dev, Handbook"
+    "Lore, Dev, Handbook, SFX"
 };
