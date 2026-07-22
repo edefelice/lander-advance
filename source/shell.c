@@ -13,7 +13,7 @@ static AreaSubState present_area;
 static ConfigSubState present_config;
 static PauseSubState present_pause;
 
-//Pointers placeholders
+//Pointers
 static int up_pointer = 0; //Page up for selection
 static int down_pointer = 0;
 static int left_pointer = 0;
@@ -117,11 +117,19 @@ void main_states_management(void) {
                         present_state = STATE_TITLE;
                         break;
                     case SUB_CREDITS:
-                        shell_init();
-                        present_state = STATE_TITLE; //Temporary, to be implemented with the Credits file maybe(?)
+                        credits_init();
+                        present_state = STATE_CREDITS;
                         break;
                 }
             }     
+            break;
+            case STATE_CREDITS:
+            credits_update();
+            if (A_button == 1 || B_button == 1) {
+                present_state = STATE_PAUSE;
+                A_button = 0;
+                B_button = 0;
+            }
             break;
         case STATE_LANDING:
             if (A_button == 1) {

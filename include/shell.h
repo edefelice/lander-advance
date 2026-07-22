@@ -14,7 +14,8 @@ typedef enum {
     STATE_PAUSE, //Pause
     STATE_LANDING, //Win state
     STATE_CRASH, //Game Over - Lost
-    STATE_FIN //End + Results
+    STATE_FIN, //End + Results
+    STATE_CREDITS 
 } GameState; 
 
 //Sub-states of STATE_CELESTIAL_BODY_SELECTION

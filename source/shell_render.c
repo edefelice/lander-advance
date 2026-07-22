@@ -3,6 +3,7 @@
 #include "shell_render.h"
 #include <stdio.h>
 #include "game_data.h"
+#include "credits.h"
 
 #define COLOR_WHITE 0X7FFF
 #define COLOR_SILVER 0x5EF7
@@ -184,6 +185,20 @@ void shell_render_display(void) {
         tte_set_pos(2 * BASE_OFFSET, 10 * BASE_OFFSET); tte_write(pause_index() == 2 ? "> Title" : "  Title");
         tte_set_pos(2 * BASE_OFFSET, 13 * BASE_OFFSET); tte_write(pause_index() == 3 ? "> Credits" : "  Credits");
         break;
+
+    case STATE_CREDITS:
+    tte_set_color(TTE_INK, COLOR_GREEN);
+    for (int i = 0; i < CREDITS_LINE_COUNT; i++) {
+        tte_set_pos(2 * BASE_OFFSET, (3 + i) * BASE_OFFSET);
+        tte_write(credits_lines[i]);
+    }
+    tte_set_color(TTE_INK, COLOR_WHITE);
+    tte_set_pos(2 * BASE_OFFSET, 15 * BASE_OFFSET);
+    tte_write("Press A or B to return");
+    break;
+
+
+
 
     case STATE_LANDING:
         tte_set_color(TTE_INK, COLOR_BLU);
