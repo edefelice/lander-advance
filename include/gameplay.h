@@ -6,7 +6,7 @@
 #include <tonc.h>
 
 #include "fixedpoint32.h"
-#include "cockpit.h"        //ci sta lo struct input, non essendoci nella cartella ora, lascio lo struct nel codice (RICORDATI DI CANCELLARLO ALLA FINE)
+#include "cockpit.h"        
 
 
 /*
@@ -41,29 +41,35 @@ typedef enum
 typedef struct {
 
     //Environment
-    fixed gravity;      //Gravity of the planet (Q16.16)
+    fixed gravity;              //Gravity of the planet (Q16.16)
 
     //Position
-    fixed x;            // Global position x (Q16.16)
-    fixed y;            // Global position y (Q16.16)
+    fixed x;                    // Global position x (Q16.16)
+    fixed y;                    // Global position y (Q16.16)
     
     //Altitude
-    fixed z;            // Altitude (Q16.16)
+    fixed z;                    // Altitude (Q16.16)
     
     //Velocity
-    fixed vx;           // velocity x axis (Q16.16)
-    fixed vy;           // velocity y axis (Q16.16)
-    fixed vz;           // velocity z axis (Q16.16)
+    fixed vx;                   // velocity x axis (Q16.16)
+    fixed vy;                   // velocity y axis (Q16.16)
+    fixed vz;                   // velocity z axis (Q16.16)
     
     //Rotation
-    fixed theta;        //Rotation angle (Q16.16 radians)
-    fixed omega;        //Angular velocity (rad/s, Q16.16)
+    fixed theta;                //Rotation angle (Q16.16 radians)
+    fixed omega;                //Angular velocity (rad/s, Q16.16)
 
-    //propellant
-    fixed propellant;   //current propellant mass (Q16.16)
+    //Propellant
+    fixed propellant;           //current propellant mass (Q16.16)
 
     //Remaining power
-    u8 available_power; //current power available
+    u8 available_power;         //current power available
+
+    //Touchdown data save
+    fixed touchdown_vx;         //velocity x axis during the touchdown (Q16.16)
+    fixed touchdown_vy;         //velocity y axis during the touchdown (Q16.16)
+    fixed touchdown_vz;         //velocity z axis during the touchdown (Q16.16)
+    fixed touchdown_omega;      //Angular velocity during the touchdown (Q16.16)
 
     //Lander state
     LanderStatus state;

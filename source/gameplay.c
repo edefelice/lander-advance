@@ -155,7 +155,7 @@ void UpdateRotation(Lander *lander, const PlayerInput *input, fixed mass){
 
     // Calculate angular acceleration
     fixed torque = fixMul(RCS_THRUST, LEM_RADIUS);
-    fixed inertia = fixMul (fixMul(INERTIA_FACTOR, mass), fixMul(LEM_RADIUS, LEM_RADIUS)); //va in overflow e quindi si gira dall'altra parte perché cambia segno 
+    fixed inertia = fixMul (fixMul(INERTIA_FACTOR, mass), fixMul(LEM_RADIUS, LEM_RADIUS));  
     fixed alpha = fixDiv(torque, inertia);
 
     //Press L, clockwise rotation
@@ -217,10 +217,16 @@ void UpdateCollision(Lander *lander){
 
         lander->z = 0;
 
+        lander->touchdown_vx = lander->vx;
+        lander->touchdown_vy = lander->vy;
+        lander->touchdown_vz = lander->vz;
+        lander->touchdown_omega = lander->omega;
+
         if (lander->vz < -FIX_FROM_INT(4)) {            // 4 m/s limit for a good land 
             lander->vx = 0;
             lander->vy = 0;
             lander->vz = 0;
+            lander->omega = 0;
             lander->state = LANDER_CRASHED;             // Crash!
         } 
         
@@ -229,6 +235,7 @@ void UpdateCollision(Lander *lander){
             lander->vx = 0;
             lander->vy = 0;
             lander->vz = 0;
+            lander->omega = 0;
             lander->state = LANDER_LANDED;              //Successfully landed 
         }
     }
