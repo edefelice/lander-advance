@@ -10,6 +10,7 @@
     This module manages the lander gameplay and physics simulation.
 
     Responsibilities:
+    
     - Lander initialization
     - Mass and propellant management
     - Main engine physics
@@ -139,7 +140,7 @@ void UpdateRCS(Lander *lander, const PlayerInput *input, fixed mass){
     if(lander->propellant < 0) {
         lander->propellant = 0;
     }
-
+ 
     u16 theta = (u16)fixDiv(lander->theta, FIX_TWO_PI); // Convert theta in brad
     fixed cos_theta = (fixed)(lu_cos(theta) << 4);
     fixed sin_theta = (fixed)(lu_sin(theta) << 4);
