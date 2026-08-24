@@ -175,14 +175,29 @@ void shell_render_display(void) {
         break;
 */
     case STATE_PAUSE: 
-        tte_set_color(TTE_INK, COLOR_GREEN);
-        tte_set_pos(7 * BASE_OFFSET, 4 * BASE_OFFSET); tte_write("PAUSE");
-        
-        tte_set_color(TTE_INK, COLOR_GREEN);
-        tte_set_pos(2 * BASE_OFFSET, 6 * BASE_OFFSET); tte_write(pause_index() == 0 ? "> Resume" : "  Resume");
-        tte_set_pos(2 * BASE_OFFSET, BASE_OFFSET * BASE_OFFSET); tte_write(pause_index() == 1 ? "> Restart" : "  Restart");
-        tte_set_pos(2 * BASE_OFFSET, 10 * BASE_OFFSET); tte_write(pause_index() == 2 ? "> Title" : "  Title");
-        tte_set_pos(2 * BASE_OFFSET, 13 * BASE_OFFSET); tte_write(pause_index() == 3 ? "> Credits" : "  Credits");
+        if (pause_state() == SUB_SHOW_CREDITS) {
+            tte_set_color(TTE_INK, COLOR_GREEN);
+            tte_set_pos(11 * BASE_OFFSET, 3 * BASE_OFFSET); tte_write("CREDITS");
+
+            tte_set_color(TTE_INK, COLOR_GREEN);
+            tte_set_pos(2 * BASE_OFFSET, 6 * BASE_OFFSET); tte_write("Ernesto De Felice");
+            tte_set_pos(2 * BASE_OFFSET, 8 * BASE_OFFSET); tte_write("Pierluca De Felice");
+            tte_set_pos(2 * BASE_OFFSET, 10 * BASE_OFFSET); tte_write("Raffaele Aucelli");
+            tte_set_pos(2 * BASE_OFFSET, 12 * BASE_OFFSET); tte_write("Raffaele Colamarino");
+
+            tte_set_color(TTE_INK, COLOR_WHITE);
+            tte_set_pos(2 * BASE_OFFSET, 15 * BASE_OFFSET); tte_write("Press A / B to return");
+        }
+        else {
+            tte_set_color(TTE_INK, COLOR_GREEN);
+            tte_set_pos(7 * BASE_OFFSET, 4 * BASE_OFFSET); tte_write("PAUSE");
+            
+            tte_set_color(TTE_INK, COLOR_GREEN);
+            tte_set_pos(2 * BASE_OFFSET, 6 * BASE_OFFSET); tte_write(pause_index() == 0 ? "> Resume" : "  Resume");
+            tte_set_pos(2 * BASE_OFFSET, BASE_OFFSET * BASE_OFFSET); tte_write(pause_index() == 1 ? "> Restart" : "  Restart");
+            tte_set_pos(2 * BASE_OFFSET, 10 * BASE_OFFSET); tte_write(pause_index() == 2 ? "> Title" : "  Title");
+            tte_set_pos(2 * BASE_OFFSET, 13 * BASE_OFFSET); tte_write(pause_index() == 3 ? "> Credits" : "  Credits");
+        }
         break;
 
     case STATE_LANDING:

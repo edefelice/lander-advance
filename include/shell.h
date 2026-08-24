@@ -14,8 +14,7 @@ typedef enum {
     STATE_PAUSE, //Pause
     STATE_LANDING, //Win state
     STATE_CRASH, //Game Over - Lost
-    STATE_FIN, //End + Results
-    STATE_CREDITS 
+    STATE_FIN //End + Results
 } GameState; 
 
 //Sub-states of STATE_CELESTIAL_BODY_SELECTION
@@ -37,12 +36,12 @@ typedef enum {
     SUB_CREW_INFO
 } ConfigSubState;
 
-//Sub-states of STATE_PAUSE
 typedef enum {
     SUB_RESUME,
     SUB_RESTART,
     SUB_TITLE,
-    SUB_CREDITS
+    SUB_CREDITS,
+    SUB_SHOW_CREDITS
 } PauseSubState;
 
 //getter functions
