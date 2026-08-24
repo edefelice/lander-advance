@@ -4,7 +4,7 @@
 
 //Planets Database
 static const PlanetData planets[1] = { //[] is the number of planets in the database
-    {FIX_TO_INT(MOON_G), ((MOON_G & 0xFFFF) * 100) >> 16, FIX_TO_INT(MOON_H), "Earth's Moon", "Regolith\n        corrosion"} //the first one is the gravity integer value
+    {(MOON_G >> FIX_SHIFT32), ((MOON_G & 0xFFFF) * 100) >> 16, FIX_TO_INT(MOON_H), "Earth's Moon", "Regolith\n        corrosion"} //the first one is the gravity integer value
 //add more planets
 };
 

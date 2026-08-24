@@ -13,7 +13,7 @@ static AreaSubState present_area;
 static ConfigSubState present_config;
 static PauseSubState present_pause;
 
-//Pointers
+//Pointers placeholders
 static int up_pointer = 0; //Page up for selection
 static int down_pointer = 0;
 static int left_pointer = 0;
@@ -117,19 +117,11 @@ void main_states_management(void) {
                         present_state = STATE_TITLE;
                         break;
                     case SUB_CREDITS:
-                        credits_init();
-                        present_state = STATE_CREDITS;
+                        shell_init();
+                        present_state = STATE_TITLE; //Temporary, to be implemented with the Credits file maybe(?)
                         break;
                 }
             }     
-            break;
-            case STATE_CREDITS:
-            credits_update();
-            if (A_button == 1 || B_button == 1) {
-                present_state = STATE_PAUSE;
-                A_button = 0;
-                B_button = 0;
-            }
             break;
         case STATE_LANDING:
             if (A_button == 1) {
@@ -341,38 +333,21 @@ const char* result_reason(void) {
 }
 
 void shell_feed_input(u16 action) {
-    switch (action) {
-        case M_CONFIRM:
-            A_button = 1;
-            break;
-        case M_RETURN:
-            B_button = 1;
-            break;
-        case M_UP:
-            up_pointer = 1;
-            break;
-        case M_RIGHT:
-            right_pointer = 1;
-            break;
-        case M_DOWN:
-            down_pointer = 1;
-            break;
-        case M_LEFT:
-            left_pointer = 1;
-            break;
-        case PAUSE:
-            START_button = 1;
-            break;
-        default:
-            A_button = 0;
-            B_button = 0;
-            up_pointer = 0;
-            right_pointer = 0;
-            down_pointer = 0;
-            left_pointer = 0;
-            START_button = 0;
-            break;
-    }
+    A_button = 0;
+    B_button = 0;
+    up_pointer = 0;
+    right_pointer = 0;
+    down_pointer = 0;
+    left_pointer = 0;
+    START_button = 0;
+
+    if (action & M_CONFIRM) A_button = 1;
+    if (action & M_RETURN)  B_button = 1;
+    if (action & M_UP)      up_pointer = 1;
+    if (action & M_DOWN)    down_pointer = 1;
+    if (action & M_LEFT)    left_pointer = 1;
+    if (action & M_RIGHT)   right_pointer = 1;
+    if (action & PAUSE)     START_button = 1;
 }
 
 void shell_submit_result(const GameResult *result) {
