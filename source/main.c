@@ -130,6 +130,7 @@ int main(void) {
                 shell_commit_input();
                 hud_update(obj_buffer, 0, &lander, &input);
                 // Configure BG Affine 2
+                map_swap(&lander);
                 lander_to_affine_src(&lander, &affine_src);
                 bg_rotscale_ex(&affine_bg, &affine_src);
                 break;
