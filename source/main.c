@@ -33,8 +33,8 @@ int main(void) {
     memcpy32(tile8_mem[2], HUD_1Tiles, HUD_1TilesLen / 4);
     // Load background tilemap in SBB 28
     memcpy16(se_mem[28], moon_far_v3Map, moon_far_v3MapLen / 2);
-    // Load hud background tilemap in SBB 30
-    memcpy16(se_mem[30], HUD_1Map, HUD_1MapLen / 2);
+    // Load hud background tilemap in SBB 23
+    memcpy16(se_mem[23], HUD_1Map, HUD_1MapLen / 2);
     // Load background palette
     memcpy16(pal_bg_mem, moon_far_v3Pal, moon_far_v3PalLen / 2);
     pal_bg_mem[0] = 0x0; // TODO: remove when loading title graphics
@@ -44,7 +44,7 @@ int main(void) {
     // Load hud sprites
     hud_load_gfx();
     // Configure BG1 and priority 0
-    REG_BG1CNT = BG_CBB(2) | BG_SBB(30) | BG_8BPP | BG_REG_32x32 | BG_PRIO(1);
+    REG_BG1CNT = BG_CBB(2) | BG_SBB(23) | BG_8BPP | BG_REG_32x32 | BG_PRIO(1);
     // Configure BG2 with wrap on and priority 3
     REG_BG2CNT = BG_CBB(0) | BG_SBB(28) | BG_AFF_64x64 | BG_WRAP | BG_PRIO(3);
     // Set regular background (Mode 1, BG0)
