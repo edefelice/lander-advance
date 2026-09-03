@@ -12,18 +12,18 @@
 #define MAX_SHRINK 0x190
 #define MAX_HEIGHT_FAR 3000 // TODO: eventually change in tuning (Pierluca W7)
 #define MAX_HEIGHT_NEAR 200 // TODO: eventually change in tuning (Pierluca W7)
-#define SWAP_HEIGHT 200 // Metre
-#define SWAP_MARGIN 50  // Metre
+#define SWAP_HEIGHT 200 // Metre TODO: eventually change in tuning (Pierluca W7)
+#define SWAP_MARGIN 50  // Metre TODO: eventually change in tuning (Pierluca W7)
 #define SWAP_EXIT ((SWAP_HEIGHT) + (SWAP_MARGIN))
-#define MM_PER_TEXEL_FAR    13710   // 512px  → 7020 m
-#define MM_PER_TEXEL_NEAR     217   // 1024px →  222 m
+#define MM_PER_TEXEL_FAR 13710   // 512px  → 7020 m
+#define MM_PER_TEXEL_NEAR 217   // 1024px →  222 m
 #define PIVOT_X 103 // Pivot x-coordinate on screen at half porthole width
 #define PIVOT_Y (SCREEN_HEIGHT) // Pivot y-coordinate on screen
 #define MAP_SIZE_FAR 512 // moon_far is 64x64 tiles = 512px; TODO: derive from scenario when maps vary
 #define MAP_SIZE_NEAR 1024 // moon_site1 is 128x128 tiles = 1024px
 #define MAX_RADIUS 137 // porthole height + bottom frame
-#define AREA1_CENTRE_X 2303 // Metre
-#define AREA1_CENTRE_Y 1426 // Metre
+#define AREA1_ORIGIN_X 2194 // Metre
+#define AREA1_ORIGIN_Y 1316 // Metre
 
 static bool is_near = false;
 
@@ -40,8 +40,8 @@ static inline fixed shrink(const fixed max, const fixed height, const fixed max_
 void lander_to_affine_src(const Lander *lander, AFF_SRC_EX *src) {
     int map_size = is_near ? MAP_SIZE_NEAR : MAP_SIZE_FAR;
     int mm_per_texel = is_near ? MM_PER_TEXEL_NEAR : MM_PER_TEXEL_FAR;
-    int area1_centre_x = is_near ? AREA1_CENTRE_X : 0;
-    int area1_centre_y = is_near ? AREA1_CENTRE_Y : 0;
+    int area1_origin_x = is_near ? AREA1_ORIGIN_X : 0;
+    int area1_origin_y = is_near ? AREA1_ORIGIN_Y : 0;
     int max_height = is_near ? MAX_HEIGHT_NEAR : MAX_HEIGHT_FAR;
     // Initialize source affine matrix
     src->scr_x = PIVOT_X;
@@ -56,11 +56,11 @@ void lander_to_affine_src(const Lander *lander, AFF_SRC_EX *src) {
     // Pan
     // Shift by 8 bits because the affine matrix uses 8.8 representation.
     // Divides by mm_per_texel to convert: metre->texel
-    int pan_x = (((lander->x - area1_centre_x) >> 8) * 1000) / mm_per_texel;
+    int pan_x = (((lander->x - area1_origin_x) >> 8) * 1000) / mm_per_texel;
     int tex_x = ((map_size / 2) << 8) + pan_x;
     tex_x = clamp(tex_x, lo, hi + 1);
     src->tex_x = tex_x;
-    int pan_y = ((-(lander->y - area1_centre_y) >> 8) * 1000) / mm_per_texel;
+    int pan_y = ((-(lander->y - area1_origin_y) >> 8) * 1000) / mm_per_texel;
     int tex_y = ((map_size / 2) << 8) + pan_y;
     tex_y = clamp(tex_y, lo, hi + 1);
     src->tex_y = tex_y;
