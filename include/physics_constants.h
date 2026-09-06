@@ -34,7 +34,7 @@
 
 //Thrust main and RCS
 #define MAIN_THRUST         FIX_FROM_INT(30000)                 //Thrust main engine 30000N
-#define RCS_THRUST          FIX_FROM_INT(440)                   //Thrust RCS engines 440N
+#define RCS_THRUST          FIX_FROM_INT(4400)                   //Thrust RCS engines 440N
 
 //mass
 #define DRY_MASS            FIX_FROM_INT(6713)                  //Dry mass 6713 Kg
