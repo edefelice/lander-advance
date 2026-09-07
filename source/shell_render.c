@@ -70,6 +70,19 @@ void shell_render_display(void) {
              
              tte_set_pos(2 * BASE_OFFSET, 12 * BASE_OFFSET); tte_write("Desc: "); tte_write(p_data->planet_description);
              break;
+             
+         case SUB_MODE_SELECTION:
+             tte_set_color(TTE_INK, COLOR_GREEN);
+             tte_set_pos(4 * BASE_OFFSET, 4 * BASE_OFFSET); tte_write("Select Flight Mode");
+             
+             tte_set_pos(2 * BASE_OFFSET, 7 * BASE_OFFSET);
+             tte_write(is_night_mode() ? "  Day Mode" : "> Day Mode");
+             
+             tte_set_pos(2 * BASE_OFFSET, 9 * BASE_OFFSET);
+             tte_write(is_night_mode() ? "> Night Mode" : "  Night Mode");
+             
+             tte_set_pos(2 * BASE_OFFSET, 14 * BASE_OFFSET); tte_write("Press A to confirm");
+             break;
       }
       break;
 

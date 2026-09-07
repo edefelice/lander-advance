@@ -47,6 +47,8 @@ void GameplayInit(Lander *lander){                  //game initialization
 
     //Remaining power
     lander->available_power = P_USES;
+    lander->light_on = false;
+    lander->light_timer = 0;
 
     //Lander state
     lander->state = LANDER_FLYING;
@@ -285,6 +287,26 @@ void UpdateCollision(Lander *lander){
 void GameplayUpdate(Lander *lander, const PlayerInput *input){
 
     if(lander->state == LANDER_FLYING){
+
+        if (input->light) {
+            if (lander->light_on) {
+                lander->light_on = false;
+                lander->light_timer = 0;
+            } else if (lander->available_power > 0) {
+                lander->available_power--;
+                lander->light_on = true;
+                lander->light_timer = 1800;
+            }
+        }
+
+        if (lander->light_on) {
+            if (lander->light_timer > 0) {
+                lander->light_timer--;
+            }
+            if (lander->light_timer == 0) {
+                lander->light_on = false;
+            }
+        }
 
         fixed mass = GameplayGetMass(lander);
         UpdateMainEngine(lander, input, mass); 

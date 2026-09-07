@@ -321,7 +321,7 @@ static bool lamp_on(int k, const Lander *lander, const PlayerInput *input) {
             on = input->radar;
             break;
         case HUD_LAMP_LIGHT:
-            on = input->light;
+            on = lander->light_on;
             break;
     }
     return on;

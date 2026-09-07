@@ -88,12 +88,14 @@ int main(void) {
             for (int i = post_fuel_power_idx; i < MAX_SPRITES; i++) {
                 obj_hide(&obj_buffer[i]);
             }
-            REG_DISPCNT &= ~DCNT_BG2;
+            REG_DISPCNT &= ~(DCNT_BG2 | DCNT_WIN0 | DCNT_WIN1);
+            REG_BLDCNT = 0;
+            REG_BLDY = 0;
         }
 
         if (entered_gameplay) {
             tte_erase_screen(); // Hide menu
-            pal_bg_mem[0] = moon_far_v3Pal[0];
+            pal_bg_mem[0] = is_night_mode() ? 0x0 : moon_far_v3Pal[0];
             pal_bg_mem[HUD_SPEED_RULER_PAL_IDX] = HUD_1Pal[25];
             for (int i = 0; i < digit_sprite_idx_end; i++) {
                 obj_unhide(&obj_buffer[i], ATTR0_REG);
@@ -129,6 +131,28 @@ int main(void) {
                 main_states_management(); // Changes game state to "pause" when Start button is pressed
                 shell_commit_input();
                 hud_update(obj_buffer, 0, &lander, &input);
+                if (shell_state() == STATE_GAMEPLAY && is_night_mode()) {
+                    pal_bg_mem[0] = 0x0;
+                    if (lander.light_on) {
+                        REG_DISPCNT |= DCNT_WIN0 | DCNT_WIN1;
+                        REG_WIN0H = (70 << 8) | 138;
+                        REG_WIN0V = (40 << 8) | 136;
+                        REG_WIN1H = (56 << 8) | 152;
+                        REG_WIN1V = (54 << 8) | 122;
+                        REG_WININ = WININ_BUILD(WIN_BG0 | WIN_BG1 | WIN_BG2 | WIN_OBJ, WIN_BG0 | WIN_BG1 | WIN_BG2 | WIN_OBJ);
+                        REG_WINOUT = WINOUT_BUILD(WIN_BG0 | WIN_BG1 | WIN_OBJ, 0);
+                        REG_BLDCNT = 0;
+                        REG_BLDY = 0;
+                    } else {
+                        REG_DISPCNT &= ~(DCNT_WIN0 | DCNT_WIN1);
+                        REG_BLDCNT = BLD_BG2 | BLD_BLACK;
+                        REG_BLDY = 15;
+                    }
+                } else {
+                    REG_DISPCNT &= ~(DCNT_WIN0 | DCNT_WIN1);
+                    REG_BLDCNT = 0;
+                    REG_BLDY = 0;
+                }
                 // Configure BG Affine 2
                 map_swap(&lander);
                 lander_to_affine_src(&lander, &affine_src);
