@@ -32,7 +32,7 @@ void GameplayInit(Lander *lander){                  //game initialization
     //Position
     lander->x = FIX_FROM_INT(0);
     lander->y = FIX_FROM_INT(0);
-    lander->z = FIX_FROM_INT(3000);                 //Initial altitude 5000m
+    lander->z = MOON_H;                             //Initial altitude 3000m
     
     //Velocity
     lander->vx = 0;
@@ -48,6 +48,8 @@ void GameplayInit(Lander *lander){                  //game initialization
 
     //Remaining power
     lander->available_power = P_USES;
+    lander->light_on = false;
+    lander->light_timer = 0;
 
     //Lander state
     lander->state = LANDER_FLYING;
@@ -107,7 +109,7 @@ void UpdateMainEngine(Lander *lander, const PlayerInput *input, fixed mass){
 //Manage the RCS engine data
 void UpdateRCS(Lander *lander, const PlayerInput *input, fixed mass){
 
-    fixed a= fixDiv(RCS_THRUST , mass);
+    fixed a = fixDiv(RCS_THRUST , mass);
     fixed a_body_x = 0;
     fixed a_body_y = 0; 
 
@@ -144,8 +146,8 @@ void UpdateRCS(Lander *lander, const PlayerInput *input, fixed mass){
     u16 theta = (u16)fixDiv(lander->theta, FIX_TWO_PI); // Convert theta in brad
     fixed cos_theta = (fixed)(lu_cos(theta) << 4);
     fixed sin_theta = (fixed)(lu_sin(theta) << 4);
-    fixed ax_world = fixMul(a_body_x, cos_theta) - fixMul(a_body_y, sin_theta);
-    fixed ay_world = fixMul(a_body_x, sin_theta) + fixMul(a_body_y, cos_theta);
+    fixed ax_world = fixMul(a_body_x, cos_theta) + fixMul(a_body_y, sin_theta);
+    fixed ay_world = -fixMul(a_body_x, sin_theta) + fixMul(a_body_y, cos_theta);
     lander->vx += fixMul(ax_world, SIM_DT);
     lander->vy += fixMul(ay_world, SIM_DT);
 }
@@ -265,6 +267,26 @@ void UpdateCollision(Lander *lander){
 void GameplayUpdate(Lander *lander, const PlayerInput *input){
 
     if(lander->state == LANDER_FLYING){
+
+        if (input->light) {
+            if (lander->light_on) {
+                lander->light_on = false;
+                lander->light_timer = 0;
+            } else if (lander->available_power > 0) {
+                lander->available_power--;
+                lander->light_on = true;
+                lander->light_timer = 1800;
+            }
+        }
+
+        if (lander->light_on) {
+            if (lander->light_timer > 0) {
+                lander->light_timer--;
+            }
+            if (lander->light_timer == 0) {
+                lander->light_on = false;
+            }
+        }
 
         fixed mass = GameplayGetMass(lander);
         UpdateMainEngine(lander, input, mass); 

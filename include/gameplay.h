@@ -71,6 +71,9 @@ typedef struct {
     fixed touchdown_vz;         //velocity z axis during the touchdown (Q16.16)
     fixed touchdown_omega;      //Angular velocity during the touchdown (Q16.16)
 
+    bool light_on;
+    u16 light_timer;
+
     //Lander state
     LanderStatus state;
 

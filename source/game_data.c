@@ -1,8 +1,10 @@
 #include "game_data.h"
+#include "fixedpoint32.h"
+#include "physics_constants.h"
 
 //Planets Database
 static const PlanetData planets[1] = { //[] is the number of planets in the database
-    {"1.62", "5000", "Earth's Moon", "Regolith corrosion"} //the first one is the gravity value
+    {(MOON_G >> FIX_SHIFT32), ((MOON_G & 0xFFFF) * 100) >> 16, FIX_TO_INT(MOON_H), "Earth's Moon", "Regolith\n        corrosion"} //the first one is the gravity integer value
 //add more planets
 };
 
@@ -10,8 +12,8 @@ static const PlanetData planets[1] = { //[] is the number of planets in the data
 static const AreaData areas [1][3] = { //the first [] is the number of planets in the database, the second [] is the number of areas for each planet
 //areas for planet 0
     {
-        {3, "Moon area 1", "Crater, dangerous"}, //the first number is the difficulty value
-        {1, "Moon area 2", "Flat surface, easy"},
+        {3, "Moon area 1", "Crater,\n        dangerous"}, //the first number is the difficulty value
+        {1, "Moon area 2", "Flat surface,\n        easy"},
         {4, "Moon area 3", "Peak, dangerous"}   //the first number is the difficulty value
     }
 //add more planets + areas
@@ -19,7 +21,7 @@ static const AreaData areas [1][3] = { //the first [] is the number of planets i
 
 //Landers Database
 static const LanderData landers[1] = { //[] number of landers in database
-    {2, 6713, 8487, 30000, 440, "Baffo", "Big"} //first number is the max crew, second is the mass, third is the thrust
+    {2, FIX_TO_INT(DRY_MASS), FIX_TO_INT(PROP_MASS), FIX_TO_INT(MAIN_THRUST), FIX_TO_INT(RCS_THRUST), "Baffo", "Big"} //first number is the max crew, second is the mass, third is the thrust
 //add more landers
 };
 

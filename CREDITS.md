@@ -13,13 +13,16 @@ All the team contributed to the Game Logic, Game Design and Testing.
 ## Third-party assets
 
 <!-- List any external assets used (graphics, audio, fonts) with author, license and link -->
-<!-- Example: -->
-<!-- - "Asset Name" by Author — CC BY 4.0 — https://example.com -->
 
-# Third-Party Code & Licenses
+- **Visual Assets (Cockpit HUD, Lunar Surface, Gauges, UI Digits)**:
+  - Created for *Lander Advance* — Licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)
+- **Audio Assets (SFX, Engine Tones)**:
+  - Created for *Lander Advance* — Licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)
 
-## Tonc
-- **Purpose:** Game Boy Advance support library (headers + core utilities)
+# Third-Party Code, Libraries & Toolchain
+
+## Tonc & Tonc Text Engine (TTE)
+- **Purpose:** Game Boy Advance support library (headers, core utilities, fixed-point math LUTs, affine transformations, default 8x8 font & text engine)
 - **Author:** J. Vijn (Cearn)
 - **Original Project:** http://www.coranac.com/projects/#tonc
 - **Source (reference):** https://github.com/gbadev-org/libtonc
@@ -47,10 +50,10 @@ All the team contributed to the Game Logic, Game Design and Testing.
   THE SOFTWARE.
 
 ## Maxmod
-- **Purpose:** audio and music playback
+- **Purpose:** Sound and music playback engine
 - **Author:** Mukunda Johnson (mukunda@maxmod.org)
 - **Source:** https://github.com/devkitPro/maxmod
-- **License:** permissive license — Copyright (c) 2008, Mukunda Johnson
+- **License:** Permissive License — Copyright (c) 2008, Mukunda Johnson
 
   Permission to use, copy, modify, and/or distribute this software for any
   purpose with or without fee is hereby granted, provided that the above
@@ -63,6 +66,16 @@ All the team contributed to the Game Logic, Game Design and Testing.
   WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
   ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
   OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
-  (full text: https://github.com/devkitPro/maxmod/blob/master/maxmod_license.txt)
 
-<!-- Add any other libraries or tools below -->
+## libgba
+- **Purpose:** Low-level GBA register definitions, interrupts, and BIOS call wrappers
+- **Author:** Dave Murphy (WinterMute) / devkitPro
+- **Source:** https://github.com/devkitPro/libgba
+- **License:** Permissive / LGPL
+
+## devkitARM & Build Tools
+- **devkitARM (GCC for ARM):** GNU Compiler Collection targeting `arm-none-eabi` (GPL)
+- **Grit (GBA Raster Image Transmogrifier):** Jasper Vijn (Cearn) — Image to GBA graphics converter (MIT)
+- **mmutil:** Mukunda Johnson / devkitPro — Maxmod soundbank compiler (Permissive)
+- **gbafix:** devkitPro — GBA ROM header patching and checksum tool (GPL)
+- **bin2s:** devkitPro — Binary to GNU Assembly conversion utility (GPL)
