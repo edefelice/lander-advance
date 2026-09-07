@@ -36,5 +36,14 @@ compile_flags.txt
 *.swp
 *.swo
 
+# LaTeX
+*.aux
+*.log
+*.toc
+*.synctex.gz
+*.fdb_latexmk
+*.fls
+*.out
+
 # Aseprite
 *.aseprite
