@@ -13,13 +13,15 @@
 #define SWAP_HEIGHT 200 // Metre TODO: eventually change in tuning (Pierluca W7)
 #define SWAP_MARGIN 25  // Metre TODO: eventually change in tuning (Pierluca W7)
 #define SWAP_EXIT ((SWAP_HEIGHT) + (SWAP_MARGIN))
-#define MM_PER_TEXEL_FAR 13710   // 512px  → 7020 m
-#define MM_PER_TEXEL_NEAR 214// 219m //217   // 1024px →  222 m
+#define MM_PER_TEXEL_FAR 13710 // 512px  → 7020 m
+#define MM_PER_TEXEL_NEAR 214 // 219m //217   // 1024px →  222 m
 #define PIVOT_X 103 // Pivot x-coordinate on screen at half porthole width
 #define PIVOT_Y (SCREEN_HEIGHT) // Pivot y-coordinate on screen
 #define MAP_SIZE_FAR 512 // moon_far is 64x64 tiles = 512px; TODO: derive from scenario when maps vary
 #define MAP_SIZE_NEAR 1024 // moon_site1 is 128x128 tiles = 1024px
 #define MAX_RADIUS 137 // porthole height + bottom frame
+#define NEAR_RADIUS 110 // half width of the near map in metre
+#define NEAR_MARGIN 5 // Metre TODO: eventually change in tuning (Pierluca W7)
 
 static bool is_near = false;
 static int active_area_idx = -1;
@@ -87,8 +89,15 @@ void map_swap(const Lander *lander) {
             }
         }
     }
-    else if (lander->z > FIX_FROM_INT(SWAP_EXIT) && is_near) {
+    else if (is_near) {
+        const LandingArea *area = &AREAS[active_area_idx];
+        if (lander->z > FIX_FROM_INT(SWAP_EXIT)
+        || lander->x < area->centre_x - FIX_FROM_INT(NEAR_RADIUS) - FIX_FROM_INT(NEAR_MARGIN)
+        || lander->x > area->centre_x + FIX_FROM_INT(NEAR_RADIUS) + FIX_FROM_INT(NEAR_MARGIN)
+        || lander->y < area->centre_y - FIX_FROM_INT(NEAR_RADIUS) - FIX_FROM_INT(NEAR_MARGIN)
+        || lander->y > area->centre_y + FIX_FROM_INT(NEAR_RADIUS) + FIX_FROM_INT(NEAR_MARGIN)) {
         is_near = false;
+        active_area_idx = -1;
         // Load background tiles in CBB0
         memcpy32(tile8_mem[0], moon_far_v3Tiles, moon_far_v3TilesLen / 4);
         // Load background tilemap in SBB 28
@@ -96,5 +105,6 @@ void map_swap(const Lander *lander) {
         // Load background palette
         memcpy16(pal_bg_mem, moon_far_v3Pal, moon_far_v3PalLen / 2 - 3); // first 13 colours
         REG_BG2CNT = (REG_BG2CNT & ~(BG_SIZE_MASK | BG_SBB_MASK)) | BG_AFF_64x64 | BG_WRAP | BG_SBB(28);
+        }
     }
 }

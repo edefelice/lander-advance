@@ -34,11 +34,11 @@
 
 //Thrust main and RCS
 #define MAIN_THRUST         FIX_FROM_INT(30000)                 //Thrust main engine 30000N
-#define RCS_THRUST          FIX_FROM_INT(4400)                   //Thrust RCS engines 440N
+#define RCS_THRUST          FIX_FROM_INT(440)                   //Thrust RCS engines 440N
 
 //mass
 #define DRY_MASS            FIX_FROM_INT(6713)                  //Dry mass 6713 Kg
-#define PROP_MASS           FIX_FROM_INT(8487)                  //Propellant mass 8487 Kg
+#define PROP_MASS           FIX_FROM_INT(4244)                  // Full Propellant mass 8487 Kg
 #define CREW_MASS           FIX_FROM_INT(160)                   // Crew mass (2 astronauts, 80 kg each)
 
 //mass flow main and RCS (Consumption)
