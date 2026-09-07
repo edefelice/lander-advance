@@ -189,8 +189,8 @@ void UpdateRCS(Lander *lander, const PlayerInput *input, fixed mass){
     u16 theta = (u16)fixDiv(lander->theta, FIX_TWO_PI); // Convert theta in brad
     fixed cos_theta = (fixed)(lu_cos(theta) << 4);
     fixed sin_theta = (fixed)(lu_sin(theta) << 4);
-    fixed ax_world = fixMul(a_body_x, cos_theta) - fixMul(a_body_y, sin_theta);
-    fixed ay_world = fixMul(a_body_x, sin_theta) + fixMul(a_body_y, cos_theta);
+    fixed ax_world = fixMul(a_body_x, cos_theta) + fixMul(a_body_y, sin_theta);
+    fixed ay_world = -fixMul(a_body_x, sin_theta) + fixMul(a_body_y, cos_theta);
     lander->vx += fixMul(ax_world, SIM_DT);
     lander->vy += fixMul(ay_world, SIM_DT);
 }
