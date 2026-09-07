@@ -65,6 +65,9 @@ typedef struct {
     //Remaining power
     u8 available_power; //current power available
 
+    bool light_on;
+    u16 light_timer;
+
     //Lander state
     LanderStatus state;
 

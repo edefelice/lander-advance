@@ -31,6 +31,7 @@ static int selected_lander = 0;
 static int selected_crew = 0;
 static int selected_pause = 0;
 static bool result_pending = false;
+static bool selected_night_mode = false;
 
 // Reason descriptor for losing
 static const char* const reason_text[] = {
@@ -61,6 +62,10 @@ void main_states_management(void) {
             break;
         case STATE_CELESTIAL_BODY_SELECTION:
             if (A_button == 1 && present_body == SUB_BODY_INFO) {
+                present_body = SUB_MODE_SELECTION;
+                A_button = 0;
+            }
+            else if (A_button == 1 && present_body == SUB_MODE_SELECTION) {
                 present_state = STATE_AREA_SELECTION;
                 present_area = SUB_AREA_POINTER_MOVING;
                 A_button = 0;
@@ -176,6 +181,15 @@ void sub_states_management(void) {
                         B_button = 0;
                     }
                     break;
+                case SUB_MODE_SELECTION:
+                    if (up_pointer == 1 || down_pointer == 1 || left_pointer == 1 || right_pointer == 1) {
+                        selected_night_mode = !selected_night_mode;
+                    }
+                    else if (B_button == 1) {
+                        present_body = SUB_BODY_INFO;
+                        B_button = 0;
+                    }
+                    break;
             }
             break;
         case STATE_AREA_SELECTION:
@@ -193,7 +207,7 @@ void sub_states_management(void) {
                     }
                     else if (B_button == 1) {
                         present_state = STATE_CELESTIAL_BODY_SELECTION;
-                        present_body = SUB_SHUTTLE_MOVING;
+                        present_body = SUB_MODE_SELECTION;
                         B_button = 0;
                     }
                     break;
@@ -278,6 +292,7 @@ void shell_init(void) {
     selected_area = 0;
     selected_lander = 0;
     selected_crew = 0;
+    selected_night_mode = false;
 
     //reset results
     present_result.outcome = GR_LOSE;
@@ -342,6 +357,10 @@ int result_score(void) {
 
 const char* result_reason(void) {
     return reason_text[present_result.reason];
+}
+
+bool is_night_mode(void) {
+    return selected_night_mode;
 }
 
 void shell_feed_input(u16 action) {

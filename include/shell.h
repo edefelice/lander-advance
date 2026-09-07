@@ -20,7 +20,8 @@ typedef enum {
 //Sub-states of STATE_CELESTIAL_BODY_SELECTION
 typedef enum {
     SUB_SHUTTLE_MOVING,
-    SUB_BODY_INFO
+    SUB_BODY_INFO,
+    SUB_MODE_SELECTION
 } BodySubState;
 
 //Sub-states of STATE_AREA_SELECTION
@@ -59,6 +60,7 @@ int pause_index(void);
 int result_victory(void);
 int result_score(void);
 const char* result_reason(void);
+bool is_night_mode(void);
 
 void shell_init(void);
 void main_states_management(void);

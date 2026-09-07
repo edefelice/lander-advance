@@ -27,15 +27,15 @@ PlayerInput cpit_input(){
         inputs.rcs_y = -1;
     }
 
-    if(key_hit(KEY_R) && key_held(KEY_B)){
+    if ((key_hit(KEY_R) && key_is_down(KEY_B)) || (key_hit(KEY_B) && key_is_down(KEY_R))) {
         inputs.radar = 1;
-    } else if (key_is_down(KEY_R)){
+    } else if (key_is_down(KEY_R) && !key_is_down(KEY_B)) {
         inputs.rotate = 1;
     }
 
-    if(key_hit(KEY_L) && key_held(KEY_B)){
+    if ((key_hit(KEY_L) && key_is_down(KEY_B)) || (key_hit(KEY_B) && key_is_down(KEY_L))) {
         inputs.light = 1;
-    } else if (key_is_down(KEY_L)){
+    } else if (key_is_down(KEY_L) && !key_is_down(KEY_B)) {
         inputs.rotate = -1;
     }
 
