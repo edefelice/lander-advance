@@ -10,6 +10,7 @@
     This module manages the lander gameplay and physics simulation.
 
     Responsibilities:
+    
     - Lander initialization
     - Mass and propellant management
     - Main engine physics
@@ -103,53 +104,7 @@ void UpdateMainEngine(Lander *lander, const PlayerInput *input, fixed mass){
     }
 
 }       
-
-/*
-//Manage the RCS engine data
-void UpdateRCS(Lander *lander, const PlayerInput *input, fixed mass){
-
-    fixed a= fixDiv(RCS_THRUST , mass); 
-
-    //X AXIS
-    if(input->rcs_x == 1 && GameplayHasPropellant(lander)) {
-
-        lander->vx -= fixMul(a, SIM_DT);
-        lander->propellant -= RCS_CONSUMPTION;
-
-        if(lander->propellant < 0)
-            lander->propellant = 0;
-
-    }
-
-    else if(input->rcs_x == -1 && GameplayHasPropellant(lander)) {
-
-        lander->vx += fixMul(a, SIM_DT);
-        lander->propellant -= RCS_CONSUMPTION;
-
-        if(lander->propellant < 0)
-            lander->propellant = 0;        
-    }
-
-    //Y AXIS
-    if(input->rcs_y == 1 && GameplayHasPropellant(lander)) {
-
-        lander->vy -= fixMul(a, SIM_DT);
-        lander->propellant -= RCS_CONSUMPTION;
-
-        if(lander->propellant < 0)
-            lander->propellant = 0;
-    }
-
-    else if(input->rcs_y == -1 && GameplayHasPropellant(lander)) {
-
-        lander->vy += fixMul(a, SIM_DT);
-        lander->propellant -= RCS_CONSUMPTION;
-
-        if(lander->propellant < 0)
-            lander->propellant = 0;        
-    }
-
-}  */              
+ 
 
 //Manage the RCS engine data
 void UpdateRCS(Lander *lander, const PlayerInput *input, fixed mass){
@@ -187,7 +142,7 @@ void UpdateRCS(Lander *lander, const PlayerInput *input, fixed mass){
     if(lander->propellant < 0) {
         lander->propellant = 0;
     }
-
+ 
     u16 theta = (u16)fixDiv(lander->theta, FIX_TWO_PI); // Convert theta in brad
     fixed cos_theta = (fixed)(lu_cos(theta) << 4);
     fixed sin_theta = (fixed)(lu_sin(theta) << 4);
@@ -202,7 +157,7 @@ void UpdateRotation(Lander *lander, const PlayerInput *input, fixed mass){
 
     // Calculate angular acceleration
     fixed torque = fixMul(RCS_THRUST, LEM_RADIUS);
-    fixed inertia = fixMul (fixMul(INERTIA_FACTOR, mass), fixMul(LEM_RADIUS, LEM_RADIUS));
+    fixed inertia = fixMul (fixMul(INERTIA_FACTOR, mass), fixMul(LEM_RADIUS, LEM_RADIUS));  
     fixed alpha = fixDiv(torque, inertia);
 
     //Press L, clockwise rotation
@@ -257,30 +212,55 @@ void UpdateLinearPhysics(Lander *lander){
 }                               
           
 
-//Define the lander status                     // SALVA LE VELOCITà PER IL PUNTEGGIO E DOPO LE METTO A 0 
+//Define the lander status                                                  
 void UpdateCollision(Lander *lander){
 
     if (lander->z <= 0) {
 
         lander->z = 0;
 
-        if (lander->vz < -FIX_FROM_INT(4)) {            // 4 m/s limit for a good land 
-            lander->vx = 0;
-            lander->vy = 0;
-            lander->vz = 0;
-            lander->state = LANDER_CRASHED;             // Crash!
+        lander->touchdown_vx = lander->vx;
+        lander->touchdown_vy = lander->vy;
+        lander->touchdown_vz = lander->vz;
+        lander->touchdown_omega = lander->omega;
+ 
+/*
+        if (!IsonPad(lander) )      {                                                               //Pad position
+
+            lander->state = LANDER_CRASHED;                                                         // Crash!
+
         } 
-        
-        else if (lander->vz >= -FIX_FROM_INT(4)) {
+
+*/
+
+        if ( fixAbs(lander->vz) > MAX_LANDING_VZ) {                                                 // Vertcal limit
+            
+            lander->state = LANDER_CRASHED;                                                         // Crash!
+        } 
+
+        else if (fixAbs(lander->vx) > MAX_LANDING_VX || fixAbs(lander->vy) > MAX_LANDING_VY)      { // Traslational limit
+
+            lander->state = LANDER_CRASHED;                                                         // Crash!
+
+        } 
+
+        else if (fixAbs(lander->omega) > MAX_LANDING_OMEGA)      {                                  // Angular velocity limit
+
+            lander->state = LANDER_CRASHED;                                                         // Crash!
+
+        } 
+
+        else {
+
+            lander->state = LANDER_LANDED;                                                          //Successfully landed 
+        }
 
             lander->vx = 0;
             lander->vy = 0;
             lander->vz = 0;
-            lander->state = LANDER_LANDED;              //Successfully landed 
-        }
+            lander->omega = 0;
     }
-    //inserire if per velocità traslazione e vel angolare
-}                                          
+}                                         
 
 
 //manage the gameplay functions for the update 
@@ -316,15 +296,5 @@ void GameplayUpdate(Lander *lander, const PlayerInput *input){
         UpdateCollision(lander); 
     }
 
-    else if(lander->state == LANDER_CRASHED){
-        return;
-        //funzione motivazione del crash vel elevata e targhet mancato velocità laterale elevata! vel angolare elevata
-    }
-
-    else if(lander->state == LANDER_LANDED){
-        return;
-        //funzione score cosnumo propellant e atterraggio con velocità più vicina a 4  
-        //e placeholder moltiplicatore difficoltà area di atterraggio e moltiplicatore difficoltà peso CREW_MASS 
-    }
 }    
 

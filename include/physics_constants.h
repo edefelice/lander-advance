@@ -38,7 +38,7 @@
 
 //mass
 #define DRY_MASS            FIX_FROM_INT(6713)                  //Dry mass 6713 Kg
-#define PROP_MASS           FIX_FROM_INT(4244)                  // Full Propellant mass 8487 Kg
+#define PROP_MASS           FIX_FROM_INT(4243)                  //Propellant mass 4243 Kg  (realistic mass 8487 / 2)
 #define CREW_MASS           FIX_FROM_INT(160)                   // Crew mass (2 astronauts, 80 kg each)
 
 //mass flow main and RCS (Consumption)
@@ -53,13 +53,27 @@
 
 // Power source
 #define P_USES              6                                   // Number of available uses of the power source     
+
 // ---------------------------
 // SIMULATION
 // ---------------------------
 
 //time
-#define SIM_DT              FIX_FROM_FRACTION(1674,100000)  // Simulation timestep (≈1/59.73 s)
+#define SIM_DT              FIX_FROM_FRACTION(1674,100000)      // Simulation timestep (≈1/59.73 s)
 
+// ---------------------------
+// CRASH LIMIT
+// ---------------------------
+
+//Vertical velocity
+#define MAX_LANDING_VZ      FIX_FROM_INT(4)                     // 4 m/s limit for a good land             
+
+//Horizontal velocity
+#define MAX_LANDING_VX      FIX_FROM_INT(2)                     // 2 m/s limit for a good land
+#define MAX_LANDING_VY      FIX_FROM_INT(2)                     // 2 m/s limit for a good land
+
+//Angular velocity
+#define MAX_LANDING_OMEGA   FIX_FROM_INT(1)                     // 1 rad/s limit for a good land
 
 
 #endif // PHYSICS_CONSTANT_H

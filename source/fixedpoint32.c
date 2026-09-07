@@ -29,3 +29,9 @@ fixed fixDiv(fixed a, fixed b)
     }
     return (fixed)((((int64_t)a) << FIX_SHIFT32) / b);  
 }
+
+//Absolute
+fixed fixAbs(fixed a)
+{
+    return (a < 0) ? -a : a;
+}
