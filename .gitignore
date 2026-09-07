@@ -44,3 +44,6 @@ compile_flags.txt
 *.fdb_latexmk
 *.fls
 *.out
+
+# Aseprite
+*.aseprite

@@ -13,7 +13,7 @@ SOURCE_ROOT  := source
 INCLUDE_ROOT := include
 GRAPHICS     := graphics
 DATA         :=
-MUSIC        :=
+MUSIC        := audio
 
 # ROM metadata for gbafix (leave empty for defaults)
 ROM_TITLE    :=
