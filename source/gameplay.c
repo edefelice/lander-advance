@@ -210,7 +210,7 @@ void UpdateLinearPhysics(Lander *lander){
 }                               
           
 
-//Define the lander status                     // SALVA LE VELOCITà PER IL PUNTEGGIO E DOPO LE METTO A 0 
+//Define the lander status                                                  
 void UpdateCollision(Lander *lander){
 
     if (lander->z <= 0) {
@@ -221,26 +221,44 @@ void UpdateCollision(Lander *lander){
         lander->touchdown_vy = lander->vy;
         lander->touchdown_vz = lander->vz;
         lander->touchdown_omega = lander->omega;
+ 
+/*
+        if (!IsonPad(lander) )      {                                                               //Pad position
 
-        if (lander->vz < -FIX_FROM_INT(4)) {            // 4 m/s limit for a good land 
-            lander->vx = 0;
-            lander->vy = 0;
-            lander->vz = 0;
-            lander->omega = 0;
-            lander->state = LANDER_CRASHED;             // Crash!
+            lander->state = LANDER_CRASHED;                                                         // Crash!
+
         } 
-        
-        else if (lander->vz >= -FIX_FROM_INT(4)) {
+
+*/
+
+        if ( fixAbs(lander->vz) > MAX_LANDING_VZ) {                                                 // Vertcal limit
+            
+            lander->state = LANDER_CRASHED;                                                         // Crash!
+        } 
+
+        else if (fixAbs(lander->vx) > MAX_LANDING_VX || fixAbs(lander->vy) > MAX_LANDING_VY)      { // Traslational limit
+
+            lander->state = LANDER_CRASHED;                                                         // Crash!
+
+        } 
+
+        else if (fixAbs(lander->omega) > MAX_LANDING_OMEGA)      {                                  // Angular velocity limit
+
+            lander->state = LANDER_CRASHED;                                                         // Crash!
+
+        } 
+
+        else {
+
+            lander->state = LANDER_LANDED;                                                          //Successfully landed 
+        }
 
             lander->vx = 0;
             lander->vy = 0;
             lander->vz = 0;
             lander->omega = 0;
-            lander->state = LANDER_LANDED;              //Successfully landed 
-        }
     }
-    //inserire if per velocità traslazione e vel angolare
-}                                          
+}                                         
 
 
 //manage the gameplay functions for the update 
@@ -256,15 +274,5 @@ void GameplayUpdate(Lander *lander, const PlayerInput *input){
         UpdateCollision(lander); 
     }
 
-    else if(lander->state == LANDER_CRASHED){
-        return;
-        //funzione motivazione del crash vel elevata e targhet mancato velocità laterale elevata! vel angolare elevata
-    }
-
-    else if(lander->state == LANDER_LANDED){
-        return;
-        //funzione score cosnumo propellant e atterraggio con velocità più vicina a 4  
-        //e placeholder moltiplicatore difficoltà area di atterraggio e moltiplicatore difficoltà peso CREW_MASS 
-    }
 }    
 

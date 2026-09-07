@@ -57,8 +57,21 @@
 // ---------------------------
 
 //time
-#define SIM_DT              FIX_FROM_FRACTION(1674,100000)  // Simulation timestep (≈1/59.73 s)
+#define SIM_DT              FIX_FROM_FRACTION(1674,100000)      // Simulation timestep (≈1/59.73 s)
 
+// ---------------------------
+// CRASH LIMIT
+// ---------------------------
+
+//Vertical velocity
+#define MAX_LANDING_VZ      FIX_FROM_INT(4)                     // 4 m/s limit for a good land             
+
+//Horizontal velocity
+#define MAX_LANDING_VX      FIX_FROM_INT(2)                     // 2 m/s limit for a good land
+#define MAX_LANDING_VY      FIX_FROM_INT(2)                     // 2 m/s limit for a good land
+
+//Angular velocity
+#define MAX_LANDING_OMEGA   FIX_FROM_INT(1)                     // 1 rad/s limit for a good land
 
 
 #endif // PHYSICS_CONSTANT_H

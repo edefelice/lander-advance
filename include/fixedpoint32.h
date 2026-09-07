@@ -30,5 +30,6 @@ typedef int32_t fixed;                                                          
 // Definition of operations
 fixed fixMul(fixed a, fixed b);                                                     //Multiplication
 fixed fixDiv(fixed a, fixed b);                                                     //Division
+fixed fixAbs(fixed a);                                                              //Absolute
 
 #endif // FIXEDPOINT32_H
