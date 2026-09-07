@@ -36,12 +36,12 @@ typedef enum {
     SUB_CREW_INFO
 } ConfigSubState;
 
-//Sub-states of STATE_PAUSE
 typedef enum {
     SUB_RESUME,
     SUB_RESTART,
     SUB_TITLE,
-    SUB_CREDITS
+    SUB_CREDITS,
+    SUB_SHOW_CREDITS
 } PauseSubState;
 
 //getter functions
