@@ -95,7 +95,7 @@ int main(void) {
 
         if (entered_gameplay) {
             tte_erase_screen(); // Hide menu
-            pal_bg_mem[0] = is_night_mode() ? 0x0 : moon_far_v2Pal[0];
+            pal_bg_mem[0] = is_night_mode() ? 0x0 : moon_far_v3Pal[0];
             pal_bg_mem[HUD_SPEED_RULER_PAL_IDX] = HUD_1Pal[25];
             for (int i = 0; i < digit_sprite_idx_end; i++) {
                 obj_unhide(&obj_buffer[i], ATTR0_REG);
