@@ -1,6 +1,8 @@
 #include <tonc.h>
 #include <stdint.h>
 #include "sfx_psg.h"
+#include "tonc_memdef.h"
+#include "tonc_memmap.h"
 
 
 // Channel 2 sequencer
@@ -47,6 +49,34 @@ static void ch2_apply(const Ch2Step *s) {
     }
 }
 
+#define ARRAY_LEN(a) (sizeof(a) / sizeof(a[0]))
+
+static void ch2_play(const Ch2Step *steps, uint8_t count) {
+    ch2_steps = steps;
+    ch2_count = count;
+    ch2_idx = 0;
+    ch2_apply(&ch2_steps[0]); // immidiately apply 1st step
+    ch2_timer =ch2_steps[0].frames;
+}
+
+static void ch2_tick(void) {
+    if (ch2_steps == NULL || ch2_idx >= ch2_count) {
+        return;
+    }
+    if (ch2_timer > 0) {
+        ch2_timer--;
+        return;
+    }
+    
+    ch2_idx++;
+    if (ch2_idx >= ch2_count) {
+        ch2_steps = NULL; // finished sequence
+        return;
+    }
+    ch2_apply(&ch2_steps[ch2_idx]);
+    ch2_timer = ch2_steps[ch2_idx].frames;
+}
+
 // Channel 3 sequencer
 typedef enum {
     W_TRIGGER = 0,
@@ -72,6 +102,55 @@ static const WaveStep STEPS_TRUMPET[] = {
     { W_STOP,    0,     0,               0 },
 };
 
+static const WaveStep *ch3_steps = NULL;
+static uint8_t ch3_count = 0;
+static uint8_t ch3_idx = 0;
+static uint8_t ch3_timer = 0;
+
+static void ch3_apply(const WaveStep *ws) {
+    switch (ws->type) {
+        case W_TRIGGER:
+            REG_SND3CNT = (1 << 13); // Volume 100%
+            REG_SND3FREQ = SFREQ_RESET | SFREQ_RATE(ws->rate);
+            break;
+        case W_LEGATO:
+            REG_SND3FREQ = SFREQ_RATE(ws->rate);
+            break;
+        case W_VOLUME:
+            REG_SND3CNT = ws->vol;
+            break;
+        case W_STOP:
+            REG_SND3SEL = 0; // turn channel off
+            break;
+    }
+}
+
+static void ch3_play(const WaveStep *steps, uint8_t count) {
+    ch3_steps = steps;
+    ch3_count = count;
+    ch3_idx = 0;
+    ch3_apply(&ch3_steps[0]);
+    ch3_timer = ch3_steps[0].frames;
+}
+
+static void ch3_tick(void) {
+    if (ch3_steps == NULL || ch3_idx >= ch3_count) {
+        return;
+    }
+    if (ch3_timer > 0) {
+        ch3_timer--;
+        return;
+    }
+
+    ch3_idx++;
+    if (ch3_idx >= ch3_count) {
+        ch3_steps = NULL;
+        return;
+    }
+    ch3_apply(&ch3_steps[ch3_idx]);
+    ch3_timer = ch3_steps[ch3_idx].frames;
+}
+
 static void load_sawtooth_wave(void) {
     uint32_t wave_data[4];
     uint8_t samples[32];
@@ -95,4 +174,49 @@ static void load_sawtooth_wave(void) {
     REG_WAVE_RAM2 = wave_data[2];
     REG_WAVE_RAM3 = wave_data[3];
     REG_SND3SEL = (1<<7) | (1<<6);  // riaccende il canale (bit 7), dimensione/banco restano 0
+}
+
+// Channel 4
+#define ENGINE_NOISE_RATIO 4
+#define ENGINE_NOISE_SHIFT 5
+#define ENGINE_NOISE_WIDTH 0
+static EngineState engine_state = ENGINE_OFF;
+
+static void engine_start(uint8_t ivol) {
+    REG_SND4CNT  = SSQR_ENV_BUILD(ivol, 0, 0);
+    REG_SND4FREQ = (1<<15) | ((ENGINE_NOISE_SHIFT & 0xF) << 4)
+                            | ((ENGINE_NOISE_WIDTH & 1) << 3)
+                            | (ENGINE_NOISE_RATIO & 0x7);
+}
+
+static void engine_stop(void) {
+    REG_SND4CNT = SSQR_ENV_BUILD(0, 0, 0);
+}
+
+void sfx_engine_set(EngineState state) {
+    if (state == engine_state) {
+        return;
+    }
+
+    switch (state) {
+        case ENGINE_MAIN:
+            engine_start(9);
+            break;
+        case ENGINE_RCS:
+            engine_start(4);
+            break;
+        case ENGINE_OFF:
+            engine_stop();
+            break;
+    }
+
+    engine_state = state;
+}
+
+void sfx_init(void) {
+    REG_SNDSTAT   = SSTAT_ENABLE;
+    REG_SNDDSCNT  = SDS_DMG100;
+    REG_SNDDMGCNT = SDMG_BUILD(SDMG_SQR2|SDMG_WAVE|SDMG_NOISE,
+                                SDMG_SQR2|SDMG_WAVE|SDMG_NOISE, 7, 7);
+    load_sawtooth_wave();
 }
