@@ -6,7 +6,9 @@
 #include <tonc.h>
 
 #include "fixedpoint32.h"
-#include "cockpit.h"        
+#include "cockpit.h"    
+
+#include "game_result.h"
 
 
 /*
@@ -70,6 +72,9 @@ typedef struct {
     fixed touchdown_vy;         //velocity y axis during the touchdown (Q16.16)
     fixed touchdown_vz;         //velocity z axis during the touchdown (Q16.16)
     fixed touchdown_omega;      //Angular velocity during the touchdown (Q16.16)
+
+    //Crash information
+    GrReason crash_reason;
 
     bool light_on;
     u16 light_timer;
