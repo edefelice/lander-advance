@@ -7,6 +7,7 @@
 
 typedef enum {
     STATE_TITLE,
+    STATE_GAME_MODE_SELECTION,
     STATE_CELESTIAL_BODY_SELECTION, //Macro-state
     STATE_AREA_SELECTION, //Macro-state
     STATE_CONFIG_SELECTION, //Macro-state
@@ -61,6 +62,7 @@ int result_victory(void);
 int result_score(void);
 const char* result_reason(void);
 bool is_night_mode(void);
+bool is_fast_mode(void);
 
 void shell_init(void);
 void main_states_management(void);

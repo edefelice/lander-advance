@@ -32,6 +32,7 @@ static int selected_crew = 0;
 static int selected_pause = 0;
 static bool result_pending = false;
 static bool selected_night_mode = false;
+static bool selected_fast_mode = false;
 
 // Reason descriptor for losing
 static const char* const reason_text[] = {
@@ -56,8 +57,18 @@ void main_states_management(void) {
     switch (present_state) {
         case STATE_TITLE:
             if (A_button == 1) {
+                present_state = STATE_GAME_MODE_SELECTION;
+                A_button = 0;
+            }
+            break;
+        case STATE_GAME_MODE_SELECTION:
+            if (A_button == 1) {
                 present_state = STATE_CELESTIAL_BODY_SELECTION;
                 A_button = 0;
+            }
+            else if (B_button == 1) {
+                present_state = STATE_TITLE;
+                B_button = 0;
             }
             break;
         case STATE_CELESTIAL_BODY_SELECTION:
@@ -111,7 +122,6 @@ void main_states_management(void) {
                         present_state = STATE_GAMEPLAY;
                         break;
                     case SUB_RESTART:
-                        shell_init();
                         present_state = STATE_GAMEPLAY;
                         present_result.outcome = GR_LOSE;
                         present_result.score = 0;
@@ -157,6 +167,11 @@ void main_states_management(void) {
 //Movement logic for the sub_states
 void sub_states_management(void) { 
     switch (present_state){
+        case STATE_GAME_MODE_SELECTION:
+            if (up_pointer == 1 || down_pointer == 1 || left_pointer == 1 || right_pointer == 1) {
+                selected_fast_mode = !selected_fast_mode;
+            }
+            break;
         case STATE_CELESTIAL_BODY_SELECTION:
             switch (present_body){
                 case SUB_SHUTTLE_MOVING:
@@ -171,7 +186,7 @@ void sub_states_management(void) {
                         A_button = 0;
                     }
                     else if (B_button == 1){
-                        present_state = STATE_TITLE;
+                        present_state = STATE_GAME_MODE_SELECTION;
                         B_button = 0;
                     }
                     break;
@@ -293,6 +308,7 @@ void shell_init(void) {
     selected_lander = 0;
     selected_crew = 0;
     selected_night_mode = false;
+    selected_fast_mode = false;
 
     //reset results
     present_result.outcome = GR_LOSE;
@@ -361,6 +377,10 @@ const char* result_reason(void) {
 
 bool is_night_mode(void) {
     return selected_night_mode;
+}
+
+bool is_fast_mode(void) {
+    return selected_fast_mode;
 }
 
 void shell_feed_input(u16 action) {

@@ -36,6 +36,38 @@ void shell_render_display(void) {
         tte_write("Press A to launch");
         break;
 
+    case STATE_GAME_MODE_SELECTION:
+        tte_set_color(TTE_INK, COLOR_GREEN);
+        tte_set_pos(4 * BASE_OFFSET, 2 * BASE_OFFSET);
+        tte_write("Select Game Mode");
+
+        tte_set_color(TTE_INK, is_fast_mode() ? COLOR_SILVER : COLOR_GREEN);
+        tte_set_pos(2 * BASE_OFFSET, 4 * BASE_OFFSET);
+        tte_write(is_fast_mode() ? "  Simulation" : "> Simulation");
+
+        tte_set_color(TTE_INK, COLOR_SILVER);
+        tte_set_pos(4 * BASE_OFFSET, 6 * BASE_OFFSET);
+        tte_write("Original game mode,");
+        tte_set_pos(4 * BASE_OFFSET, 7 * BASE_OFFSET);
+        tte_write("realistic experience");
+
+        tte_set_color(TTE_INK, is_fast_mode() ? COLOR_GREEN : COLOR_SILVER);
+        tte_set_pos(2 * BASE_OFFSET, 9 * BASE_OFFSET);
+        tte_write(is_fast_mode() ? "> Fast" : "  Fast");
+
+        tte_set_color(TTE_INK, COLOR_SILVER);
+        tte_set_pos(4 * BASE_OFFSET, 11 * BASE_OFFSET);
+        tte_write("RCS more powerful,");
+        tte_set_pos(4 * BASE_OFFSET, 12 * BASE_OFFSET);
+        tte_write("faster rotation,");
+        tte_set_pos(4 * BASE_OFFSET, 13 * BASE_OFFSET);
+        tte_write("shorter game time");
+
+        tte_set_color(TTE_INK, COLOR_GREEN);
+        tte_set_pos(2 * BASE_OFFSET, 16 * BASE_OFFSET);
+        tte_write("Press A to confirm");
+        break;
+
     case STATE_CELESTIAL_BODY_SELECTION:
       switch (body_state()){
          case SUB_SHUTTLE_MOVING:
