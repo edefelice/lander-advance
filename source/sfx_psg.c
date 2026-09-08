@@ -1,7 +1,6 @@
 #include <tonc.h>
 #include <stdint.h>
 #include "sfx_psg.h"
-#include "tonc_memdef.h"
 #include "tonc_memmap.h"
 
 
@@ -30,11 +29,11 @@ static const Ch2Step STEPS_BACK[] = {
 };
 
 static const Ch2Step STEPS_WARNING[] = {
-    { STEP_TRIGGER, SSQR_ENV_BUILD(15,0,2)|SSQR_DUTY1_2, 0x783, 6 },
+    { STEP_TRIGGER, SSQR_ENV_BUILD(15, 0, 2) | SSQR_DUTY1_2, 0x783, 6 },
     { STEP_SILENCE, 0, 0, 4 },
-    { STEP_TRIGGER, SSQR_ENV_BUILD(15,0,2)|SSQR_DUTY1_2, 0x783, 6 },
+    { STEP_TRIGGER, SSQR_ENV_BUILD(15, 0, 2) | SSQR_DUTY1_2, 0x783, 6 },
     { STEP_SILENCE, 0, 0, 4 },
-    { STEP_TRIGGER, SSQR_ENV_BUILD(15,0,2)|SSQR_DUTY1_2, 0x783, 6 }
+    { STEP_TRIGGER, SSQR_ENV_BUILD(15, 0, 2) | SSQR_DUTY1_2, 0x783, 6 }
 };
 
 static const Ch2Step *ch2_steps = NULL;
@@ -93,13 +92,13 @@ typedef struct {
 } WaveStep;
 
 static const WaveStep STEPS_TRUMPET[] = {
-    { W_TRIGGER, 0x712, 0,               6 },  // low
-    { W_LEGATO,  0x739, 0,               6 },  // high
-    { W_LEGATO,  0x712, 0,               6 },  // low
-    { W_LEGATO,  0x739, 0,               4 },  // high
-    { W_VOLUME,  0,     (1<<14),         1 },  // 50% duty
-    { W_VOLUME,  0,     (1<<14)|(1<<13), 1 },  // 25% duty
-    { W_STOP,    0,     0,               0 },
+    { W_TRIGGER, 0x712, 0, 6 },  // low
+    { W_LEGATO, 0x739, 0, 6 },  // high
+    { W_LEGATO, 0x712, 0, 6 },  // low
+    { W_LEGATO, 0x739, 0, 4 },  // high
+    { W_VOLUME, 0, (1<<14), 1 },  // 50% duty
+    { W_VOLUME, 0, (1<<14)|(1<<13), 1 },  // 25% duty
+    { W_STOP, 0, 0, 0 },
 };
 
 static const WaveStep *ch3_steps = NULL;
@@ -110,6 +109,7 @@ static uint8_t ch3_timer = 0;
 static void ch3_apply(const WaveStep *ws) {
     switch (ws->type) {
         case W_TRIGGER:
+            REG_SND3SEL = (1 << 7) | (1 << 6); // turn channel on
             REG_SND3CNT = (1 << 13); // Volume 100%
             REG_SND3FREQ = SFREQ_RESET | SFREQ_RATE(ws->rate);
             break;
@@ -219,4 +219,26 @@ void sfx_init(void) {
     REG_SNDDMGCNT = SDMG_BUILD(SDMG_SQR2|SDMG_WAVE|SDMG_NOISE,
                                 SDMG_SQR2|SDMG_WAVE|SDMG_NOISE, 7, 7);
     load_sawtooth_wave();
+}
+
+void sfx_play(SfxId id) {
+    switch (id) {
+        case SFX_SELECTION:
+            ch2_play(STEPS_SELECTION, ARRAY_LEN(STEPS_SELECTION));
+            break;
+        case SFX_BACK:
+            ch2_play(STEPS_BACK, ARRAY_LEN(STEPS_BACK));
+            break;
+        case SFX_WARNING:
+            ch2_play(STEPS_WARNING, ARRAY_LEN(STEPS_WARNING));
+            break;
+        case SFX_TRUMPET:
+            ch3_play(STEPS_TRUMPET, ARRAY_LEN(STEPS_TRUMPET));
+            break;
+    }
+}
+
+void sfx_update(void) {
+    ch2_tick();
+    ch3_tick();
 }
