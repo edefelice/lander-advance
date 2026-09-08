@@ -3,6 +3,7 @@
 #include "physics_constants.h"
 #include "tonc_math.h"
 #include "tonc_types.h"
+#include "shell.h"
 
 /*
     gameplay.c
@@ -109,7 +110,8 @@ void UpdateMainEngine(Lander *lander, const PlayerInput *input, fixed mass){
 //Manage the RCS engine data
 void UpdateRCS(Lander *lander, const PlayerInput *input, fixed mass){
 
-    fixed a = fixDiv(RCS_THRUST , mass);
+    fixed rcs_thrust = is_fast_mode() ? (RCS_THRUST * 10) : RCS_THRUST;
+    fixed a = fixDiv(rcs_thrust, mass);
     fixed a_body_x = 0;
     fixed a_body_y = 0; 
 
@@ -156,7 +158,8 @@ void UpdateRCS(Lander *lander, const PlayerInput *input, fixed mass){
 void UpdateRotation(Lander *lander, const PlayerInput *input, fixed mass){
 
     // Calculate angular acceleration
-    fixed torque = fixMul(RCS_THRUST, LEM_RADIUS);
+    fixed rcs_thrust = is_fast_mode() ? (RCS_THRUST * 10) : RCS_THRUST;
+    fixed torque = fixMul(rcs_thrust, LEM_RADIUS);
     fixed inertia = fixMul (fixMul(INERTIA_FACTOR, mass), fixMul(LEM_RADIUS, LEM_RADIUS));  
     fixed alpha = fixDiv(torque, inertia);
 

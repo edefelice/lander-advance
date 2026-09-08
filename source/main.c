@@ -16,6 +16,58 @@
 
 static OBJ_ATTR obj_buffer[MAX_SPRITES];
 
+#define SPOTLIGHT_BASE_TILE 128
+#define SPOTLIGHT_OBJ_COUNT 4
+
+static void spotlight_init_gfx(void) {
+    for (int ty = 0; ty < 8; ty++) {
+        for (int tx = 0; tx < 8; tx++) {
+            int t = SPOTLIGHT_BASE_TILE + ty * 8 + tx;
+            for (int py = 0; py < 8; py++) {
+                int y = ty * 8 + py;
+                u32 row = 0;
+                for (int px = 0; px < 8; px++) {
+                    int x = tx * 8 + px;
+                    int dx = 127 - 2 * x;
+                    int dy = 127 - 2 * y;
+                    if (dx * dx + dy * dy <= 9216) {
+                        row |= (1 << (px * 4));
+                    }
+                }
+                tile_mem_obj[0][t].data[py] = row;
+            }
+        }
+    }
+}
+
+static void spotlight_init_objs(OBJ_ATTR *buffer, int slot) {
+    obj_set_attr(&buffer[slot + 0], ATTR0_SQUARE | ATTR0_HIDE | ATTR0_WINDOW, ATTR1_SIZE_64, ATTR2_ID(SPOTLIGHT_BASE_TILE));
+    obj_set_pos(&buffer[slot + 0], 40, 24);
+
+    obj_set_attr(&buffer[slot + 1], ATTR0_SQUARE | ATTR0_HIDE | ATTR0_WINDOW, ATTR1_SIZE_64 | ATTR1_HFLIP, ATTR2_ID(SPOTLIGHT_BASE_TILE));
+    obj_set_pos(&buffer[slot + 1], 104, 24);
+
+    obj_set_attr(&buffer[slot + 2], ATTR0_SQUARE | ATTR0_HIDE | ATTR0_WINDOW, ATTR1_SIZE_64 | ATTR1_VFLIP, ATTR2_ID(SPOTLIGHT_BASE_TILE));
+    obj_set_pos(&buffer[slot + 2], 40, 88);
+
+    obj_set_attr(&buffer[slot + 3], ATTR0_SQUARE | ATTR0_HIDE | ATTR0_WINDOW, ATTR1_SIZE_64 | ATTR1_HFLIP | ATTR1_VFLIP, ATTR2_ID(SPOTLIGHT_BASE_TILE));
+    obj_set_pos(&buffer[slot + 3], 104, 88);
+}
+
+static void spotlight_set_active(OBJ_ATTR *buffer, int slot, bool active) {
+    if (active) {
+        obj_unhide(&buffer[slot + 0], ATTR0_REG);
+        obj_unhide(&buffer[slot + 1], ATTR0_REG);
+        obj_unhide(&buffer[slot + 2], ATTR0_REG);
+        obj_unhide(&buffer[slot + 3], ATTR0_REG);
+    } else {
+        obj_hide(&buffer[slot + 0]);
+        obj_hide(&buffer[slot + 1]);
+        obj_hide(&buffer[slot + 2]);
+        obj_hide(&buffer[slot + 3]);
+    }
+}
+
 int main(void) {
     int post_fuel_power_idx = hud_post_fuel_power_slot();
     int digit_sprite_idx_end = hud_digit_slot_end();
@@ -43,6 +95,7 @@ int main(void) {
     pal_bg_mem[HUD_SPEED_RULER_PAL_IDX] = 0x0; // Black
     // Load hud sprites
     hud_load_gfx();
+    spotlight_init_gfx();
     // Configure BG1 and priority 0
     REG_BG1CNT = BG_CBB(2) | BG_SBB(23) | BG_8BPP | BG_REG_32x32 | BG_PRIO(1);
     // Configure BG2 with wrap on and priority 3
@@ -52,6 +105,9 @@ int main(void) {
     // Initialize sprites
     oam_init(obj_buffer, MAX_SPRITES);
     int n_obj = hud_init(obj_buffer, 0);
+    int spotlight_slot = n_obj;
+    spotlight_init_objs(obj_buffer, spotlight_slot);
+    int total_obj = n_obj + SPOTLIGHT_OBJ_COUNT;
     irq_init(NULL);
     irq_add(II_VBLANK, mmVBlank);
     mmInitDefault((mm_addr)soundbank_bin, 8); // TODO: check when adding audio files
@@ -68,7 +124,7 @@ int main(void) {
         // True = in play state after restarting game
         bool fresh_start = entered_gameplay && (prev_state == STATE_CONFIG_SELECTION || last_pause_choice == SUB_RESTART);
         key_poll(); // Check key status
-        if (cur_state != STATE_TITLE) {
+        if (cur_state != STATE_TITLE && cur_state != STATE_GAME_MODE_SELECTION) {
             REG_DISPCNT |= DCNT_BG1;
         }
         else {
@@ -77,7 +133,12 @@ int main(void) {
 
         if(cur_state == STATE_GAMEPLAY) {
             pal_bg_mem[HUD_SPEED_RULER_PAL_IDX] = HUD_1Pal[25];
-            REG_DISPCNT |= DCNT_OBJ | DCNT_OBJ_1D | DCNT_BG2; // Set affine background (Mode 1, BG2)
+            REG_DISPCNT |= DCNT_OBJ | DCNT_OBJ_1D;
+            if (!is_night_mode() || lander.light_on) {
+                REG_DISPCNT |= DCNT_BG2;
+            } else {
+                REG_DISPCNT &= ~DCNT_BG2;
+            }
             for (int i = post_fuel_power_idx; i < digit_sprite_idx_end; i++) {
                 obj_unhide(&obj_buffer[i], ATTR0_REG);
             }
@@ -88,9 +149,10 @@ int main(void) {
             for (int i = post_fuel_power_idx; i < MAX_SPRITES; i++) {
                 obj_hide(&obj_buffer[i]);
             }
-            REG_DISPCNT &= ~(DCNT_BG2 | DCNT_WIN0 | DCNT_WIN1);
+            REG_DISPCNT &= ~(DCNT_BG2 | DCNT_WIN0 | DCNT_WIN1 | DCNT_WINOBJ);
             REG_BLDCNT = 0;
             REG_BLDY = 0;
+            spotlight_set_active(obj_buffer, spotlight_slot, false);
         }
 
         if (entered_gameplay) {
@@ -130,33 +192,48 @@ int main(void) {
                 }
                 main_states_management(); // Changes game state to "pause" when Start button is pressed
                 shell_commit_input();
-                hud_update(obj_buffer, 0, &lander, &input);
-                if (shell_state() == STATE_GAMEPLAY && is_night_mode()) {
+                if (shell_state() != STATE_GAMEPLAY) {
                     pal_bg_mem[0] = 0x0;
-                    if (lander.light_on) {
-                        REG_DISPCNT |= DCNT_WIN0 | DCNT_WIN1;
-                        REG_WIN0H = (70 << 8) | 138;
-                        REG_WIN0V = (40 << 8) | 136;
-                        REG_WIN1H = (56 << 8) | 152;
-                        REG_WIN1V = (54 << 8) | 122;
-                        REG_WININ = WININ_BUILD(WIN_BG0 | WIN_BG1 | WIN_BG2 | WIN_OBJ, WIN_BG0 | WIN_BG1 | WIN_BG2 | WIN_OBJ);
-                        REG_WINOUT = WINOUT_BUILD(WIN_BG0 | WIN_BG1 | WIN_OBJ, 0);
-                        REG_BLDCNT = 0;
-                        REG_BLDY = 0;
-                    } else {
-                        REG_DISPCNT &= ~(DCNT_WIN0 | DCNT_WIN1);
-                        REG_BLDCNT = BLD_BG2 | BLD_BLACK;
-                        REG_BLDY = 15;
+                    pal_bg_mem[HUD_SPEED_RULER_PAL_IDX] = 0x0;
+                    for (int i = post_fuel_power_idx; i < MAX_SPRITES; i++) {
+                        obj_hide(&obj_buffer[i]);
                     }
-                } else {
-                    REG_DISPCNT &= ~(DCNT_WIN0 | DCNT_WIN1);
+                    REG_DISPCNT &= ~(DCNT_BG2 | DCNT_WIN0 | DCNT_WIN1 | DCNT_WINOBJ);
                     REG_BLDCNT = 0;
                     REG_BLDY = 0;
+                    spotlight_set_active(obj_buffer, spotlight_slot, false);
+                    break;
+                }
+                hud_update(obj_buffer, 0, &lander, &input);
+                if (is_night_mode()) {
+                    pal_bg_mem[0] = 0x0;
+                    if (lander.light_on) {
+                        REG_DISPCNT &= ~(DCNT_WIN0 | DCNT_WIN1);
+                        REG_DISPCNT |= DCNT_WINOBJ | DCNT_BG2;
+                        REG_WINOUT = WINOUT_BUILD(WIN_BG0 | WIN_BG1 | WIN_OBJ, WIN_BG0 | WIN_BG1 | WIN_BG2 | WIN_OBJ);
+                        REG_BLDCNT = 0;
+                        REG_BLDY = 0;
+                        spotlight_set_active(obj_buffer, spotlight_slot, true);
+                    } else {
+                        REG_DISPCNT &= ~(DCNT_WIN0 | DCNT_WIN1 | DCNT_WINOBJ | DCNT_BG2);
+                        REG_BLDCNT = 0;
+                        REG_BLDY = 0;
+                        spotlight_set_active(obj_buffer, spotlight_slot, false);
+                    }
+                } else {
+                    REG_DISPCNT &= ~(DCNT_WIN0 | DCNT_WIN1 | DCNT_WINOBJ);
+                    REG_DISPCNT |= DCNT_BG2;
+                    REG_BLDCNT = 0;
+                    REG_BLDY = 0;
+                    spotlight_set_active(obj_buffer, spotlight_slot, false);
                 }
                 // Configure BG Affine 2
                 map_swap(&lander);
                 lander_to_affine_src(&lander, &affine_src);
                 bg_rotscale_ex(&affine_bg, &affine_src);
+                if (is_night_mode()) {
+                    pal_bg_mem[0] = 0x0;
+                }
                 break;
             case STATE_PAUSE:
                 shell_render_display();
@@ -177,7 +254,7 @@ int main(void) {
         prev_state = cur_state; // Update previous state
         VBlankIntrWait(); // Wait VBlank
         mmFrame();
-        oam_copy(oam_mem, obj_buffer, n_obj); // Copy sprites in oam
+        oam_copy(oam_mem, obj_buffer, total_obj); // Copy sprites in oam
         REG_BG_AFFINE[2] = affine_bg; // Update affine bg register
     }
 }
