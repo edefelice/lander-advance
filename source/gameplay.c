@@ -53,6 +53,16 @@ void GameplayInit(Lander *lander){                  //game initialization
 
     //Lander state
     lander->state = LANDER_FLYING;
+
+    //Crash information
+    lander->crash_reason = GR_REASON_NONE;
+
+    //Touchdown data initialization
+    lander->touchdown_vx = 0;
+    lander->touchdown_vy = 0;
+    lander->touchdown_vz = 0;
+    lander->touchdown_omega = 0;
+
 }
 
 
@@ -218,43 +228,54 @@ void UpdateCollision(Lander *lander){
     if (lander->z <= 0) {
 
         lander->z = 0;
-
+        
+        //Save touchdown values before stopping the lander
         lander->touchdown_vx = lander->vx;
         lander->touchdown_vy = lander->vy;
         lander->touchdown_vz = lander->vz;
         lander->touchdown_omega = lander->omega;
  
-/*
+/*      
+-------------------------------------
+INSERISCI QUI IL LANDING PAD CHECK 
+unica cosa, mettilo precisamente qui, che mi serve il pad come primo check della funzione
+
         if (!IsonPad(lander) )      {                                                               //Pad position
 
+            lander->crash_reason = GR_REASON_OUT_OF_PAD;
             lander->state = LANDER_CRASHED;                                                         // Crash!
 
         } 
-
+-------------------------------------------------
 */
 
         if ( fixAbs(lander->vz) > MAX_LANDING_VZ) {                                                 // Vertcal limit
             
+            lander->crash_reason = GR_REASON_VERTICAL_SPEED;
             lander->state = LANDER_CRASHED;                                                         // Crash!
         } 
 
         else if (fixAbs(lander->vx) > MAX_LANDING_VX || fixAbs(lander->vy) > MAX_LANDING_VY)      { // Traslational limit
 
+            lander->crash_reason = GR_REASON_HORIZONTAL_SPEED;
             lander->state = LANDER_CRASHED;                                                         // Crash!
 
         } 
 
         else if (fixAbs(lander->omega) > MAX_LANDING_OMEGA)      {                                  // Angular velocity limit
 
+            lander->crash_reason = GR_REASON_ANGULAR_SPEED;
             lander->state = LANDER_CRASHED;                                                         // Crash!
 
         } 
 
         else {
 
+            lander->crash_reason = GR_REASON_NONE;
             lander->state = LANDER_LANDED;                                                          //Successfully landed 
         }
 
+            //Stop the lander after touchdown
             lander->vx = 0;
             lander->vy = 0;
             lander->vz = 0;
