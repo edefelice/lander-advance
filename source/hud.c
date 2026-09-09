@@ -25,7 +25,7 @@
 #define VY_FULL_SCALE (FIX_FROM_INT(12)) // m/s in Q16.16 TODO: check when fine tuning
 #define W_FULL_SCALE (FIX_FROM_INT(6)) // rad/s in Q16.16 TODO: check when fine tuning
 
-#define HUD_LAMP_PAL_BASE 19   // first live palette index of the lamps
+#define HUD_LAMP_PAL_BASE (HUD_BACKGROUND_PAL_BASE + 5)   // first live palette index of the lamps
 #define HUD_LAMP_ON_STEP  10   // lit colour = unlit colour + 10
 #define HUD_LAMP_OFF ((HUD_LAMP_PAL_BASE) - (HUD_BACKGROUND_PAL_BASE))
 #define HUD_LAMP_ON  ((HUD_LAMP_OFF) + (HUD_LAMP_ON_STEP))

@@ -83,7 +83,7 @@ void map_swap(const Lander *lander) {
                     // Load background tilemap in SBB 24
                     memcpy16(se_mem[24], AREAS[i].map, AREAS[i].map_len / 2);
                     // Load background palette
-                    memcpy16(pal_bg_mem, AREAS[i].pal, AREAS[i].pal_len / 2 - 3); // first 13 colours
+                    memcpy16(pal_bg_mem, AREAS[i].pal, AREAS[i].pal_len / 2);
                     REG_BG2CNT = (REG_BG2CNT & ~(BG_SIZE_MASK | BG_SBB_MASK | BG_WRAP)) | BG_AFF_128x128 | BG_SBB(24);
                     break;
             }
@@ -103,7 +103,7 @@ void map_swap(const Lander *lander) {
         // Load background tilemap in SBB 28
         memcpy16(se_mem[28], moon_far_v3Map, moon_far_v3MapLen / 2);
         // Load background palette
-        memcpy16(pal_bg_mem, moon_far_v3Pal, moon_far_v3PalLen / 2 - 3); // first 13 colours
+        memcpy16(pal_bg_mem, moon_far_v3Pal, moon_far_v3PalLen / 2);
         REG_BG2CNT = (REG_BG2CNT & ~(BG_SIZE_MASK | BG_SBB_MASK)) | BG_AFF_64x64 | BG_WRAP | BG_SBB(28);
         }
     }
