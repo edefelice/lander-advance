@@ -1,23 +1,16 @@
 #include "landing_stat.h"
 #include "gameplay.h"
 #include "fixedpoint32.h"
-#include "physics_constants.h"
-#include "tonc_math.h"
-#include "tonc_types.h"
 #include "landing_area.h"
 
 
-int active_area_idx = -1;
-
-
-
-bool IsonPad(const Lander *lander, int area, const Sites *moon_sites) {
-    if (area < 0 || lander == NULL || moon_sites == NULL) {
+bool IsonPad(const Lander *lander, int area_idx, const Sites *moon_sites) {
+    if (area_idx < 0 || lander == NULL || moon_sites == NULL) {
         return 0;
     }
 
     const fixed r2 = fixMul(ZONE_LIMIT, ZONE_LIMIT);
-    const Sites *current = &moon_sites[area];
+    const Sites *current = &moon_sites[area_idx];
 
     for (int i = 0; i < N_ZONES; i++) {
 

@@ -16,4 +16,6 @@ void lander_to_affine_src(const Lander *lander, AFF_SRC_EX *src);
 */
 void map_swap(const Lander *lander);
 
+int get_active_area_idx(void);
+
 #endif // AFFINE_BACKGROUND_H

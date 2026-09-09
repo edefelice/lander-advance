@@ -104,17 +104,17 @@ bool GameplayHasPropellant(const Lander *lander);               //return if ther
 // UPDATE FUNCTIONS
 // ---------------------------
 
-void GameplayUpdate(Lander *lander, const PlayerInput *input, int area, Sites *moon_sites);                              //manage the update functions
+void GameplayUpdate(Lander *lander, const PlayerInput *input, bool fast_mode, int area, const Sites *moon_sites);                              //manage the update functions
 
 void UpdateMainEngine(Lander *lander, const PlayerInput *input, fixed mass);                //main engine physics
 
-void UpdateRCS(Lander *lander, const PlayerInput *input, fixed mass);                       //RCS engine physics
+void UpdateRCS(Lander *lander, const PlayerInput *input, fixed mass, bool fast_mode);       //RCS engine physics
 
 void UpdateLinearPhysics(Lander *lander);                                                   //position update
 
-void UpdateRotation(Lander *lander, const PlayerInput *input, fixed mass);                  //rotation physics
+void UpdateRotation(Lander *lander, const PlayerInput *input, fixed mass, bool fast_mode);  //rotation physics
 
-void UpdateCollision(Lander *lander, int area, Sites *moon_sites);                                                       //check the lander state
+void UpdateCollision(Lander *lander, int area, const Sites *moon_sites);                                                       //check the lander state
 
 
 #endif // GAMEPLAY_H
