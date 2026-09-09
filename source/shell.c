@@ -37,7 +37,7 @@ static bool selected_fast_mode = false;
 // Reason descriptor for losing
 static const char* const reason_text[] = {
     [GR_REASON_NONE] = "N/A",
-    [GR_REASON_TOO_FAST] = "Excessive speed",
+    [GR_REASON_VERTICAL_SPEED] = "Excessive speed",
     [GR_REASON_OUT_OF_PAD] = "Out of pad"
 };
 

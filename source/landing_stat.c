@@ -7,6 +7,8 @@
 #include "landing_area.h"
 
 
+int active_area_idx = -1;
+
 
 
 bool IsonPad(const Lander *lander, int area, const Sites *moon_sites) {
@@ -18,7 +20,7 @@ bool IsonPad(const Lander *lander, int area, const Sites *moon_sites) {
     const Sites *current = &moon_sites[area];
 
     for (int i = 0; i < N_ZONES; i++) {
-        
+
         fixed dx = current->site[i].centre_x - lander->x;
         if(dx > ZONE_LIMIT || dx < -ZONE_LIMIT){
             continue;

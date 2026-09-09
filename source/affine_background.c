@@ -6,6 +6,7 @@
 #include "physics_constants.h"
 #include "landing_area.h"
 #include "graphics/moon_far_v3.h"
+#include "landing_stat.h"
 
 #define MAX_SHRINK 0x190
 #define MAX_HEIGHT_FAR 3000 // TODO: eventually change in tuning (Pierluca W7)
@@ -24,7 +25,7 @@
 #define NEAR_MARGIN 5 // Metre TODO: eventually change in tuning (Pierluca W7)
 
 static bool is_near = false;
-static int active_area_idx = -1;
+//static int active_area_idx = -1;
 
 /*
     shrink(...)
@@ -36,7 +37,7 @@ static inline fixed shrink(const fixed max, const fixed height, const fixed max_
     return fixMul(fixDiv(height + FIX_FROM_INT(3), max_height + FIX_FROM_INT(3)), max);
 }
 
-static inline int get_active_area_idx(void) { return active_area_idx; };
+//static inline int get_active_area_idx(void) { return active_area_idx; };
 
 void lander_to_affine_src(const Lander *lander, AFF_SRC_EX *src) {
     int idx = get_active_area_idx();

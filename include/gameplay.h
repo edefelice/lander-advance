@@ -6,8 +6,8 @@
 #include <tonc.h>
 
 #include "fixedpoint32.h"
-#include "cockpit.h"    
-
+#include "cockpit.h"        
+#include "landing_area.h"
 #include "game_result.h"
 
 
@@ -75,7 +75,6 @@ typedef struct {
 
     //Crash information
     GrReason crash_reason;
-
     bool light_on;
     u16 light_timer;
 
@@ -105,7 +104,7 @@ bool GameplayHasPropellant(const Lander *lander);               //return if ther
 // UPDATE FUNCTIONS
 // ---------------------------
 
-void GameplayUpdate(Lander *lander, const PlayerInput *input);                              //manage the update functions
+void GameplayUpdate(Lander *lander, const PlayerInput *input, int area, Sites *moon_sites);                              //manage the update functions
 
 void UpdateMainEngine(Lander *lander, const PlayerInput *input, fixed mass);                //main engine physics
 
@@ -115,7 +114,7 @@ void UpdateLinearPhysics(Lander *lander);                                       
 
 void UpdateRotation(Lander *lander, const PlayerInput *input, fixed mass);                  //rotation physics
 
-void UpdateCollision(Lander *lander);                                                       //check the lander state
+void UpdateCollision(Lander *lander, int area, Sites *moon_sites);                                                       //check the lander state
 
 
 #endif // GAMEPLAY_H

@@ -13,6 +13,9 @@
 #include "soundbank.h"
 #include "soundbank_bin.h"
 #include "tonc_memdef.h"
+#include "sfx_psg.h"
+#include "landing_area.h"
+#include "landing_stat.h"
 
 static OBJ_ATTR obj_buffer[MAX_SPRITES];
 
@@ -74,6 +77,7 @@ int main(void) {
     // Initialization
     BG_AFFINE affine_bg = {0};
     AFF_SRC_EX affine_src = {0};
+    sfx_init();
     Lander lander;
     shell_init();
     GameState prev_state = shell_state();
@@ -181,7 +185,7 @@ int main(void) {
                     }
                 }
                 shell_feed_input(menu_input()); // To read the Start button
-                GameplayUpdate(&lander, &input);
+                GameplayUpdate(&lander, &input, get_active_area_idx(), moon_sites);
                 if (lander.state != LANDER_FLYING && !result_sent) {
                     // For testing
                     result.outcome = (lander.state == LANDER_LANDED) ? GR_WIN : GR_LOSE;
@@ -254,6 +258,7 @@ int main(void) {
         prev_state = cur_state; // Update previous state
         VBlankIntrWait(); // Wait VBlank
         mmFrame();
+        sfx_update();
         oam_copy(oam_mem, obj_buffer, total_obj); // Copy sprites in oam
         REG_BG_AFFINE[2] = affine_bg; // Update affine bg register
     }
