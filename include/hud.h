@@ -7,7 +7,7 @@
 
 #define MAX_SPRITES 128
 // HUD background palette is loaded into pal_bg_mem at this offset (see hud.c lamps)
-#define HUD_BACKGROUND_PAL_BASE 14
+#define HUD_BACKGROUND_PAL_BASE 25
 // Index into pal_bg_mem of the speedbar "ruler" colour
 // (offset 25 within HUD_1Pal, relocated by HUD_BACKGROUND_PAL_BASE on load)
 #define HUD_SPEED_RULER_PAL_IDX ((HUD_BACKGROUND_PAL_BASE) + 25)

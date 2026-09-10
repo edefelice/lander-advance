@@ -156,10 +156,10 @@ static void load_sawtooth_wave(void) {
     uint8_t samples[32];
 
     for (int i = 0; i < 32; i++) {
-        samples[i] = (i * 15) / 31;  // rampa 0..15
+        samples[i] = (i * 15) / 31;  // 0..15 ramp
     }
 
-    // Due campioni per byte: nibble alto = primo campione, nibble basso = secondo
+    // 2 samples per byte: high nibble = 1st sample, low nibble = 2nd
     for (int j = 0; j < 4; j++) {
         u8 b0 = (samples[j * 8] << 4) | samples[j * 8 + 1];
         u8 b1 = (samples[j * 8 + 2] << 4) | samples[j * 8 + 3];
@@ -168,12 +168,12 @@ static void load_sawtooth_wave(void) {
         wave_data[j] = b0 | (b1<<8) | (b2<<16) | (b3<<24);
     }
 
-    REG_SND3SEL = 0;  // canale spento durante la scrittura, dimensione=32, banco=0
+    REG_SND3SEL = 0;  // channel off during write, size=32, bank=0
     REG_WAVE_RAM0 = wave_data[0];
     REG_WAVE_RAM1 = wave_data[1];
     REG_WAVE_RAM2 = wave_data[2];
     REG_WAVE_RAM3 = wave_data[3];
-    REG_SND3SEL = (1<<7) | (1<<6);  // riaccende il canale (bit 7), dimensione/banco restano 0
+    REG_SND3SEL = (1<<7) | (1<<6);  // channel on (bit 7), size/bank stay 0
 }
 
 // Channel 4
@@ -184,7 +184,7 @@ static EngineState engine_state = ENGINE_OFF;
 
 static void engine_start(uint8_t ivol) {
     REG_SND4CNT  = SSQR_ENV_BUILD(ivol, 0, 0);
-    REG_SND4FREQ = (1<<15) | ((ENGINE_NOISE_SHIFT & 0xF) << 4)
+    REG_SND4FREQ = (1 << 15) | ((ENGINE_NOISE_SHIFT & 0xF) << 4)
                             | ((ENGINE_NOISE_WIDTH & 1) << 3)
                             | (ENGINE_NOISE_RATIO & 0x7);
 }
