@@ -3,7 +3,7 @@
 #include "physics_constants.h"
 #include "tonc_math.h"
 #include "tonc_types.h"
-#include "shell.h"
+#include "landing_stat.h"
 
 /*
     gameplay.c
@@ -118,9 +118,9 @@ void UpdateMainEngine(Lander *lander, const PlayerInput *input, fixed mass){
  
 
 //Manage the RCS engine data
-void UpdateRCS(Lander *lander, const PlayerInput *input, fixed mass){
+void UpdateRCS(Lander *lander, const PlayerInput *input, fixed mass, bool fast_mode){
 
-    fixed rcs_thrust = is_fast_mode() ? (RCS_THRUST * 10) : RCS_THRUST;
+    fixed rcs_thrust = fast_mode ? (RCS_THRUST * 10) : RCS_THRUST;
     fixed a = fixDiv(rcs_thrust, mass);
     fixed a_body_x = 0;
     fixed a_body_y = 0; 
@@ -165,10 +165,10 @@ void UpdateRCS(Lander *lander, const PlayerInput *input, fixed mass){
 }
 
 //Manage the rotation
-void UpdateRotation(Lander *lander, const PlayerInput *input, fixed mass){
+void UpdateRotation(Lander *lander, const PlayerInput *input, fixed mass, bool fast_mode){
 
     // Calculate angular acceleration
-    fixed rcs_thrust = is_fast_mode() ? (RCS_THRUST * 10) : RCS_THRUST;
+    fixed rcs_thrust = fast_mode ? (RCS_THRUST * 10) : RCS_THRUST;
     fixed torque = fixMul(rcs_thrust, LEM_RADIUS);
     fixed inertia = fixMul (fixMul(INERTIA_FACTOR, mass), fixMul(LEM_RADIUS, LEM_RADIUS));  
     fixed alpha = fixDiv(torque, inertia);
@@ -216,7 +216,7 @@ void UpdateRotation(Lander *lander, const PlayerInput *input, fixed mass){
 
 
 //Manage the position updates
-void UpdateLinearPhysics(Lander *lander){
+void UpdateLinearPhysics(Lander *lander) {
 
     lander->x += fixMul(lander->vx, SIM_DT);
     lander->y += fixMul(lander->vy, SIM_DT);
@@ -226,39 +226,34 @@ void UpdateLinearPhysics(Lander *lander){
           
 
 //Define the lander status                                                  
-void UpdateCollision(Lander *lander){
+void UpdateCollision(Lander *lander, int area_idx, const Sites *moon_sites) {
 
     if (lander->z <= 0) {
 
         lander->z = 0;
-        
-        //Save touchdown values before stopping the lander
+
+         //Save touchdown values before stopping the lander
+
         lander->touchdown_vx = lander->vx;
         lander->touchdown_vy = lander->vy;
         lander->touchdown_vz = lander->vz;
         lander->touchdown_omega = lander->omega;
  
-/*      
--------------------------------------
-INSERISCI QUI IL LANDING PAD CHECK 
-unica cosa, mettilo precisamente qui, che mi serve il pad come primo check della funzione
 
-        if (!IsonPad(lander) )      {                                                               //Pad position
+        if (!IsonPad(lander, area_idx, moon_sites) ) {                                                  //Pad position
 
             lander->crash_reason = GR_REASON_OUT_OF_PAD;
             lander->state = LANDER_CRASHED;                                                         // Crash!
 
         } 
--------------------------------------------------
-*/
 
-        if ( fixAbs(lander->vz) > MAX_LANDING_VZ) {                                                 // Vertcal limit
+        else if ( fixAbs(lander->vz) > MAX_LANDING_VZ) {                                            // Vertcal limit
             
             lander->crash_reason = GR_REASON_VERTICAL_SPEED;
             lander->state = LANDER_CRASHED;                                                         // Crash!
         } 
 
-        else if (fixAbs(lander->vx) > MAX_LANDING_VX || fixAbs(lander->vy) > MAX_LANDING_VY)      { // Traslational limit
+        else if (fixAbs(lander->vx) > MAX_LANDING_VX || fixAbs(lander->vy) > MAX_LANDING_VY) {       // Traslational limit
 
             lander->crash_reason = GR_REASON_HORIZONTAL_SPEED;
             lander->state = LANDER_CRASHED;                                                         // Crash!
@@ -278,7 +273,6 @@ unica cosa, mettilo precisamente qui, che mi serve il pad come primo check della
             lander->state = LANDER_LANDED;                                                          //Successfully landed 
         }
 
-            //Stop the lander after touchdown
             lander->vx = 0;
             lander->vy = 0;
             lander->vz = 0;
@@ -288,7 +282,7 @@ unica cosa, mettilo precisamente qui, che mi serve il pad come primo check della
 
 
 //manage the gameplay functions for the update 
-void GameplayUpdate(Lander *lander, const PlayerInput *input){
+void GameplayUpdate(Lander *lander, const PlayerInput *input, bool fast_mode, int area_idx, const Sites *moon_sites) {
 
     if(lander->state == LANDER_FLYING){
 
@@ -314,11 +308,12 @@ void GameplayUpdate(Lander *lander, const PlayerInput *input){
 
         fixed mass = GameplayGetMass(lander);
         UpdateMainEngine(lander, input, mass); 
-        UpdateRCS(lander, input, mass);
-        UpdateRotation(lander, input, mass);
+        UpdateRCS(lander, input, mass, fast_mode);
+        UpdateRotation(lander, input, mass, fast_mode);
         UpdateLinearPhysics(lander);
-        UpdateCollision(lander); 
+        UpdateCollision(lander, area_idx, moon_sites); 
     }
 
 }    
+
 

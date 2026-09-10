@@ -1,3 +1,4 @@
+#include <stdint.h>
 #include <tonc.h>
 #include "cockpit.h"
 #include "game_result.h"
@@ -12,7 +13,9 @@
 #include "shell_render.h"
 #include "soundbank.h"
 #include "soundbank_bin.h"
-#include "tonc_memdef.h"
+#include "sfx_psg.h"
+#include "landing_area.h"
+#include "game_score.h"
 
 static OBJ_ATTR obj_buffer[MAX_SPRITES];
 
@@ -111,8 +114,10 @@ int main(void) {
     irq_init(NULL);
     irq_add(II_VBLANK, mmVBlank);
     mmInitDefault((mm_addr)soundbank_bin, 8); // TODO: check when adding audio files
+    sfx_init();
     //mmEffect(SFX_TEST_TONE); // Just for test. Change when adding audio.
     bool result_sent = false;
+    uint16_t action = 0;
     GameResult result;
     PauseSubState last_pause_choice = SUB_RESUME;
     // Prevents A held during menu confirm from triggering thrust on gameplay entry
@@ -181,18 +186,21 @@ int main(void) {
                     }
                 }
                 shell_feed_input(menu_input()); // To read the Start button
-                GameplayUpdate(&lander, &input);
+                EngineState engine = input.thrust_main ? ENGINE_MAIN
+                                    : (input.rcs_x || input.rcs_y || input.rotate) ? ENGINE_RCS
+                                    : ENGINE_OFF;
+                sfx_engine_set(engine);
+                bool fast_mode = is_fast_mode();
+                GameplayUpdate(&lander, &input, fast_mode, get_active_area_idx(), moon_sites);
                 if (lander.state != LANDER_FLYING && !result_sent) {
-                    // For testing
-                    result.outcome = (lander.state == LANDER_LANDED) ? GR_WIN : GR_LOSE;
-                    result.reason = GR_REASON_NONE;
-                    result.score = 0;
+                    result = GameScoreCreateResult(&lander);
                     shell_submit_result(&result);
                     result_sent = true;
                 }
                 main_states_management(); // Changes game state to "pause" when Start button is pressed
                 shell_commit_input();
                 if (shell_state() != STATE_GAMEPLAY) {
+                    sfx_engine_set(ENGINE_OFF);
                     pal_bg_mem[0] = 0x0;
                     pal_bg_mem[HUD_SPEED_RULER_PAL_IDX] = 0x0;
                     for (int i = post_fuel_power_idx; i < MAX_SPRITES; i++) {
@@ -237,7 +245,14 @@ int main(void) {
                 break;
             case STATE_PAUSE:
                 shell_render_display();
-                shell_feed_input(menu_input()); // Reads input
+                action = menu_input();
+                shell_feed_input(action); // Reads input
+                if (action & M_CONFIRM) {
+                    sfx_play(SFX_SELECTION);
+                }
+                else if (action & M_RETURN) {
+                    sfx_play(SFX_BACK);
+                }
                 main_states_management(); // Changes game state (Title/Gameplay/Pause)
                 sub_states_management(); // Changes game substate (Resume/Restart/Title/Credits)
                 shell_commit_input();
@@ -246,6 +261,13 @@ int main(void) {
             default:
                 shell_render_display();
                 shell_feed_input(menu_input());
+                action = menu_input();
+                if (action & M_CONFIRM) {
+                    sfx_play(SFX_SELECTION);
+                }
+                else if (action & M_RETURN) {
+                    sfx_play(SFX_BACK);
+                }
                 main_states_management();
                 sub_states_management();
                 shell_commit_input();
@@ -254,6 +276,7 @@ int main(void) {
         prev_state = cur_state; // Update previous state
         VBlankIntrWait(); // Wait VBlank
         mmFrame();
+        sfx_update();
         oam_copy(oam_mem, obj_buffer, total_obj); // Copy sprites in oam
         REG_BG_AFFINE[2] = affine_bg; // Update affine bg register
     }

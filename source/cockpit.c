@@ -1,4 +1,5 @@
 #include "cockpit.h"
+#include "sfx_psg.h"
 
 PlayerInput cpit_input(){    
 
@@ -45,6 +46,7 @@ PlayerInput cpit_input(){
 
     if(key_hit(KEY_SELECT)){
         inputs.popipopi = 1;
+        sfx_play(SFX_TRUMPET);
     }
 
     return inputs;

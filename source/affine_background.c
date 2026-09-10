@@ -36,7 +36,7 @@ static inline fixed shrink(const fixed max, const fixed height, const fixed max_
     return fixMul(fixDiv(height + FIX_FROM_INT(3), max_height + FIX_FROM_INT(3)), max);
 }
 
-static inline int get_active_area_idx(void) { return active_area_idx; };
+int get_active_area_idx(void) { return active_area_idx; };
 
 void lander_to_affine_src(const Lander *lander, AFF_SRC_EX *src) {
     int idx = get_active_area_idx();

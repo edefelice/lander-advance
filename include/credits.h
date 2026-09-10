@@ -4,7 +4,7 @@
 #define LINES_COUNT 13 //change based on the number of credits lines
 
 static const char* const credits_lines[LINES_COUNT] = {
-    "---THE CIRCUS---".
+    "---THE CIRCUS---",
     "",
     "E. De Felice:",
     "Lead, GBA Dev, Fixed-Point Math",
@@ -18,3 +18,5 @@ static const char* const credits_lines[LINES_COUNT] = {
     "R. Colamarino:",
     "Lore, Dev, Handbook, SFX"
 };
+
+#endif
