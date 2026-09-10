@@ -72,6 +72,7 @@ typedef struct {
     fixed touchdown_vy;         //velocity y axis during the touchdown (Q16.16)
     fixed touchdown_vz;         //velocity z axis during the touchdown (Q16.16)
     fixed touchdown_omega;      //Angular velocity during the touchdown (Q16.16)
+    fixed pad_d_sqr;            //Distance from the closest pad at landing (!=0 when land on a pad) (Q16.16)
 
     //Crash information
     GrReason crash_reason;

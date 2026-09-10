@@ -4,9 +4,17 @@
 #include "landing_area.h"
 
 
-bool IsonPad(const Lander *lander, int area_idx, const Sites *moon_sites) {
-    if (area_idx < 0 || lander == NULL || moon_sites == NULL) {
-        return 0;
+void IsonPad(const Lander *lander, int area_idx, const Sites *moon_sites, bool *pad_status, fixed *distance_sqr) {
+    
+
+    if (area_idx < 0 || lander == NULL || moon_sites == NULL || pad_status == NULL || distance_sqr == NULL ) {
+        if (pad_status != NULL) {
+            *pad_status = 0;
+        }
+        if (distance_sqr != NULL) {
+            *distance_sqr = 0;
+        }
+        return;
     }
 
     const fixed r2 = fixMul(ZONE_LIMIT, ZONE_LIMIT);
@@ -24,12 +32,15 @@ bool IsonPad(const Lander *lander, int area_idx, const Sites *moon_sites) {
             continue;
         }
 
-        fixed distance = fixMul(dx, dx) + fixMul(dy, dy);
+        fixed d_sqr = fixMul(dx, dx) + fixMul(dy, dy);
 
-        if (distance < r2) {
-            return 1;  
+        if (d_sqr < r2) {
+            *pad_status = 1;
+            *distance_sqr = d_sqr;
+            return;  
         }
     }
 
-    return 0;
+    *pad_status = 0;
+    *distance_sqr = 0;
 }
