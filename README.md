@@ -28,8 +28,8 @@ make clean   # remove build artifacts
 
 - **Ernesto De Felice**
 - **Pierluca De Felice**
-- **Raffaele Aucelli**
 - **Raffaele Colamarino**
+- **Raffaele Aucelli**
 
 ## License
 

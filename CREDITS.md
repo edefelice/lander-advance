@@ -2,10 +2,10 @@
 
 ## Team
 
-- **Ernesto De Felice** — Project Lead, Core GBA programming (using libtonc), Fixed-Point Math
-- **Pierluca De Felice** — Programming, Graphics
-- **Raffaele Aucelli** — Audio (SFX & Music), Programming
-- **Raffaele Colamarino** — Audio (SFX & Music), Programming, Game Manual
+- **Ernesto De Felice** - Project Lead, Core GBA programming (using libtonc), Fixed-Point Math, Audio (SFX & Music)
+- **Pierluca De Felice** - Programming, Graphics, Audio (SFX & Music)
+- **Raffaele Colamarino** - Lore, Programming, Game Manual
+- **Raffaele Aucelli** - Programming
 
 
 All the team contributed to the Game Logic, Game Design and Testing.
