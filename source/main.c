@@ -190,6 +190,9 @@ int main(void) {
                                     : (input.rcs_x || input.rcs_y || input.rotate) ? ENGINE_RCS
                                     : ENGINE_OFF;
                 sfx_engine_set(engine);
+                if (input.radar) {
+                    sfx_play(SFX_RADAR);
+                }
                 bool fast_mode = is_fast_mode();
                 GameplayUpdate(&lander, &input, fast_mode, get_active_area_idx(), moon_sites);
                 if (lander.state != LANDER_FLYING && !result_sent) {
@@ -253,6 +256,10 @@ int main(void) {
                 else if (action & M_RETURN) {
                     sfx_play(SFX_BACK);
                 }
+                else if ((action & M_DOWN) || (action & M_UP)
+                        || (action & M_LEFT) || (action & M_RIGHT)) {
+                            sfx_play(SFX_DPAD);
+                }
                 main_states_management(); // Changes game state (Title/Gameplay/Pause)
                 sub_states_management(); // Changes game substate (Resume/Restart/Title/Credits)
                 shell_commit_input();
@@ -267,6 +274,13 @@ int main(void) {
                 }
                 else if (action & M_RETURN) {
                     sfx_play(SFX_BACK);
+                }
+                else if (action & M_RETURN) {
+                    sfx_play(SFX_BACK);
+                }
+                else if ((action & M_DOWN) || (action & M_UP)
+                        || (action & M_LEFT) || (action & M_RIGHT)) {
+                            sfx_play(SFX_DPAD);
                 }
                 main_states_management();
                 sub_states_management();

@@ -4,8 +4,10 @@
 typedef enum {
     SFX_SELECTION = 0,
     SFX_BACK,
+    SFX_DPAD,
     SFX_WARNING,
-    SFX_TRUMPET
+    SFX_TRUMPET,
+    SFX_RADAR
 } SfxId;
 
 typedef enum {
