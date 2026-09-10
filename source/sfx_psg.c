@@ -177,8 +177,8 @@ static void load_sawtooth_wave(void) {
 }
 
 // Channel 4
-#define ENGINE_NOISE_RATIO 4
-#define ENGINE_NOISE_SHIFT 5
+#define ENGINE_NOISE_RATIO 2
+#define ENGINE_NOISE_SHIFT 6
 #define ENGINE_NOISE_WIDTH 0
 static EngineState engine_state = ENGINE_OFF;
 
