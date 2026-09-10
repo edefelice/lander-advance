@@ -38,6 +38,13 @@ static inline fixed shrink(const fixed max, const fixed height, const fixed max_
 
 int get_active_area_idx(void) { return active_area_idx; };
 
+BgPalette get_active_map_palette(void) {
+    BgPalette bg_palette;
+    bg_palette.data = is_near ? AREAS[active_area_idx].pal : moon_far_v3Pal;
+    bg_palette.len = is_near ? AREAS[active_area_idx].pal_len : moon_far_v3PalLen;
+    return bg_palette;
+}
+
 void lander_to_affine_src(const Lander *lander, AFF_SRC_EX *src) {
     int idx = get_active_area_idx();
     int map_size = is_near ? MAP_SIZE_NEAR : MAP_SIZE_FAR;

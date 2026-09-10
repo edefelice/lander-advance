@@ -75,8 +75,14 @@ typedef struct {
 
     //Crash information
     GrReason crash_reason;
+
+    // Light state
     bool light_on;
     u16 light_timer;
+
+    // Radar state
+    bool radar_on;
+    u16 radar_timer;
 
     //Lander state
     LanderStatus state;
