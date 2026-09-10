@@ -30,7 +30,7 @@ static int CalculateFuelScore(const Lander *lander)
 
     fuel_ratio = fixDiv(lander->propellant, PROP_MASS);
 
-    return (int)fixMul(FIX_FROM_INT(SCORE_FUEL), fuel_ratio);
+    return FIX_TO_INT(fixMul(FIX_FROM_INT(SCORE_FUEL), fuel_ratio));
 }
 
 
@@ -39,20 +39,18 @@ static int CalculateFuelScore(const Lander *lander)
 // The distance is normalized using MAX_MAP_DISTANCE.
 static int CalculateDistanceScore(const Lander *lander)
 {
-    fixed distance;
+    int32_t distance;
     fixed ratio;
 
-    distance = fixAbs(lander->x);
+    distance = FIX_TO_INT(lander->x);
+    distance *= distance;
 
-    if (fixAbs(lander->y) > distance)
-        distance = fixAbs(lander->y);
-
-    ratio = fixDiv(distance, MAX_MAP_DISTANCE);
+    ratio = FIX_FROM_FRACTION(distance, MAX_MAP_DISTANCE_SQR);
 
     if (ratio > FIX_FROM_INT(1))
         ratio = FIX_FROM_INT(1);
 
-    return (int)fixMul(FIX_FROM_INT(SCORE_DISTANCE), ratio);
+    return FIX_TO_INT(fixMul(FIX_FROM_INT(SCORE_DISTANCE), ratio));
 }
 
 
@@ -109,7 +107,7 @@ static int CalculateLandingScore(const Lander *lander)
 
     quality = fixMul(vertical_ratio, FIX_FROM_FRACTION(1, 2)) + fixMul(horizontal_ratio, FIX_FROM_FRACTION(3, 10)) + fixMul(angular_ratio, FIX_FROM_FRACTION(1, 5));
 
-    return (int)fixMul(FIX_FROM_INT(SCORE_LANDING), quality);
+    return FIX_TO_INT(fixMul(FIX_FROM_INT(SCORE_LANDING), quality));
 }
 
 
@@ -122,26 +120,37 @@ static int CalculateBatteryScore(const Lander *lander)
 
     battery_ratio = fixDiv(FIX_FROM_INT(lander->available_power), FIX_FROM_INT(P_USES));
 
-    return (int)fixMul(FIX_FROM_INT(SCORE_BATTERY), battery_ratio);
+    return FIX_TO_INT(fixMul(FIX_FROM_INT(SCORE_BATTERY), battery_ratio));
 }
 
 
 //----------------- PIERLU COMMENTA TU
 
-//static int CalculatePadScore(const Lander *lander)
-//{
-    /*
-    --------------------------------------------
-
-PIER VEDI TU 
-
+static int CalculatePadScore(const Lander *lander)
+{    /*
     Return value:
         0    = edge of pad
         1000 = exact center
     */
 
-//    return SCORE_PAD;
-//}
+    fixed distance;
+    fixed ratio = 0;
+
+    distance = lander->pad_d_sqr;
+
+    if (distance != 0){
+
+        ratio = FIX_FROM_INT(1) - fixDiv(distance, PAD_R2);
+
+    }
+        
+    if (ratio < 0) {
+        ratio = 0;
+    }
+
+    return FIX_TO_INT(fixMul(FIX_FROM_INT(SCORE_PAD), ratio));
+
+}
 
 
 
@@ -173,7 +182,7 @@ GameResult GameScoreCreateResult(const Lander *lander)
     result.score += CalculateDistanceScore(lander);
     result.score += CalculateLandingScore(lander);
     result.score += CalculateBatteryScore(lander);
-    //result.score += CalculatePadScore(lander);
+    result.score += CalculatePadScore(lander);
 
     if (result.score > SCORE_MAX)
         result.score = SCORE_MAX;

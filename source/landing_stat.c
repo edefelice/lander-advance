@@ -2,6 +2,7 @@
 #include "gameplay.h"
 #include "fixedpoint32.h"
 #include "landing_area.h"
+#include "physics_constants.h"
 
 
 void IsonPad(const Lander *lander, int area_idx, const Sites *moon_sites, bool *pad_status, fixed *distance_sqr) {
@@ -17,7 +18,6 @@ void IsonPad(const Lander *lander, int area_idx, const Sites *moon_sites, bool *
         return;
     }
 
-    const fixed r2 = fixMul(ZONE_LIMIT, ZONE_LIMIT);
     const Sites *current = &moon_sites[area_idx];
 
     for (int i = 0; i < N_ZONES; i++) {
@@ -34,7 +34,7 @@ void IsonPad(const Lander *lander, int area_idx, const Sites *moon_sites, bool *
 
         fixed d_sqr = fixMul(dx, dx) + fixMul(dy, dy);
 
-        if (d_sqr < r2) {
+        if (d_sqr < PAD_R2) {
             *pad_status = 1;
             *distance_sqr = d_sqr;
             return;  

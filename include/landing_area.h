@@ -4,7 +4,7 @@
 #include "fixedpoint32.h"
 
 #define AREA_LIMIT 219 // Metre
-#define ZONE_LIMIT (fixed)0x447AE   // Landing Zone Radius [Metre] (4.28m)
+//#define ZONE_LIMIT (fixed)0x447AE   // Landing Zone Radius [Metre] (4.28m)
 #define N_ZONES 22 // Number of landing zones
 #define NUM_AREAS 3
 
