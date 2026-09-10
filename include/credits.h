@@ -7,16 +7,16 @@ static const char* const credits_lines[LINES_COUNT] = {
     "---THE CIRCUS---",
     "",
     "E. De Felice:",
-    "Lead, GBA Dev, Fixed-Point Math",
+    "Lead, GBA Dev, Fixed-Point Math, SFX",
     "",
     "P. De Felice:",
-    "Dev, Graphics",
-    "",
-    "R. Aucelli:",
-    "SFX, Dev",
+    "Dev, Graphics, SFX",
     "",
     "R. Colamarino:",
-    "Lore, Dev, Handbook, SFX"
+    "Lore, Dev, Handbook",
+    "",
+    "R. Aucelli:",
+    "Dev"
 };
 
 #endif

@@ -63,6 +63,7 @@ int result_score(void);
 const char* result_reason(void);
 bool is_night_mode(void);
 bool is_fast_mode(void);
+bool area_is_coming_soon(void);
 
 void shell_init(void);
 void main_states_management(void);

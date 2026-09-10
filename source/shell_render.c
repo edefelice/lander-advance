@@ -128,13 +128,21 @@ void shell_render_display(void) {
              tte_set_pos(2 * BASE_OFFSET, 6 * BASE_OFFSET);
              tte_write(area_index() == 0 ? "> " : "  "); tte_write(area_data(planet_index(), 0)->area_name);
              
+             tte_set_color(TTE_INK, COLOR_SILVER);
              tte_set_pos(2 * BASE_OFFSET, BASE_OFFSET * BASE_OFFSET);
              tte_write(area_index() == 1 ? "> " : "  "); tte_write(area_data(planet_index(), 1)->area_name);
              
+             tte_set_color(TTE_INK, COLOR_SILVER);
              tte_set_pos(2 * BASE_OFFSET, 10 * BASE_OFFSET);
              tte_write(area_index() == 2 ? "> " : "  "); tte_write(area_data(planet_index(), 2)->area_name);
              
-             tte_set_pos(2 * BASE_OFFSET, 15 * BASE_OFFSET); tte_write("Press A for Info");
+             if (area_is_coming_soon()) {
+                 tte_set_color(TTE_INK, COLOR_SILVER);
+                 tte_set_pos(2 * BASE_OFFSET, 15 * BASE_OFFSET); tte_write("Coming soon...");
+             } else {
+                 tte_set_color(TTE_INK, area_index() == 0 ? COLOR_GREEN : COLOR_SILVER);
+                 tte_set_pos(2 * BASE_OFFSET, 15 * BASE_OFFSET); tte_write("Press A for Info");
+             }
              break;
              
          case SUB_AREA_INFO:
@@ -227,8 +235,8 @@ void shell_render_display(void) {
             tte_set_color(TTE_INK, COLOR_GREEN);
             tte_set_pos(2 * BASE_OFFSET, 6 * BASE_OFFSET); tte_write("Ernesto De Felice");
             tte_set_pos(2 * BASE_OFFSET, 8 * BASE_OFFSET); tte_write("Pierluca De Felice");
-            tte_set_pos(2 * BASE_OFFSET, 10 * BASE_OFFSET); tte_write("Raffaele Aucelli");
-            tte_set_pos(2 * BASE_OFFSET, 12 * BASE_OFFSET); tte_write("Raffaele Colamarino");
+            tte_set_pos(2 * BASE_OFFSET, 10 * BASE_OFFSET); tte_write("Raffaele Colamarino");
+            tte_set_pos(2 * BASE_OFFSET, 12 * BASE_OFFSET); tte_write("Raffaele Aucelli");
 
             tte_set_color(TTE_INK, COLOR_WHITE);
             tte_set_pos(2 * BASE_OFFSET, 15 * BASE_OFFSET); tte_write("Press A / B to return");

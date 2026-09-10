@@ -228,9 +228,17 @@ void UpdateLinearPhysics(Lander *lander) {
 //Define the lander status                                                  
 void UpdateCollision(Lander *lander, int area_idx, const Sites *moon_sites) {
 
+
     if (lander->z <= 0) {
 
+        bool pad_status = 0;                                                                            // Variable for pad status on landing
+        fixed pad_distance_sqr = 0;                                                                     // Variable for pad distance on landing
+
         lander->z = 0;
+        
+        // Compute pad status and lander distance from pad
+
+        IsonPad(lander, area_idx, moon_sites, &pad_status, &pad_distance_sqr);
 
          //Save touchdown values before stopping the lander
 
@@ -238,9 +246,10 @@ void UpdateCollision(Lander *lander, int area_idx, const Sites *moon_sites) {
         lander->touchdown_vy = lander->vy;
         lander->touchdown_vz = lander->vz;
         lander->touchdown_omega = lander->omega;
+        lander->pad_d_sqr = pad_distance_sqr;
  
 
-        if (!IsonPad(lander, area_idx, moon_sites) ) {                                                  //Pad position
+        if (!pad_status) {                                                                          //Pad position
 
             lander->crash_reason = GR_REASON_OUT_OF_PAD;
             lander->state = LANDER_CRASHED;                                                         // Crash!
@@ -253,7 +262,7 @@ void UpdateCollision(Lander *lander, int area_idx, const Sites *moon_sites) {
             lander->state = LANDER_CRASHED;                                                         // Crash!
         } 
 
-        else if (fixAbs(lander->vx) > MAX_LANDING_VX || fixAbs(lander->vy) > MAX_LANDING_VY) {       // Traslational limit
+        else if (fixAbs(lander->vx) > MAX_LANDING_VX || fixAbs(lander->vy) > MAX_LANDING_VY) {      // Traslational limit
 
             lander->crash_reason = GR_REASON_HORIZONTAL_SPEED;
             lander->state = LANDER_CRASHED;                                                         // Crash!
