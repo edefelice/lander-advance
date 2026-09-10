@@ -33,6 +33,7 @@ static int selected_pause = 0;
 static bool result_pending = false;
 static bool selected_night_mode = false;
 static bool selected_fast_mode = false;
+static bool area_coming_soon = false;
 
 // Reason descriptor for losing
 static const char* const reason_text[] = {
@@ -81,6 +82,7 @@ void main_states_management(void) {
             else if (A_button == 1 && present_body == SUB_MODE_SELECTION) {
                 present_state = STATE_AREA_SELECTION;
                 present_area = SUB_AREA_POINTER_MOVING;
+                area_coming_soon = false;
                 A_button = 0;
             }
             break;
@@ -214,15 +216,23 @@ void sub_states_management(void) {
                 case SUB_AREA_POINTER_MOVING:
                     if (up_pointer == 1 && selected_area > 0) {
                         selected_area--;
+                        area_coming_soon = false;
                     }
                     else if (down_pointer == 1 && selected_area < 2) {
                         selected_area++;
+                        area_coming_soon = false;
                     }
                     else if (A_button == 1) {
-                        present_area = SUB_AREA_INFO;
+                        if (selected_area == 0) {
+                            present_area = SUB_AREA_INFO;
+                            area_coming_soon = false;
+                        } else {
+                            area_coming_soon = true;
+                        }
                         A_button = 0;
                     }
                     else if (B_button == 1) {
+                        area_coming_soon = false;
                         present_state = STATE_CELESTIAL_BODY_SELECTION;
                         present_body = SUB_MODE_SELECTION;
                         B_button = 0;
@@ -231,6 +241,7 @@ void sub_states_management(void) {
                 case SUB_AREA_INFO:
                     if (B_button == 1) {
                         present_area = SUB_AREA_POINTER_MOVING;
+                        area_coming_soon = false;
                         B_button = 0;
                     }
                     break;
@@ -252,6 +263,7 @@ void sub_states_management(void) {
                     else if (B_button == 1) {
                         present_state = STATE_AREA_SELECTION;
                         present_area = SUB_AREA_POINTER_MOVING;
+                        area_coming_soon = false;
                         B_button = 0;
                     }
                     break;
@@ -311,6 +323,7 @@ void shell_init(void) {
     selected_crew = 0;
     selected_night_mode = false;
     selected_fast_mode = false;
+    area_coming_soon = false;
 
     //reset results
     present_result.outcome = GR_LOSE;
@@ -383,6 +396,10 @@ bool is_night_mode(void) {
 
 bool is_fast_mode(void) {
     return selected_fast_mode;
+}
+
+bool area_is_coming_soon(void) {
+    return area_coming_soon;
 }
 
 void shell_feed_input(u16 action) {
