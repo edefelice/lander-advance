@@ -76,6 +76,6 @@
 #define MAX_LANDING_OMEGA   FIX_FROM_INT(1)                     // 1 rad/s limit for a good land
 
 //Map distance
-#define MAX_MAP_DISTANCE FIX_FROM_INT(1000)                     //Pier definisci le dimensioni della mappa qui
+#define MAX_MAP_DISTANCE FIX_FROM_INT(7020)                     //Pier definisci le dimensioni della mappa qui
 
 #endif // PHYSICS_CONSTANT_H

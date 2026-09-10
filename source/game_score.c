@@ -34,14 +34,13 @@ static int CalculateFuelScore(const Lander *lander)
 }
 
 
-//----------------------------------PIERLU COMMENTA TU
-
+// Calculate the score based on the distance from the center of the map.
+// Greater distance from the center results in a higher score.
+// The distance is normalized using MAX_MAP_DISTANCE.
 static int CalculateDistanceScore(const Lander *lander)
 {
     fixed distance;
     fixed ratio;
-
-    // LA DISTANZA DAL CENTRO DELLA MAPPA uso distanza massima tra gli assi
 
     distance = fixAbs(lander->x);
 
@@ -129,8 +128,8 @@ static int CalculateBatteryScore(const Lander *lander)
 
 //----------------- PIERLU COMMENTA TU
 
-static int CalculatePadScore(const Lander *lander)
-{
+//static int CalculatePadScore(const Lander *lander)
+//{
     /*
     --------------------------------------------
 
@@ -141,8 +140,9 @@ PIER VEDI TU
         1000 = exact center
     */
 
-    return SCORE_PAD;
-}
+//    return SCORE_PAD;
+//}
+
 
 
 /*
@@ -173,7 +173,7 @@ GameResult GameScoreCreateResult(const Lander *lander)
     result.score += CalculateDistanceScore(lander);
     result.score += CalculateLandingScore(lander);
     result.score += CalculateBatteryScore(lander);
-    result.score += CalculatePadScore(lander);
+    //result.score += CalculatePadScore(lander);
 
     if (result.score > SCORE_MAX)
         result.score = SCORE_MAX;
