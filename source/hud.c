@@ -1,6 +1,7 @@
 #include <stdint.h>
 #include <tonc.h>
 #include "hud.h"
+#include "affine_background.h"
 #include "fixedpoint32.h"
 #include "gameplay.h"
 #include "graphics/HUD_1.h"
@@ -29,6 +30,17 @@
 #define HUD_LAMP_ON_STEP  10   // lit colour = unlit colour + 10
 #define HUD_LAMP_OFF ((HUD_LAMP_PAL_BASE) - (HUD_BACKGROUND_PAL_BASE))
 #define HUD_LAMP_ON  ((HUD_LAMP_OFF) + (HUD_LAMP_ON_STEP))
+
+#define CLR_RADAR1 0x001F
+#define CLR_RADAR2 0x03E4
+
+static const uint16_t radar_pal[] = {
+    CLR_RADAR1, CLR_RADAR1, CLR_RADAR1, CLR_RADAR1,
+    CLR_RADAR1, CLR_RADAR1, CLR_RADAR1, CLR_RADAR1, CLR_RADAR1,
+    CLR_RADAR1, CLR_RADAR1, CLR_RADAR1, CLR_RADAR1, CLR_RADAR2,
+    CLR_RADAR2};
+
+static bool radar_on_prev = false;
 
 // Palbank map
 enum HudPalbank {
@@ -149,7 +161,7 @@ static int hud_bar_init(OBJ_ATTR *buffer, int slot, const HudBar *bar) {
     for (int i = 0; i < bar->cells; i++){
         obj_set_attr(&buffer[slot + i], ATTR0_SQUARE | ATTR0_HIDE, ATTR1_SIZE_8x8 | bar->flip,
         ATTR2_PALBANK(bar->palette_bank) | ATTR2_PRIO(bar->prio) | bar->base);
-    obj_set_pos(&buffer[slot + i], bar->x + i * bar->dx, bar->y + i * bar->dy);
+        obj_set_pos(&buffer[slot + i], bar->x + i * bar->dx, bar->y + i * bar->dy);
     }
     return bar->cells;
 }
@@ -318,7 +330,7 @@ static bool lamp_on(int k, const Lander *lander, const PlayerInput *input) {
             on = (input->rotate == 1);
             break;
         case HUD_LAMP_RADAR:
-            on = input->radar;
+            on = lander->radar_on;
             break;
         case HUD_LAMP_LIGHT:
             on = lander->light_on;
@@ -374,6 +386,15 @@ void hud_update(OBJ_ATTR *buffer, int slot, const Lander *lander, const PlayerIn
     for (int k = 0; k < HUD_LAMP_COUNT; k++) {
         pal_bg_mem[HUD_LAMP_PAL_BASE + k] = HUD_1Pal[(lamp_on(k, lander, input) ? HUD_LAMP_ON : HUD_LAMP_OFF) + k];
     }
+
+    BgPalette active_pal = get_active_map_palette();
+    if (lander->radar_on && lander->z < FIX_FROM_INT(200)) {
+        memcpy16(&pal_bg_mem[1], radar_pal, sizeof(radar_pal) / sizeof(radar_pal[0]));
+    }
+    else if (radar_on_prev && !lander->radar_on) {
+        memcpy16(pal_bg_mem, active_pal.data, active_pal.len / 2);
+    }
+    radar_on_prev = lander->radar_on;
 }
 
 int hud_post_fuel_power_slot(void) {

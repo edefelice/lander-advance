@@ -297,8 +297,8 @@ void GameplayUpdate(Lander *lander, const PlayerInput *input, bool fast_mode, in
 
         if (input->light) {
             if (lander->light_on) {
-                lander->light_on = false;
-                lander->light_timer = 0;
+                //lander->light_on = false;
+                //lander->light_timer = 0;
             } else if (lander->available_power > 0) {
                 lander->available_power--;
                 lander->light_on = true;
@@ -312,6 +312,26 @@ void GameplayUpdate(Lander *lander, const PlayerInput *input, bool fast_mode, in
             }
             if (lander->light_timer == 0) {
                 lander->light_on = false;
+            }
+        }
+
+        if (input->radar) {
+            if (lander->radar_on) {
+                //lander->radar_on = false;
+                //lander->radar_timer = 0;
+            } else if (lander->available_power > 0) {
+                lander->available_power--;
+                lander->radar_on = true;
+                lander->radar_timer = 1800;
+            }
+        }
+
+        if (lander->radar_on) {
+            if (lander->radar_timer > 0) {
+                lander->radar_timer--;
+            }
+            if (lander->radar_timer == 0) {
+                lander->radar_on = false;
             }
         }
 

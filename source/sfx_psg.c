@@ -1,15 +1,69 @@
 #include <tonc.h>
 #include <stdint.h>
 #include "sfx_psg.h"
+#include "tonc_memdef.h"
 #include "tonc_memmap.h"
-
-
-// Channel 2 sequencer
 
 typedef enum {
     STEP_SILENCE = 0,
     STEP_TRIGGER
 } Ch2StepType;
+
+// Channel 1
+typedef struct {
+    Ch2StepType type;
+    uint16_t rate; // 11-bit rate (only if TRIGGER enabled)
+    uint8_t frames;
+} Ch1Step;
+
+static const Ch1Step STEPS_RADAR[] = {
+    {STEP_TRIGGER, 0x706, 6}, // C5
+    {STEP_SILENCE, 0, 4},
+    {STEP_TRIGGER, 0x706, 6},
+    {STEP_SILENCE, 0, 4},
+    {STEP_TRIGGER, 0x706, 6}
+};
+
+static void ch1_apply(const Ch1Step *s) {
+    if (s->type == STEP_TRIGGER) {
+        REG_SND1SWEEP = (4 << 4) | (0 << 3) | 3; // tempo = 4, dir = 0(up), shift = 3
+        REG_SND1CNT = SSQR_ENV_BUILD(15, 0, 3) | SSQR_DUTY1_2;
+        REG_SND1FREQ = SFREQ_RESET | SFREQ_RATE(s->rate);
+    }
+}
+
+static const Ch1Step *ch1_steps = NULL;
+static uint8_t ch1_count = 0;
+static uint8_t ch1_idx = 0;
+static uint8_t ch1_timer = 0;
+
+static void ch1_play(const Ch1Step *steps, uint8_t count) {
+    ch1_steps = steps;
+    ch1_count = count;
+    ch1_idx = 0;
+    ch1_apply(&ch1_steps[0]); // immidiately apply 1st step
+    ch1_timer =ch1_steps[0].frames;
+}
+
+static void ch1_tick(void) {
+    if (ch1_steps == NULL || ch1_idx >= ch1_count) {
+        return;
+    }
+    if (ch1_timer > 0) {
+        ch1_timer--;
+        return;
+    }
+    
+    ch1_idx++;
+    if (ch1_idx >= ch1_count) {
+        ch1_steps = NULL; // finished sequence
+        return;
+    }
+    ch1_apply(&ch1_steps[ch1_idx]);
+    ch1_timer = ch1_steps[ch1_idx].frames;
+}
+
+// Channel 2
 
 typedef struct {
     Ch2StepType type;
@@ -26,6 +80,10 @@ static const Ch2Step STEPS_SELECTION[] = {
 static const Ch2Step STEPS_BACK[] = {
     {STEP_TRIGGER, SSQR_ENV_BUILD(15, 0, 1) | SSQR_DUTY1_4, 0x739, 5}, // E5
     {STEP_TRIGGER, SSQR_ENV_BUILD(15, 0, 1) | SSQR_DUTY1_4, 0x6D6, 7} // A4
+};
+
+static const Ch2Step STEPS_DPAD[] = {
+    {STEP_TRIGGER, SSQR_ENV_BUILD(10, 0, 1) | SSQR_DUTY1_8, 0x759, 3} // G5
 };
 
 static const Ch2Step STEPS_WARNING[] = {
@@ -177,8 +235,8 @@ static void load_sawtooth_wave(void) {
 }
 
 // Channel 4
-#define ENGINE_NOISE_RATIO 4
-#define ENGINE_NOISE_SHIFT 5
+#define ENGINE_NOISE_RATIO 2
+#define ENGINE_NOISE_SHIFT 6
 #define ENGINE_NOISE_WIDTH 0
 static EngineState engine_state = ENGINE_OFF;
 
@@ -216,8 +274,8 @@ void sfx_engine_set(EngineState state) {
 void sfx_init(void) {
     REG_SNDSTAT   = SSTAT_ENABLE;
     REG_SNDDSCNT  = SDS_DMG100;
-    REG_SNDDMGCNT = SDMG_BUILD(SDMG_SQR2|SDMG_WAVE|SDMG_NOISE,
-                                SDMG_SQR2|SDMG_WAVE|SDMG_NOISE, 7, 7);
+    REG_SNDDMGCNT = SDMG_BUILD(SDMG_SQR1 | SDMG_SQR2 | SDMG_WAVE | SDMG_NOISE,
+                                SDMG_SQR1 | SDMG_SQR2 | SDMG_WAVE | SDMG_NOISE, 7, 7);
     load_sawtooth_wave();
 }
 
@@ -229,16 +287,23 @@ void sfx_play(SfxId id) {
         case SFX_BACK:
             ch2_play(STEPS_BACK, ARRAY_LEN(STEPS_BACK));
             break;
+        case SFX_DPAD:
+            ch2_play(STEPS_DPAD, ARRAY_LEN(STEPS_DPAD));
+            break;
         case SFX_WARNING:
             ch2_play(STEPS_WARNING, ARRAY_LEN(STEPS_WARNING));
             break;
         case SFX_TRUMPET:
             ch3_play(STEPS_TRUMPET, ARRAY_LEN(STEPS_TRUMPET));
             break;
+        case SFX_RADAR:
+            ch1_play(STEPS_RADAR, ARRAY_LEN(STEPS_RADAR));
+            break;
     }
 }
 
 void sfx_update(void) {
+    ch1_tick();
     ch2_tick();
     ch3_tick();
 }

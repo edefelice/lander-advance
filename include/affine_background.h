@@ -2,6 +2,12 @@
 #define AFFINE_BACKGROUND_H
 
 #include "gameplay.h"
+#include <stdint.h>
+
+typedef struct {
+    const uint16_t *data;
+    uint32_t len;
+} BgPalette;
 
 /*
     lander_to_affine_src(...)
@@ -17,5 +23,7 @@ void lander_to_affine_src(const Lander *lander, AFF_SRC_EX *src);
 void map_swap(const Lander *lander);
 
 int get_active_area_idx(void);
+
+BgPalette get_active_map_palette(void);
 
 #endif // AFFINE_BACKGROUND_H
