@@ -30,15 +30,15 @@
 // ---------------------------
 
 //Dimention
-#define LEM_RADIUS          FIX_FROM_FRACTION(21,10)        //Diameter ≈ 4,2 m -> Radius 2,1 m
+#define LEM_RADIUS          FIX_FROM_FRACTION(21,10)            // Diameter ≈ 4,2 m -> Radius 2,1 m
 
 //Thrust main and RCS
-#define MAIN_THRUST         FIX_FROM_INT(30000)                 //Thrust main engine 30000N
-#define RCS_THRUST          FIX_FROM_INT(440)                   //Thrust RCS engines 440N
+#define MAIN_THRUST         FIX_FROM_INT(30000)                 // Thrust main engine 30000N
+#define RCS_THRUST          FIX_FROM_INT(440)                   // Thrust RCS engines 440N
 
 //mass
-#define DRY_MASS            FIX_FROM_INT(6713)                  //Dry mass 6713 Kg
-#define PROP_MASS           FIX_FROM_INT(4243)                  //Propellant mass 4243 Kg  (realistic mass 8487 / 2)
+#define DRY_MASS            FIX_FROM_INT(6713)                  // Dry mass 6713 Kg
+#define PROP_MASS           FIX_FROM_INT(7980)                  // Propellant mass 4243 Kg  (Max Take-Off mass 8487 / 2) (max before intertia overflow 7987 )
 #define CREW_MASS           FIX_FROM_INT(160)                   // Crew mass (2 astronauts, 80 kg each)
 
 //mass flow main and RCS (Consumption)
