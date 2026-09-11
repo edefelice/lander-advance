@@ -7,12 +7,8 @@
 #include "graphics/HUD_1.h"
 #include "affine_background.h"
 #include "hud.h"
-#include "maxmod.h"
-#include "mm_types.h"
 #include "shell.h"
 #include "shell_render.h"
-#include "soundbank.h"
-#include "soundbank_bin.h"
 #include "sfx_psg.h"
 #include "landing_area.h"
 #include "game_score.h"
@@ -114,10 +110,8 @@ int main(void) {
     spotlight_init_objs(obj_buffer, spotlight_slot);
     int total_obj = n_obj + SPOTLIGHT_OBJ_COUNT;
     irq_init(NULL);
-    irq_add(II_VBLANK, mmVBlank);
-    mmInitDefault((mm_addr)soundbank_bin, 8); // TODO: check when adding audio files
+    irq_add(II_VBLANK, NULL);
     sfx_init();
-    //mmEffect(SFX_TEST_TONE); // Just for test. Change when adding audio.
     bool result_sent = false;
     uint16_t action = 0;
     GameResult result;
@@ -306,7 +300,6 @@ int main(void) {
         }
         prev_state = cur_state; // Update previous state
         VBlankIntrWait(); // Wait VBlank
-        mmFrame();
         sfx_update();
         oam_copy(oam_mem, obj_buffer, total_obj); // Copy sprites in oam
         REG_BG_AFFINE[2] = affine_bg; // Update affine bg register
