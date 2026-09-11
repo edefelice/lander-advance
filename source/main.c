@@ -126,8 +126,7 @@ int main(void) {
         GameState cur_state = shell_state(); // Update Current state
         // True = in play state coming from title/config/pause screen
         bool entered_gameplay = cur_state == STATE_GAMEPLAY && prev_state != STATE_GAMEPLAY;
-        // True = in play state after restarting game
-        bool fresh_start = entered_gameplay && (prev_state == STATE_CONFIG_SELECTION || last_pause_choice == SUB_RESTART);
+        bool fresh_start = entered_gameplay && (prev_state == STATE_CONFIG_SELECTION || last_pause_choice == SUB_RESTART || prev_state == STATE_FIN);
         key_poll(); // Check key status
         if (cur_state != STATE_TITLE && cur_state != STATE_GAME_MODE_SELECTION) {
             REG_DISPCNT |= DCNT_BG1;
@@ -139,7 +138,8 @@ int main(void) {
         if(cur_state == STATE_GAMEPLAY) {
             pal_bg_mem[HUD_SPEED_RULER_PAL_IDX] = HUD_1Pal[25];
             REG_DISPCNT |= DCNT_OBJ | DCNT_OBJ_1D;
-            if (!is_night_mode() || lander.light_on) {
+            bool radar_active = lander.radar_on && (lander.z < FIX_FROM_INT(200));
+            if (!is_night_mode() || lander.light_on || radar_active) {
                 REG_DISPCNT |= DCNT_BG2;
             } else {
                 REG_DISPCNT &= ~DCNT_BG2;
@@ -216,9 +216,16 @@ int main(void) {
                     break;
                 }
                 hud_update(obj_buffer, 0, &lander, &input);
+                bool radar_active = lander.radar_on && (lander.z < FIX_FROM_INT(200));
                 if (is_night_mode()) {
                     pal_bg_mem[0] = 0x0;
-                    if (lander.light_on) {
+                    if (radar_active) {
+                        REG_DISPCNT &= ~(DCNT_WIN0 | DCNT_WIN1 | DCNT_WINOBJ);
+                        REG_DISPCNT |= DCNT_BG2;
+                        REG_BLDCNT = 0;
+                        REG_BLDY = 0;
+                        spotlight_set_active(obj_buffer, spotlight_slot, false);
+                    } else if (lander.light_on) {
                         REG_DISPCNT &= ~(DCNT_WIN0 | DCNT_WIN1);
                         REG_DISPCNT |= DCNT_WINOBJ | DCNT_BG2;
                         REG_WINOUT = WINOUT_BUILD(WIN_BG0 | WIN_BG1 | WIN_OBJ, WIN_BG0 | WIN_BG1 | WIN_BG2 | WIN_OBJ);

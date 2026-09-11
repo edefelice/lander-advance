@@ -361,6 +361,7 @@ void hud_load_gfx(void) {
 }
 
 int hud_init(OBJ_ATTR *buffer, int slot) {
+    radar_on_prev = false;
     int s = slot;
     for (int i = 0; i < HUD_BAR_COUNT; i++) {
         s += hud_bar_init(buffer, s, &bars[i]);
@@ -388,13 +389,14 @@ void hud_update(OBJ_ATTR *buffer, int slot, const Lander *lander, const PlayerIn
     }
 
     BgPalette active_pal = get_active_map_palette();
-    if (lander->radar_on && lander->z < FIX_FROM_INT(200)) {
+    bool radar_active = lander->radar_on && (lander->z < FIX_FROM_INT(200));
+    if (radar_active) {
         memcpy16(&pal_bg_mem[1], radar_pal, sizeof(radar_pal) / sizeof(radar_pal[0]));
     }
-    else if (radar_on_prev && !lander->radar_on) {
+    else if (radar_on_prev) {
         memcpy16(pal_bg_mem, active_pal.data, active_pal.len / 2);
     }
-    radar_on_prev = lander->radar_on;
+    radar_on_prev = radar_active;
 }
 
 int hud_post_fuel_power_slot(void) {

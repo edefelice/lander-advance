@@ -11,9 +11,31 @@
 #define COLOR_GREEN 0x03ED
 #define BASE_OFFSET 8
 
+#define PB_GREEN  15
+#define PB_SILVER 14
+#define PB_BLU    13
+#define PB_RED    12
+#define PB_WHITE  11
+
+static void set_text_color(u16 color) {
+    u16 pb = PB_GREEN;
+    if (color == COLOR_SILVER) pb = PB_SILVER;
+    else if (color == COLOR_BLU) pb = PB_BLU;
+    else if (color == COLOR_RED) pb = PB_RED;
+    else if (color == COLOR_WHITE) pb = PB_WHITE;
+    tte_set_special(SE_PALBANK(pb));
+}
+
+#define tte_set_color(type, clr) set_text_color(clr)
+
 void shell_render_engine_init(void) {
    //font and tte init
    tte_init_se_default(0, BG_CBB(1) | BG_SBB(15) | BG_4BPP | BG_PRIO(0));
+   pal_bg_mem[PB_GREEN * 16 + 1] = COLOR_GREEN;
+   pal_bg_mem[PB_SILVER * 16 + 1] = COLOR_SILVER;
+   pal_bg_mem[PB_BLU * 16 + 1] = COLOR_BLU;
+   pal_bg_mem[PB_RED * 16 + 1] = COLOR_RED;
+   pal_bg_mem[PB_WHITE * 16 + 1] = COLOR_WHITE;
 }
 
 void shell_render_display(void) { 
@@ -23,6 +45,12 @@ void shell_render_display(void) {
    const AreaData* a_data;
    const LanderData* l_data;
    
+   pal_bg_mem[PB_GREEN * 16 + 1] = COLOR_GREEN;
+   pal_bg_mem[PB_SILVER * 16 + 1] = COLOR_SILVER;
+   pal_bg_mem[PB_BLU * 16 + 1] = COLOR_BLU;
+   pal_bg_mem[PB_RED * 16 + 1] = COLOR_RED;
+   pal_bg_mem[PB_WHITE * 16 + 1] = COLOR_WHITE;
+
    tte_erase_screen();
    
    switch (present_state) {
@@ -37,25 +65,25 @@ void shell_render_display(void) {
         break;
 
     case STATE_GAME_MODE_SELECTION:
-        tte_set_color(TTE_INK, COLOR_GREEN);
+        tte_set_color(TTE_INK, COLOR_SILVER);
         tte_set_pos(4 * BASE_OFFSET, 2 * BASE_OFFSET);
         tte_write("Select Game Mode");
 
-        tte_set_color(TTE_INK, is_fast_mode() ? COLOR_SILVER : COLOR_GREEN);
+        tte_set_color(TTE_INK, COLOR_BLU);
         tte_set_pos(2 * BASE_OFFSET, 4 * BASE_OFFSET);
         tte_write(is_fast_mode() ? "  Simulation" : "> Simulation");
 
-        tte_set_color(TTE_INK, COLOR_SILVER);
+        tte_set_color(TTE_INK, COLOR_GREEN);
         tte_set_pos(4 * BASE_OFFSET, 6 * BASE_OFFSET);
         tte_write("Original game mode,");
         tte_set_pos(4 * BASE_OFFSET, 7 * BASE_OFFSET);
         tte_write("realistic experience");
 
-        tte_set_color(TTE_INK, is_fast_mode() ? COLOR_GREEN : COLOR_SILVER);
+        tte_set_color(TTE_INK, COLOR_RED);
         tte_set_pos(2 * BASE_OFFSET, 9 * BASE_OFFSET);
         tte_write(is_fast_mode() ? "> Fast" : "  Fast");
 
-        tte_set_color(TTE_INK, COLOR_SILVER);
+        tte_set_color(TTE_INK, COLOR_GREEN);
         tte_set_pos(4 * BASE_OFFSET, 11 * BASE_OFFSET);
         tte_write("RCS more powerful,");
         tte_set_pos(4 * BASE_OFFSET, 12 * BASE_OFFSET);
@@ -72,9 +100,10 @@ void shell_render_display(void) {
       switch (body_state()){
          case SUB_SHUTTLE_MOVING:
              p_data = planet_data(planet_index());
-             tte_set_color(TTE_INK, COLOR_GREEN);
+             tte_set_color(TTE_INK, COLOR_SILVER);
              
              tte_set_pos(4 * BASE_OFFSET, 4 * BASE_OFFSET); tte_write("Flight trajectory");
+             tte_set_color(TTE_INK, COLOR_GREEN);
              tte_set_pos(2 * BASE_OFFSET, 6 * BASE_OFFSET); tte_write("Celestial Body:");
              
              tte_set_pos(2 * BASE_OFFSET, BASE_OFFSET * BASE_OFFSET);
@@ -86,7 +115,7 @@ void shell_render_display(void) {
              
          case SUB_BODY_INFO:
              p_data = planet_data(planet_index());
-             tte_set_color(TTE_INK, COLOR_GREEN);
+             tte_set_color(TTE_INK, COLOR_SILVER);
              tte_set_pos(7 * BASE_OFFSET, 4 * BASE_OFFSET); tte_write("Body Info");
              
              tte_set_color(TTE_INK, COLOR_GREEN);
@@ -104,15 +133,18 @@ void shell_render_display(void) {
              break;
              
          case SUB_MODE_SELECTION:
-             tte_set_color(TTE_INK, COLOR_GREEN);
+             tte_set_color(TTE_INK, COLOR_SILVER);
              tte_set_pos(4 * BASE_OFFSET, 4 * BASE_OFFSET); tte_write("Select Flight Mode");
              
+             tte_set_color(TTE_INK, COLOR_BLU);
              tte_set_pos(2 * BASE_OFFSET, 7 * BASE_OFFSET);
              tte_write(is_night_mode() ? "  Day Mode" : "> Day Mode");
              
+             tte_set_color(TTE_INK, COLOR_RED);
              tte_set_pos(2 * BASE_OFFSET, 9 * BASE_OFFSET);
              tte_write(is_night_mode() ? "> Night Mode" : "  Night Mode");
              
+             tte_set_color(TTE_INK, COLOR_GREEN);
              tte_set_pos(2 * BASE_OFFSET, 14 * BASE_OFFSET); tte_write("Press A to confirm");
              break;
       }
@@ -121,7 +153,7 @@ void shell_render_display(void) {
     case STATE_AREA_SELECTION: 
       switch (area_state()) {
          case SUB_AREA_POINTER_MOVING:
-             tte_set_color(TTE_INK, COLOR_GREEN);
+             tte_set_color(TTE_INK, COLOR_SILVER);
              tte_set_pos(3 * BASE_OFFSET, 4 * BASE_OFFSET); tte_write("Select landing area");
              
              tte_set_color(TTE_INK, COLOR_GREEN);
@@ -147,7 +179,7 @@ void shell_render_display(void) {
              
          case SUB_AREA_INFO:
              a_data = area_data(planet_index(), area_index());
-             tte_set_color(TTE_INK, COLOR_GREEN);
+             tte_set_color(TTE_INK, COLOR_SILVER);
              tte_set_pos(4 * BASE_OFFSET, 4 * BASE_OFFSET); tte_write("Landing Area Info");
              
              tte_set_color(TTE_INK, COLOR_GREEN);
@@ -166,7 +198,7 @@ void shell_render_display(void) {
         l_data = lander_data(lander_index());
         switch (config_state()) {
           case SUB_CONFIG_POINTER_MOVING:
-             tte_set_color(TTE_INK, COLOR_GREEN);
+             tte_set_color(TTE_INK, COLOR_SILVER);
              tte_set_pos(4 * BASE_OFFSET, 4 * BASE_OFFSET); tte_write("Select the lander");
              
              tte_set_color(TTE_INK, COLOR_GREEN);
@@ -176,7 +208,7 @@ void shell_render_display(void) {
              break;
              
           case SUB_LANDER_INFO:
-             tte_set_color(TTE_INK, COLOR_GREEN);
+             tte_set_color(TTE_INK, COLOR_SILVER);
              tte_set_pos(7 * BASE_OFFSET, 4 * BASE_OFFSET); tte_write("Lander Info");
              
              tte_set_color(TTE_INK, COLOR_GREEN);
@@ -204,7 +236,7 @@ void shell_render_display(void) {
              break;
              
           case SUB_CREW_INFO:
-             tte_set_color(TTE_INK, COLOR_GREEN);
+             tte_set_color(TTE_INK, COLOR_SILVER);
              tte_set_pos(2 * BASE_OFFSET, 4 * BASE_OFFSET); tte_write("Select organic payload");
              
              tte_set_color(TTE_INK, COLOR_GREEN);
@@ -229,7 +261,7 @@ void shell_render_display(void) {
 */
     case STATE_PAUSE: 
         if (pause_state() == SUB_SHOW_CREDITS) {
-            tte_set_color(TTE_INK, COLOR_GREEN);
+            tte_set_color(TTE_INK, COLOR_SILVER);
             tte_set_pos(11 * BASE_OFFSET, 3 * BASE_OFFSET); tte_write("CREDITS");
 
             tte_set_color(TTE_INK, COLOR_GREEN);
@@ -242,7 +274,7 @@ void shell_render_display(void) {
             tte_set_pos(2 * BASE_OFFSET, 15 * BASE_OFFSET); tte_write("Press A / B to return");
         }
         else {
-            tte_set_color(TTE_INK, COLOR_GREEN);
+            tte_set_color(TTE_INK, COLOR_SILVER);
             tte_set_pos(7 * BASE_OFFSET, 4 * BASE_OFFSET); tte_write("PAUSE");
             
             tte_set_color(TTE_INK, COLOR_GREEN);
@@ -266,7 +298,7 @@ void shell_render_display(void) {
         break;
 
     case STATE_FIN:
-        tte_set_color(TTE_INK, COLOR_GREEN);
+        tte_set_color(TTE_INK, COLOR_SILVER);
         tte_set_pos(5 * BASE_OFFSET, 4 * BASE_OFFSET); tte_write("Final Telemetry:");
         
         tte_set_color(TTE_INK, COLOR_GREEN);
@@ -278,7 +310,10 @@ void shell_render_display(void) {
         
         tte_set_pos(2 * BASE_OFFSET, 11 * BASE_OFFSET); tte_write("Cause: "); tte_write(result_reason());
         
-        tte_set_pos(2 * BASE_OFFSET, 15 * BASE_OFFSET); tte_write("Press A to Title");
+        tte_set_color(TTE_INK, COLOR_BLU);
+        tte_set_pos(2 * BASE_OFFSET, 14 * BASE_OFFSET); tte_write(fin_index() == 0 ? "> Restart" : "  Restart");
+        tte_set_color(TTE_INK, COLOR_RED);
+        tte_set_pos(2 * BASE_OFFSET, 16 * BASE_OFFSET); tte_write(fin_index() == 1 ? "> Title" : "  Title");
         break;
     
     default: 

@@ -51,6 +51,8 @@ void GameplayInit(Lander *lander){                  //game initialization
     lander->available_power = P_USES;
     lander->light_on = false;
     lander->light_timer = 0;
+    lander->radar_on = false;
+    lander->radar_timer = 0;
 
     //Lander state
     lander->state = LANDER_FLYING;
