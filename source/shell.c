@@ -30,6 +30,8 @@ static int selected_area = 0;
 static int selected_lander = 0;
 static int selected_crew = 0;
 static int selected_pause = 0;
+static int selected_fin = 0;
+static bool fin_wait_release = true;
 static bool result_pending = false;
 static bool selected_night_mode = false;
 static bool selected_fast_mode = false;
@@ -38,10 +40,10 @@ static bool area_coming_soon = false;
 // Reason descriptor for losing
 static const char* const reason_text[] = {
     [GR_REASON_NONE] = "N/A",
-    [GR_REASON_VERTICAL_SPEED] = "Excessive vertical speed",
-    [GR_REASON_HORIZONTAL_SPEED] = "Excessive horizontal speed",
-    [GR_REASON_ANGULAR_SPEED] = "Excessive angular speed",
-    [GR_REASON_OUT_OF_PAD] = "Out of pad"
+    [GR_REASON_VERTICAL_SPEED] = "Too Fast Vz",
+    [GR_REASON_HORIZONTAL_SPEED] = "Too Fast Vx/Vy",
+    [GR_REASON_ANGULAR_SPEED] = "Too Fast W",
+    [GR_REASON_OUT_OF_PAD] = "Out of Pad"
 };
 
 /*
@@ -147,19 +149,36 @@ void main_states_management(void) {
         case STATE_LANDING:
             if (A_button == 1) {
                 present_state = STATE_FIN;
+                selected_fin = 0;
+                fin_wait_release = true;
                 A_button = 0;
             }
             break;
         case STATE_CRASH:
             if (A_button == 1) {
                 present_state = STATE_FIN;
+                selected_fin = 0;
+                fin_wait_release = true;
                 A_button = 0;
             }
             break;
         case STATE_FIN:
-            if (A_button == 1) {
-                shell_init();
-                present_state = STATE_TITLE;
+            if (fin_wait_release) {
+                if (A_button == 0) {
+                    fin_wait_release = false;
+                }
+            }
+            else if (A_button == 1) {
+                if (selected_fin == 0) {
+                    present_state = STATE_GAMEPLAY;
+                    present_result.outcome = GR_LOSE;
+                    present_result.score = 0;
+                    present_result.reason = GR_REASON_NONE;
+                } else {
+                    shell_init();
+                    present_state = STATE_TITLE;
+                }
+                selected_fin = 0;
                 A_button = 0;
             }
             break;
@@ -306,6 +325,14 @@ void sub_states_management(void) {
                 present_pause = (PauseSubState)selected_pause;
             }
             break;
+        case STATE_FIN:
+            if (up_pointer == 1 && selected_fin > 0) {
+                selected_fin--;
+            }
+            else if (down_pointer == 1 && selected_fin < 1) {
+                selected_fin++;
+            }
+            break;
         default:
             break;
     }
@@ -321,6 +348,9 @@ void shell_init(void) {
     selected_area = 0;
     selected_lander = 0;
     selected_crew = 0;
+    selected_pause = 0;
+    selected_fin = 0;
+    fin_wait_release = true;
     selected_night_mode = false;
     selected_fast_mode = false;
     area_coming_soon = false;
@@ -376,6 +406,10 @@ int crew_count(void) {
 
 int pause_index(void) {
     return selected_pause;
+}
+
+int fin_index(void) {
+    return selected_fin;
 }
 
 int result_victory(void) {
