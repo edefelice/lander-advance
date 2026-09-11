@@ -76,6 +76,11 @@
 #define MAX_LANDING_OMEGA   FIX_FROM_INT(1)                     // 1 rad/s limit for a good land
 
 //Map distance
-#define MAX_MAP_DISTANCE FIX_FROM_INT(1000)                     //Pier definisci le dimensioni della mappa qui
+#define MAX_MAP_DISTANCE    7020/2                              // 7020m is the full map, max distance along x and y is half (int)
+#define MAX_MAP_DISTANCE_SQR MAX_MAP_DISTANCE*MAX_MAP_DISTANCE 
+
+//Landing Pad Radius
+#define ZONE_LIMIT (fixed)0x447AE                               // Landing Zone Radius [Metre] (4.28m)
+#define PAD_R2 fixMul(ZONE_LIMIT, ZONE_LIMIT)                   // Radius Squared
 
 #endif // PHYSICS_CONSTANT_H
