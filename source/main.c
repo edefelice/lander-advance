@@ -74,6 +74,8 @@ static void spotlight_set_active(OBJ_ATTR *buffer, int slot, bool active) {
 int main(void) {
     int post_fuel_power_idx = hud_post_fuel_power_slot();
     int digit_sprite_idx_end = hud_digit_slot_end();
+    bool lander_light_prev = false;
+    bool radar_on_prev = false;
     // Initialization
     BG_AFFINE affine_bg = {0};
     AFF_SRC_EX affine_src = {0};
@@ -177,7 +179,7 @@ int main(void) {
         }
 
         switch (shell_state()) {
-            case STATE_GAMEPLAY:
+            case STATE_GAMEPLAY: {
                 input = cpit_input();
                 if (suppress_thrust_until_release) {
                     input.thrust_main = false;
@@ -190,9 +192,19 @@ int main(void) {
                                     : (input.rcs_x || input.rcs_y || input.rotate) ? ENGINE_RCS
                                     : ENGINE_OFF;
                 sfx_engine_set(engine);
-                if (input.radar) {
+                bool radar_on = lander.radar_on;
+                if (radar_on && !radar_on_prev) {
                     sfx_play(SFX_RADAR);
                 }
+                radar_on_prev = radar_on;
+                bool lander_light = lander.light_on;
+                if (lander_light && !lander_light_prev) {
+                    sfx_play(SFX_LIGHT);
+                }
+                else if (!lander_light && lander_light_prev) {
+                    sfx_play(SFX_LIGHT);
+                }
+                lander_light_prev = lander_light;
                 bool fast_mode = is_fast_mode();
                 GameplayUpdate(&lander, &input, fast_mode, get_active_area_idx(), moon_sites);
                 if (lander.state != LANDER_FLYING && !result_sent) {
@@ -253,6 +265,7 @@ int main(void) {
                     pal_bg_mem[0] = 0x0;
                 }
                 break;
+            }
             case STATE_PAUSE:
                 shell_render_display();
                 action = menu_input();
@@ -278,9 +291,6 @@ int main(void) {
                 action = menu_input();
                 if (action & M_CONFIRM) {
                     sfx_play(SFX_SELECTION);
-                }
-                else if (action & M_RETURN) {
-                    sfx_play(SFX_BACK);
                 }
                 else if (action & M_RETURN) {
                     sfx_play(SFX_BACK);

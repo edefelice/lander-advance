@@ -271,6 +271,18 @@ void sfx_engine_set(EngineState state) {
     engine_state = state;
 }
 
+#define SWITCH_NOISE_RATIO 4
+#define SWITCH_NOISE_SHIFT 2
+#define SWITCH_NOISE_WIDTH 1
+#define SWITCH_NOISE_LEN 62
+
+void switch_on(void) {
+    REG_SND4CNT  = SSQR_ENV_BUILD(15, 0, 0) | SWITCH_NOISE_LEN;
+    REG_SND4FREQ = SFREQ_RESET | SFREQ_TIMED | ((SWITCH_NOISE_SHIFT) << 4)
+                            | ((SWITCH_NOISE_WIDTH) << 3) | (SWITCH_NOISE_RATIO);
+    engine_state = ENGINE_OFF; // force re-trigger next call to sfx_engine_set
+}
+
 void sfx_init(void) {
     REG_SNDSTAT   = SSTAT_ENABLE;
     REG_SNDDSCNT  = SDS_DMG100;
@@ -298,6 +310,9 @@ void sfx_play(SfxId id) {
             break;
         case SFX_RADAR:
             ch1_play(STEPS_RADAR, ARRAY_LEN(STEPS_RADAR));
+            break;
+        case SFX_LIGHT:
+            switch_on();
             break;
     }
 }
