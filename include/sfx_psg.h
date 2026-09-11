@@ -7,7 +7,8 @@ typedef enum {
     SFX_DPAD,
     SFX_WARNING,
     SFX_TRUMPET,
-    SFX_RADAR
+    SFX_RADAR,
+    SFX_LIGHT
 } SfxId;
 
 typedef enum {

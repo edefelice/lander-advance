@@ -7,12 +7,8 @@
 #include "graphics/HUD_1.h"
 #include "affine_background.h"
 #include "hud.h"
-#include "maxmod.h"
-#include "mm_types.h"
 #include "shell.h"
 #include "shell_render.h"
-#include "soundbank.h"
-#include "soundbank_bin.h"
 #include "sfx_psg.h"
 #include "landing_area.h"
 #include "game_score.h"
@@ -74,6 +70,8 @@ static void spotlight_set_active(OBJ_ATTR *buffer, int slot, bool active) {
 int main(void) {
     int post_fuel_power_idx = hud_post_fuel_power_slot();
     int digit_sprite_idx_end = hud_digit_slot_end();
+    bool lander_light_prev = false;
+    bool radar_on_prev = false;
     // Initialization
     BG_AFFINE affine_bg = {0};
     AFF_SRC_EX affine_src = {0};
@@ -112,10 +110,8 @@ int main(void) {
     spotlight_init_objs(obj_buffer, spotlight_slot);
     int total_obj = n_obj + SPOTLIGHT_OBJ_COUNT;
     irq_init(NULL);
-    irq_add(II_VBLANK, mmVBlank);
-    mmInitDefault((mm_addr)soundbank_bin, 8); // TODO: check when adding audio files
+    irq_add(II_VBLANK, NULL);
     sfx_init();
-    //mmEffect(SFX_TEST_TONE); // Just for test. Change when adding audio.
     bool result_sent = false;
     uint16_t action = 0;
     GameResult result;
@@ -177,7 +173,7 @@ int main(void) {
         }
 
         switch (shell_state()) {
-            case STATE_GAMEPLAY:
+            case STATE_GAMEPLAY: {
                 input = cpit_input();
                 if (suppress_thrust_until_release) {
                     input.thrust_main = false;
@@ -189,10 +185,22 @@ int main(void) {
                 EngineState engine = input.thrust_main ? ENGINE_MAIN
                                     : (input.rcs_x || input.rcs_y || input.rotate) ? ENGINE_RCS
                                     : ENGINE_OFF;
-                sfx_engine_set(engine);
-                if (input.radar) {
+                if (lander.propellant > 0) {
+                    sfx_engine_set(engine);
+                }
+                bool radar_on = lander.radar_on;
+                if (radar_on && !radar_on_prev) {
                     sfx_play(SFX_RADAR);
                 }
+                radar_on_prev = radar_on;
+                bool lander_light = lander.light_on;
+                if (lander_light && !lander_light_prev) {
+                    sfx_play(SFX_LIGHT);
+                }
+                else if (!lander_light && lander_light_prev) {
+                    sfx_play(SFX_LIGHT);
+                }
+                lander_light_prev = lander_light;
                 bool fast_mode = is_fast_mode();
                 GameplayUpdate(&lander, &input, fast_mode, get_active_area_idx(), moon_sites);
                 if (lander.state != LANDER_FLYING && !result_sent) {
@@ -253,6 +261,7 @@ int main(void) {
                     pal_bg_mem[0] = 0x0;
                 }
                 break;
+            }
             case STATE_PAUSE:
                 shell_render_display();
                 action = menu_input();
@@ -282,9 +291,6 @@ int main(void) {
                 else if (action & M_RETURN) {
                     sfx_play(SFX_BACK);
                 }
-                else if (action & M_RETURN) {
-                    sfx_play(SFX_BACK);
-                }
                 else if ((action & M_DOWN) || (action & M_UP)
                         || (action & M_LEFT) || (action & M_RIGHT)) {
                             sfx_play(SFX_DPAD);
@@ -296,7 +302,6 @@ int main(void) {
         }
         prev_state = cur_state; // Update previous state
         VBlankIntrWait(); // Wait VBlank
-        mmFrame();
         sfx_update();
         oam_copy(oam_mem, obj_buffer, total_obj); // Copy sprites in oam
         REG_BG_AFFINE[2] = affine_bg; // Update affine bg register
