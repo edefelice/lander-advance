@@ -122,7 +122,7 @@ void UpdateMainEngine(Lander *lander, const PlayerInput *input, fixed mass){
 //Manage the RCS engine data
 void UpdateRCS(Lander *lander, const PlayerInput *input, fixed mass, bool fast_mode){
 
-    fixed rcs_thrust = fast_mode ? (RCS_THRUST * 10) : RCS_THRUST;
+    fixed rcs_thrust = fast_mode ? (RCS_THRUST * 10) : (RCS_THRUST * 4); // NOTE. 4* added for balancing
     fixed a = fixDiv(rcs_thrust, mass);
     fixed a_body_x = 0;
     fixed a_body_y = 0; 
@@ -148,11 +148,12 @@ void UpdateRCS(Lander *lander, const PlayerInput *input, fixed mass, bool fast_m
     }
 
     if(a_body_x != 0) {
-        lander->propellant -= RCS_CONSUMPTION;
+        lander->propellant -= fast_mode ? (RCS_CONSUMPTION * 10) : (RCS_CONSUMPTION * 4); // NOTE. 4* added for balancing
     }
     if(a_body_y != 0) {
-        lander->propellant -= RCS_CONSUMPTION;
+        lander->propellant -= fast_mode ? (RCS_CONSUMPTION * 10) : (RCS_CONSUMPTION * 4); // NOTE. 4* added for balancing
     }
+
     if(lander->propellant < 0) {
         lander->propellant = 0;
     }
@@ -170,7 +171,7 @@ void UpdateRCS(Lander *lander, const PlayerInput *input, fixed mass, bool fast_m
 void UpdateRotation(Lander *lander, const PlayerInput *input, fixed mass, bool fast_mode){
 
     // Calculate angular acceleration
-    fixed rcs_thrust = fast_mode ? (RCS_THRUST * 10) : RCS_THRUST;
+    fixed rcs_thrust = fast_mode ? (fixMul(RCS_THRUST, FIX_FROM_FRACTION(10,4))) : RCS_THRUST; // NOTE. /4 added for balancing
     fixed torque = fixMul(rcs_thrust, LEM_RADIUS);
     fixed inertia = fixMul (fixMul(INERTIA_FACTOR, mass), fixMul(LEM_RADIUS, LEM_RADIUS));  
     fixed alpha = fixDiv(torque, inertia);
@@ -179,7 +180,7 @@ void UpdateRotation(Lander *lander, const PlayerInput *input, fixed mass, bool f
     if(input->rotate == -1 && GameplayHasPropellant(lander)) {
 
         lander->omega += fixMul(alpha, SIM_DT);
-        lander->propellant -= RCS_CONSUMPTION;
+        lander->propellant -= fast_mode ? (fixMul(RCS_CONSUMPTION, FIX_FROM_FRACTION(10,4))) : RCS_CONSUMPTION; // NOTE. /4 added for balancing
 
         if(lander->propellant < 0)
             lander->propellant = 0;        
@@ -190,7 +191,7 @@ void UpdateRotation(Lander *lander, const PlayerInput *input, fixed mass, bool f
     if(input->rotate == 1 && GameplayHasPropellant(lander)) {
 
         lander->omega -= fixMul(alpha, SIM_DT);
-        lander->propellant -= RCS_CONSUMPTION;
+        lander->propellant -= fast_mode ? (fixMul(RCS_CONSUMPTION, FIX_FROM_FRACTION(10,4))) : RCS_CONSUMPTION;
 
         if(lander->propellant < 0)
             lander->propellant = 0;        
@@ -304,7 +305,7 @@ void GameplayUpdate(Lander *lander, const PlayerInput *input, bool fast_mode, in
             } else if (lander->available_power > 0) {
                 lander->available_power--;
                 lander->light_on = true;
-                lander->light_timer = 1800;
+                lander->light_timer = fast_mode ? 1800 : 2700;
             }
         }
 
@@ -324,7 +325,7 @@ void GameplayUpdate(Lander *lander, const PlayerInput *input, bool fast_mode, in
             } else if (lander->available_power > 0) {
                 lander->available_power--;
                 lander->radar_on = true;
-                lander->radar_timer = 1800;
+                lander->radar_timer = fast_mode ? 1800 : 2700;
             }
         }
 
