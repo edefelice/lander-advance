@@ -185,7 +185,9 @@ int main(void) {
                 EngineState engine = input.thrust_main ? ENGINE_MAIN
                                     : (input.rcs_x || input.rcs_y || input.rotate) ? ENGINE_RCS
                                     : ENGINE_OFF;
-                sfx_engine_set(engine);
+                if (lander.propellant > 0) {
+                    sfx_engine_set(engine);
+                }
                 bool radar_on = lander.radar_on;
                 if (radar_on && !radar_on_prev) {
                     sfx_play(SFX_RADAR);
