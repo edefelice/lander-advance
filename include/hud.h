@@ -17,4 +17,5 @@ int hud_init(OBJ_ATTR *buffer, int slot);
 void hud_update(OBJ_ATTR *buffer, int slot, const Lander *lander, const PlayerInput *input);
 int hud_post_fuel_power_slot(void);
 int hud_digit_slot_end(void);
+int hud_warning_slot(int slot);
 #endif // HUD_H
