@@ -13,8 +13,7 @@
 #include "landing_area.h"
 #include "game_score.h"
 #include "graphics/logo.h"
-#include "tonc_core.h"
-#include "tonc_memmap.h"
+#include "graphics/ScratchLogoSmall1.h"
 
 static OBJ_ATTR obj_buffer[MAX_SPRITES];
 
@@ -79,6 +78,41 @@ int main(void) {
     BG_AFFINE affine_bg = {0};
     AFF_SRC_EX affine_src = {0};
     Lander lander;
+
+    irq_init(NULL);
+    irq_add(II_VBLANK, NULL);
+    // Load title screen tiles in CBB2
+    memcpy32(tile8_mem[2], ScratchLogoSmall1Tiles, ScratchLogoSmall1TilesLen / 4);
+    // Load title screen tilemap in SBB 23
+    memcpy16(se_mem[29], ScratchLogoSmall1Map, ScratchLogoSmall1MapLen / 2);
+    // Load title screen palette
+    memcpy16(pal_bg_mem, ScratchLogoSmall1Pal, ScratchLogoSmall1PalLen / 2);
+    // Configure BG1 and priority 0
+    REG_BG1CNT = BG_CBB(2) | BG_SBB(29) | BG_8BPP | BG_REG_32x32 | BG_PRIO(1);
+    // Set regular background (Mode 1, BG0)
+    REG_DISPCNT = DCNT_MODE(1) | DCNT_BG1;
+    REG_BLDCNT = BLD_BG1 | BLD_BLACK;
+    for (int frame = 16; frame >= 0; frame--) {
+        REG_BLDY = BLDY_BUILD(frame); 
+        for (int j = 0; j < 4; j++) {    
+            VBlankIntrWait();  
+        }
+    }
+    for (int i = 0; i < 180; i++) {
+        VBlankIntrWait();
+    }
+    for (int frame = 0; frame <= 16; frame++) {
+        REG_BLDY = BLDY_BUILD(frame); 
+        for (int j = 0; j < 4; j++) {    
+            VBlankIntrWait();  
+        }
+    }
+    REG_BLDCNT = 0;
+    REG_BLDY = 0;
+    REG_BG1CNT &= ~(BG_CBB(2) | BG_SBB(29) | BG_8BPP | BG_REG_32x32 | BG_PRIO(1));
+    REG_DISPCNT &= ~(DCNT_MODE(1) | DCNT_BG1);    
+
+
     shell_init();
     GameState prev_state = shell_state();
     shell_render_engine_init();
@@ -89,7 +123,7 @@ int main(void) {
     memcpy16(se_mem[29], logoMap, logoMapLen / 2);
     // Load title screen palette
     memcpy16(&pal_bg_mem[HUD_SPEED_RULER_PAL_IDX + 1], logoPal, logoPalLen / 2);
-    //pal_bg_mem[HUD_SPEED_RULER_PAL_IDX] = 0x0; // Black
+    //pal_bg_mem[HUD_SPEED_RULER_PAL_IDX] = 0x0; // Black TODO: Check if still needed 
     // Load hud sprites
     hud_load_gfx();
     spotlight_init_gfx();
@@ -103,8 +137,6 @@ int main(void) {
     int spotlight_slot = n_obj;
     spotlight_init_objs(obj_buffer, spotlight_slot);
     int total_obj = n_obj + SPOTLIGHT_OBJ_COUNT;
-    irq_init(NULL);
-    irq_add(II_VBLANK, NULL);
     sfx_init();
     bool result_sent = false;
     uint16_t action = 0;
