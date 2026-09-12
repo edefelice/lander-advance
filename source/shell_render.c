@@ -60,12 +60,9 @@ void shell_render_display(void) {
    
    switch (present_state) {
     case STATE_TITLE:
-        tte_set_color(TTE_INK, COLOR_ORANGE); 
-        tte_set_pos(BASE_OFFSET * BASE_OFFSET, 6 * BASE_OFFSET); 
-        tte_write("LANDER ADVANCE");
         
         tte_set_color(TTE_INK, COLOR_WHITE); 
-        tte_set_pos(6 * BASE_OFFSET, 10 * BASE_OFFSET);
+        tte_set_pos(6 * BASE_OFFSET, 15 * BASE_OFFSET);
         tte_write("Press A to launch");
         break;
 
