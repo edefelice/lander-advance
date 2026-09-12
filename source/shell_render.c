@@ -4,25 +4,28 @@
 #include <stdio.h>
 #include "game_data.h"
 
-#define COLOR_WHITE 0X7FFF
-#define COLOR_SILVER 0x5EF7
-#define COLOR_RED 0x001F
-#define COLOR_BLU 0x7C00
-#define COLOR_GREEN 0x03ED
+#define COLOR_WHITE 0x7FFF
+#define COLOR_ORANGE 0x15BB
+#define COLOR_RED 0x18D4
+#define COLOR_BLU 0x6DE6
+#define COLOR_GREEN 0x268E
+#define COLOR_RUST 0x1154
 #define BASE_OFFSET 8
 
 #define PB_GREEN  15
-#define PB_SILVER 14
+#define PB_ORANGE 14
 #define PB_BLU    13
 #define PB_RED    12
 #define PB_WHITE  11
+#define PB_RUST   10
 
 static void set_text_color(u16 color) {
     u16 pb = PB_GREEN;
-    if (color == COLOR_SILVER) pb = PB_SILVER;
+    if (color == COLOR_ORANGE) pb = PB_ORANGE;
     else if (color == COLOR_BLU) pb = PB_BLU;
     else if (color == COLOR_RED) pb = PB_RED;
     else if (color == COLOR_WHITE) pb = PB_WHITE;
+    else if (color == COLOR_RUST) pb = PB_RUST;
     tte_set_special(SE_PALBANK(pb));
 }
 
@@ -32,10 +35,11 @@ void shell_render_engine_init(void) {
    //font and tte init
    tte_init_se_default(0, BG_CBB(1) | BG_SBB(15) | BG_4BPP | BG_PRIO(0));
    pal_bg_mem[PB_GREEN * 16 + 1] = COLOR_GREEN;
-   pal_bg_mem[PB_SILVER * 16 + 1] = COLOR_SILVER;
+   pal_bg_mem[PB_ORANGE * 16 + 1] = COLOR_ORANGE;
    pal_bg_mem[PB_BLU * 16 + 1] = COLOR_BLU;
    pal_bg_mem[PB_RED * 16 + 1] = COLOR_RED;
    pal_bg_mem[PB_WHITE * 16 + 1] = COLOR_WHITE;
+   pal_bg_mem[PB_RUST * 16 + 1] = COLOR_RUST;
 }
 
 void shell_render_display(void) { 
@@ -46,10 +50,11 @@ void shell_render_display(void) {
    const LanderData* l_data;
    
    pal_bg_mem[PB_GREEN * 16 + 1] = COLOR_GREEN;
-   pal_bg_mem[PB_SILVER * 16 + 1] = COLOR_SILVER;
+   pal_bg_mem[PB_ORANGE * 16 + 1] = COLOR_ORANGE;
    pal_bg_mem[PB_BLU * 16 + 1] = COLOR_BLU;
    pal_bg_mem[PB_RED * 16 + 1] = COLOR_RED;
    pal_bg_mem[PB_WHITE * 16 + 1] = COLOR_WHITE;
+   pal_bg_mem[PB_RUST * 16 + 1] = COLOR_RUST;
 
    tte_erase_screen();
    
@@ -62,7 +67,7 @@ void shell_render_display(void) {
         break;
 
     case STATE_GAME_MODE_SELECTION:
-        tte_set_color(TTE_INK, COLOR_SILVER);
+        tte_set_color(TTE_INK, COLOR_ORANGE);
         tte_set_pos(4 * BASE_OFFSET, 2 * BASE_OFFSET);
         tte_write("Select Game Mode");
 
@@ -97,7 +102,7 @@ void shell_render_display(void) {
       switch (body_state()){
          case SUB_SHUTTLE_MOVING:
              p_data = planet_data(planet_index());
-             tte_set_color(TTE_INK, COLOR_SILVER);
+             tte_set_color(TTE_INK, COLOR_ORANGE);
              
              tte_set_pos(4 * BASE_OFFSET, 4 * BASE_OFFSET); tte_write("Flight trajectory");
              tte_set_color(TTE_INK, COLOR_GREEN);
@@ -112,7 +117,7 @@ void shell_render_display(void) {
              
          case SUB_BODY_INFO:
              p_data = planet_data(planet_index());
-             tte_set_color(TTE_INK, COLOR_SILVER);
+             tte_set_color(TTE_INK, COLOR_ORANGE);
              tte_set_pos(7 * BASE_OFFSET, 4 * BASE_OFFSET); tte_write("Body Info");
              
              tte_set_color(TTE_INK, COLOR_GREEN);
@@ -130,7 +135,7 @@ void shell_render_display(void) {
              break;
              
          case SUB_MODE_SELECTION:
-             tte_set_color(TTE_INK, COLOR_SILVER);
+             tte_set_color(TTE_INK, COLOR_ORANGE);
              tte_set_pos(4 * BASE_OFFSET, 4 * BASE_OFFSET); tte_write("Select Flight Mode");
              
              tte_set_color(TTE_INK, COLOR_BLU);
@@ -150,33 +155,33 @@ void shell_render_display(void) {
     case STATE_AREA_SELECTION: 
       switch (area_state()) {
          case SUB_AREA_POINTER_MOVING:
-             tte_set_color(TTE_INK, COLOR_SILVER);
+             tte_set_color(TTE_INK, COLOR_ORANGE);
              tte_set_pos(3 * BASE_OFFSET, 4 * BASE_OFFSET); tte_write("Select landing area");
              
              tte_set_color(TTE_INK, COLOR_GREEN);
              tte_set_pos(2 * BASE_OFFSET, 6 * BASE_OFFSET);
              tte_write(area_index() == 0 ? "> " : "  "); tte_write(area_data(planet_index(), 0)->area_name);
              
-             tte_set_color(TTE_INK, COLOR_SILVER);
+             tte_set_color(TTE_INK, COLOR_RUST);
              tte_set_pos(2 * BASE_OFFSET, BASE_OFFSET * BASE_OFFSET);
              tte_write(area_index() == 1 ? "> " : "  "); tte_write(area_data(planet_index(), 1)->area_name);
              
-             tte_set_color(TTE_INK, COLOR_SILVER);
+             tte_set_color(TTE_INK, COLOR_RUST);
              tte_set_pos(2 * BASE_OFFSET, 10 * BASE_OFFSET);
              tte_write(area_index() == 2 ? "> " : "  "); tte_write(area_data(planet_index(), 2)->area_name);
              
              if (area_is_coming_soon()) {
-                 tte_set_color(TTE_INK, COLOR_SILVER);
+                 tte_set_color(TTE_INK, COLOR_RUST);
                  tte_set_pos(2 * BASE_OFFSET, 15 * BASE_OFFSET); tte_write("Coming soon...");
              } else {
-                 tte_set_color(TTE_INK, area_index() == 0 ? COLOR_GREEN : COLOR_SILVER);
+                 tte_set_color(TTE_INK, area_index() == 0 ? COLOR_GREEN : COLOR_RUST);
                  tte_set_pos(2 * BASE_OFFSET, 15 * BASE_OFFSET); tte_write("Press A for Info");
              }
              break;
              
          case SUB_AREA_INFO:
              a_data = area_data(planet_index(), area_index());
-             tte_set_color(TTE_INK, COLOR_SILVER);
+             tte_set_color(TTE_INK, COLOR_ORANGE);
              tte_set_pos(4 * BASE_OFFSET, 4 * BASE_OFFSET); tte_write("Landing Area Info");
              
              tte_set_color(TTE_INK, COLOR_GREEN);
@@ -195,7 +200,7 @@ void shell_render_display(void) {
         l_data = lander_data(lander_index());
         switch (config_state()) {
           case SUB_CONFIG_POINTER_MOVING:
-             tte_set_color(TTE_INK, COLOR_SILVER);
+             tte_set_color(TTE_INK, COLOR_ORANGE);
              tte_set_pos(4 * BASE_OFFSET, 4 * BASE_OFFSET); tte_write("Select the lander");
              
              tte_set_color(TTE_INK, COLOR_GREEN);
@@ -205,7 +210,7 @@ void shell_render_display(void) {
              break;
              
           case SUB_LANDER_INFO:
-             tte_set_color(TTE_INK, COLOR_SILVER);
+             tte_set_color(TTE_INK, COLOR_ORANGE);
              tte_set_pos(7 * BASE_OFFSET, 4 * BASE_OFFSET); tte_write("Lander Info");
              
              tte_set_color(TTE_INK, COLOR_GREEN);
@@ -233,7 +238,7 @@ void shell_render_display(void) {
              break;
              
           case SUB_CREW_INFO:
-             tte_set_color(TTE_INK, COLOR_SILVER);
+             tte_set_color(TTE_INK, COLOR_ORANGE);
              tte_set_pos(2 * BASE_OFFSET, 4 * BASE_OFFSET); tte_write("Select organic payload");
              
              tte_set_color(TTE_INK, COLOR_GREEN);
@@ -258,7 +263,7 @@ void shell_render_display(void) {
 */
     case STATE_PAUSE: 
         if (pause_state() == SUB_SHOW_CREDITS) {
-            tte_set_color(TTE_INK, COLOR_SILVER);
+            tte_set_color(TTE_INK, COLOR_ORANGE);
             tte_set_pos(11 * BASE_OFFSET, 3 * BASE_OFFSET); tte_write("CREDITS");
 
             tte_set_color(TTE_INK, COLOR_GREEN);
@@ -271,7 +276,7 @@ void shell_render_display(void) {
             tte_set_pos(2 * BASE_OFFSET, 15 * BASE_OFFSET); tte_write("Press A / B to return");
         }
         else {
-            tte_set_color(TTE_INK, COLOR_SILVER);
+            tte_set_color(TTE_INK, COLOR_ORANGE);
             tte_set_pos(7 * BASE_OFFSET, 4 * BASE_OFFSET); tte_write("PAUSE");
             
             tte_set_color(TTE_INK, COLOR_GREEN);
@@ -295,13 +300,13 @@ void shell_render_display(void) {
         break;
 
     case STATE_FIN:
-        tte_set_color(TTE_INK, COLOR_SILVER);
+        tte_set_color(TTE_INK, COLOR_ORANGE);
         tte_set_pos(5 * BASE_OFFSET, 4 * BASE_OFFSET); tte_write("Final Telemetry:");
         
         tte_set_color(TTE_INK, COLOR_GREEN);
         tte_set_pos(2 * BASE_OFFSET, 7 * BASE_OFFSET); tte_write("Result: "); tte_write(result_victory() ? "SUCCESS" : "DESTROYED");
         
-        tte_set_pos(2 * BASE_OFFSET, 9 * BASE_OFFSET); tte_write("Score: ");
+        tte_set_pos(2 * BASE_OFFSET, 9 * BASE_OFFSET); tte_write("Clap Index: ");
         snprintf(buffer, sizeof(buffer), "%d", result_score());
         tte_write(buffer);
         
