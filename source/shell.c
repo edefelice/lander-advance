@@ -147,7 +147,7 @@ void main_states_management(void) {
             }     
             break;
         case STATE_LANDING:
-            if (A_button == 1) {
+            if (START_button == 1) {
                 present_state = STATE_FIN;
                 selected_fin = 0;
                 fin_wait_release = true;
@@ -155,7 +155,7 @@ void main_states_management(void) {
             }
             break;
         case STATE_CRASH:
-            if (A_button == 1) {
+            if (START_button == 1) {
                 present_state = STATE_FIN;
                 selected_fin = 0;
                 fin_wait_release = true;

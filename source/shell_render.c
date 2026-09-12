@@ -290,13 +290,13 @@ void shell_render_display(void) {
     case STATE_LANDING:
         tte_set_color(TTE_INK, COLOR_BLU);
         tte_set_pos(9 * BASE_OFFSET, 9 * BASE_OFFSET); tte_write("Landed!");
-        tte_set_pos(5 * BASE_OFFSET, 14 * BASE_OFFSET); tte_write("Press A for data");
+        tte_set_pos(3 * BASE_OFFSET, 14 * BASE_OFFSET); tte_write("Press START for data");
         break;
 
     case STATE_CRASH:
         tte_set_color(TTE_INK, COLOR_RED); 
         tte_set_pos(10 * BASE_OFFSET, 9 * BASE_OFFSET); tte_write("CRASH!");
-        tte_set_pos(5 * BASE_OFFSET, 14 * BASE_OFFSET); tte_write("Press A for data");
+        tte_set_pos(3 * BASE_OFFSET, 14 * BASE_OFFSET); tte_write("Press START for data");
         break;
 
     case STATE_FIN:
