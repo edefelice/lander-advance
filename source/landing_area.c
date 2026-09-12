@@ -1,7 +1,7 @@
 #include "landing_area.h"
-#include "graphics/moon_site1_v1.h"
-#include "graphics/moon_site2_v1.h"
-#include "graphics/moon_site3_v1.h"
+#include "graphics/moon_site_1_fin.h"
+#include "graphics/moon_site_2_fin.h"
+#include "graphics/moon_site_3_fin.h"
 
 const LandingArea AREAS[] = {
     // Area 1
@@ -11,12 +11,12 @@ const LandingArea AREAS[] = {
         FIX_FROM_INT(2194),
         -FIX_FROM_INT(1316 - (AREA_LIMIT>>1)),
         FIX_FROM_INT(2194 - (AREA_LIMIT>>1)),
-        moon_site1_v1Tiles,
-        moon_site1_v1TilesLen,
-        moon_site1_v1Map,
-        moon_site1_v1MapLen,
-        moon_site1_v1Pal,
-        moon_site1_v1PalLen},
+        moon_site_1_finTiles,
+        moon_site_1_finTilesLen,
+        moon_site_1_finMap,
+        moon_site_1_finMapLen,
+        moon_site_1_finPal,
+        moon_site_1_finPalLen},
         // Area 2
     {-FIX_FROM_INT(1536),
         -FIX_FROM_INT(1536 - AREA_LIMIT),
@@ -24,12 +24,12 @@ const LandingArea AREAS[] = {
         FIX_FROM_INT(1097),
         -FIX_FROM_INT(1536 - (AREA_LIMIT>>1)),
         FIX_FROM_INT(1097 - (AREA_LIMIT>>1)),
-        moon_site2_v1Tiles,
-        moon_site2_v1TilesLen,
-        moon_site2_v1Map,
-        moon_site2_v1MapLen,
-        moon_site2_v1Pal,
-        moon_site2_v1PalLen},
+        moon_site_2_finTiles,
+        moon_site_2_finTilesLen,
+        moon_site_2_finMap,
+        moon_site_2_finMapLen,
+        moon_site_2_finPal,
+        moon_site_2_finPalLen},
         // Area 3
     {FIX_FROM_INT(2303),
         FIX_FROM_INT(2303 + AREA_LIMIT),
@@ -37,12 +37,12 @@ const LandingArea AREAS[] = {
         -FIX_FROM_INT(1974),
         FIX_FROM_INT(2303 + (AREA_LIMIT>>1)),
         -FIX_FROM_INT(1974 + (AREA_LIMIT>>1)),
-        moon_site3_v1Tiles,
-        moon_site3_v1TilesLen,
-        moon_site3_v1Map,
-        moon_site3_v1MapLen,
-        moon_site3_v1Pal,
-        moon_site3_v1PalLen}
+        moon_site_3_finTiles,
+        moon_site_3_finTilesLen,
+        moon_site_3_finMap,
+        moon_site_3_finMapLen,
+        moon_site_3_finPal,
+        moon_site_3_finPalLen}
 };
 
 const Sites moon_sites[]={

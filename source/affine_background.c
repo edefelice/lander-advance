@@ -5,7 +5,7 @@
 #include "fixedpoint32.h"
 #include "physics_constants.h"
 #include "landing_area.h"
-#include "graphics/moon_far_v3.h"
+#include "graphics/moon_far_fin.h"
 
 #define MAX_SHRINK 0x190
 #define MAX_HEIGHT_FAR 3000 // TODO: eventually change in tuning (Pierluca W7)
@@ -40,8 +40,8 @@ int get_active_area_idx(void) { return active_area_idx; };
 
 BgPalette get_active_map_palette(void) {
     BgPalette bg_palette;
-    bg_palette.data = is_near ? AREAS[active_area_idx].pal : moon_far_v3Pal;
-    bg_palette.len = is_near ? AREAS[active_area_idx].pal_len : moon_far_v3PalLen;
+    bg_palette.data = is_near ? AREAS[active_area_idx].pal : moon_far_finPal;
+    bg_palette.len = is_near ? AREAS[active_area_idx].pal_len : moon_far_finPalLen;
     return bg_palette;
 }
 
@@ -106,11 +106,11 @@ void map_swap(const Lander *lander) {
         is_near = false;
         active_area_idx = -1;
         // Load background tiles in CBB0
-        memcpy32(tile8_mem[0], moon_far_v3Tiles, moon_far_v3TilesLen / 4);
+        memcpy32(tile8_mem[0], moon_far_finTiles, moon_far_finTilesLen / 4);
         // Load background tilemap in SBB 28
-        memcpy16(se_mem[28], moon_far_v3Map, moon_far_v3MapLen / 2);
+        memcpy16(se_mem[28], moon_far_finMap, moon_far_finMapLen / 2);
         // Load background palette
-        memcpy16(pal_bg_mem, moon_far_v3Pal, moon_far_v3PalLen / 2);
+        memcpy16(pal_bg_mem, moon_far_finPal, moon_far_finPalLen / 2);
         REG_BG2CNT = (REG_BG2CNT & ~(BG_SIZE_MASK | BG_SBB_MASK)) | BG_AFF_64x64 | BG_WRAP | BG_SBB(28);
         }
     }

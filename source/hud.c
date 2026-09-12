@@ -38,8 +38,8 @@
 #define HUD_LAMP_OFF ((HUD_LAMP_PAL_BASE) - (HUD_BACKGROUND_PAL_BASE))
 #define HUD_LAMP_ON  ((HUD_LAMP_OFF) + (HUD_LAMP_ON_STEP))
 
-#define CLR_RADAR1 0x001F
-#define CLR_RADAR2 0x03E4
+#define CLR_RADAR1 0x0435 // red
+#define CLR_RADAR2 0x0DC2 // green
 
 #define COCKPIT_OFFSET_X 7
 #define COCKPIT_OFFSET_Y 24
@@ -55,6 +55,7 @@ static const uint16_t radar_pal[] = {
     CLR_RADAR2};
 
 static bool radar_on_prev = false;
+static bool warning_on_prev = false;
 
 // Palbank map
 enum HudPalbank {
@@ -387,6 +388,7 @@ void hud_load_gfx(void) {
 
 int hud_init(OBJ_ATTR *buffer, int slot) {
     radar_on_prev = false;
+    warning_on_prev = false;
     int s = slot;
     for (int i = 0; i < HUD_BAR_COUNT; i++) {
         s += hud_bar_init(buffer, s, &bars[i]);
@@ -426,12 +428,13 @@ void hud_update(OBJ_ATTR *buffer, int slot, const Lander *lander, const PlayerIn
     radar_on_prev = radar_active;
 
     bool warning_active = (get_active_area_idx() == -1) && (lander->z < FIX_FROM_INT(200));
-    if (warning_active) {
+    if (warning_active && warning_on_prev) {
         obj_unhide(&buffer[hud_warning_slot(slot)], ATTR0_SQUARE);
     }
     else {
         obj_hide(&buffer[hud_warning_slot(slot)]);
     }
+    warning_on_prev = warning_active;
 }
 
 int hud_post_fuel_power_slot(void) {
