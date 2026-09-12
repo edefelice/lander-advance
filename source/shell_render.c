@@ -6,9 +6,9 @@
 
 #define COLOR_WHITE 0x7FFF
 #define COLOR_ORANGE 0x15BB
-#define COLOR_RED 0x18D4
+#define COLOR_RED 0x001F
 #define COLOR_BLU 0x6DE6
-#define COLOR_GREEN 0x268E
+#define COLOR_GREEN 0x03ED
 #define COLOR_RUST 0x1154
 #define BASE_OFFSET 8
 
