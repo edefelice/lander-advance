@@ -10,6 +10,12 @@
 #include "graphics/digit_small.h"
 #include "graphics/digit_big.h"
 #include "cockpit.h"
+#include "graphics/warning.h"
+#include "tonc_core.h"
+#include "tonc_memdef.h"
+#include "tonc_memmap.h"
+#include "tonc_oam.h"
+#include "tonc_types.h"
 
 #define HUD_FUEL_POW_BASE_BAR 0
 #define DIGIT_DOT_GLYPHS 10 // index for dotted numbers
@@ -21,6 +27,7 @@
 #define HUD_VERTICAL_BASE_BAR ((HUD_HORIZONTAL_BASE_BAR) + BAR_LEVELS)
 #define HUD_DIGIT_SMALL_BASE ((HUD_VERTICAL_BASE_BAR) + BAR_LEVELS)
 #define HUD_DIGIT_BIG_BASE ((HUD_DIGIT_SMALL_BASE) + digit_smallTilesLen / 32)
+#define HUD_WARNING_BASE ((HUD_DIGIT_BIG_BASE) + digit_bigTilesLen / 32)
 #define FUEL_FULL_SCALE (FIX_FROM_INT(100))
 #define VX_FULL_SCALE (FIX_FROM_INT(12)) // m/s in Q16.16 TODO: check when fine tuning
 #define VY_FULL_SCALE (FIX_FROM_INT(12)) // m/s in Q16.16 TODO: check when fine tuning
@@ -33,6 +40,13 @@
 
 #define CLR_RADAR1 0x001F
 #define CLR_RADAR2 0x03E4
+
+#define COCKPIT_OFFSET_X 7
+#define COCKPIT_OFFSET_Y 24
+#define COCKPIT_WIDTH 194
+#define COCKPIT_HEIGHT 129
+#define WARNING_X (COCKPIT_OFFSET_X + (COCKPIT_WIDTH - 64) / 2)
+#define WARNING_Y (COCKPIT_OFFSET_Y + (COCKPIT_HEIGHT - 64) / 2) 
 
 static const uint16_t radar_pal[] = {
     CLR_RADAR1, CLR_RADAR1, CLR_RADAR1, CLR_RADAR1,
@@ -48,6 +62,7 @@ enum HudPalbank {
     HUD_PB_SPEED,
     HUD_PB_DIGIT_SMALL,
     HUD_PB_DIGIT_BIG,
+    HUD_PB_WARNING,
     HUD_PB_COUNT
 };
 
@@ -306,7 +321,7 @@ static bool lamp_on(int k, const Lander *lander, const PlayerInput *input) {
     bool on = false;
     switch(k) {
         case HUD_LAMP_DANGER:
-            on = false; // TODO: needs crash condition from gameplay
+            on = (get_active_area_idx() == -1) && (lander->z < FIX_FROM_INT(200));
             break;
         case HUD_LAMP_MAIN:
             on = input->thrust_main;
@@ -339,6 +354,12 @@ static bool lamp_on(int k, const Lander *lander, const PlayerInput *input) {
     return on;
 }
 
+static void hud_warning_init(OBJ_ATTR *buffer, int slot) {
+    obj_set_attr(&buffer[slot], ATTR0_SQUARE | ATTR0_HIDE, ATTR1_SIZE_64x64,
+        ATTR2_PALBANK(HUD_PB_WARNING) | HUD_WARNING_BASE);
+    obj_set_pos(&buffer[slot], WARNING_X, WARNING_Y);
+}
+
 void hud_load_gfx(void) {
     // Load fuel/power bar
     memcpy32(&tile_mem_obj[0][HUD_FUEL_POW_BASE_BAR], fuel_pow_barsTiles,
@@ -358,6 +379,10 @@ void hud_load_gfx(void) {
     memcpy32(&tile_mem_obj[0][HUD_DIGIT_BIG_BASE], digit_bigTiles, digit_bigTilesLen / 4);
     // Load digits (big) palette
     memcpy16(&pal_obj_mem[HUD_PB_DIGIT_BIG * 16], digit_bigPal, digit_bigPalLen / 2);
+    // Load warning icon tiles
+    memcpy32(&tile_mem_obj[0][HUD_WARNING_BASE], warningTiles, warningTilesLen / 4);
+    // Load warning icon palette
+    memcpy16(&pal_obj_mem[HUD_PB_WARNING * 16], warningPal, warningPalLen / 2);
 }
 
 int hud_init(OBJ_ATTR *buffer, int slot) {
@@ -369,6 +394,8 @@ int hud_init(OBJ_ATTR *buffer, int slot) {
     for(int j = 0; j < HUD_DIGITS_COUNT; j++) { // Includes the sign cell: init positions every cell
         s += hud_bar_init(buffer, s, &digits[j].bar);
     }
+    hud_warning_init(buffer, s);
+    s += 1;
     return (s - slot);
 }
 
@@ -397,6 +424,14 @@ void hud_update(OBJ_ATTR *buffer, int slot, const Lander *lander, const PlayerIn
         memcpy16(pal_bg_mem, active_pal.data, active_pal.len / 2);
     }
     radar_on_prev = radar_active;
+
+    bool warning_active = (get_active_area_idx() == -1) && (lander->z < FIX_FROM_INT(200));
+    if (warning_active) {
+        obj_unhide(&buffer[hud_warning_slot(slot)], ATTR0_SQUARE);
+    }
+    else {
+        obj_hide(&buffer[hud_warning_slot(slot)]);
+    }
 }
 
 int hud_post_fuel_power_slot(void) {
@@ -409,4 +444,16 @@ int hud_digit_slot_end(void) {
         s += digits[i].bar.cells;
     }
     return s;
+}
+
+static int hud_bars_total_cells(void) {
+    int s = 0;
+    for (int i = 0; i < HUD_BAR_COUNT; i++) {
+        s += bars[i].cells;
+    }
+    return s;
+}
+
+int hud_warning_slot(int slot) {
+    return slot + hud_bars_total_cells() + hud_digit_slot_end();
 }
