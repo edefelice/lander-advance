@@ -12,6 +12,9 @@
 #include "sfx_psg.h"
 #include "landing_area.h"
 #include "game_score.h"
+#include "graphics/logo.h"
+#include "tonc_core.h"
+#include "tonc_memmap.h"
 
 static OBJ_ATTR obj_buffer[MAX_SPRITES];
 
@@ -80,27 +83,18 @@ int main(void) {
     GameState prev_state = shell_state();
     shell_render_engine_init();
     PlayerInput input = {0};
-    // Load background tiles in CBB0
-    memcpy32(tile8_mem[0], moon_far_finTiles, moon_far_finTilesLen / 4);
-    // Load hud background tiles in CBB2
-    memcpy32(tile8_mem[2], HUD_1Tiles, HUD_1TilesLen / 4);
-    // Load background tilemap in SBB 28
-    memcpy16(se_mem[28], moon_far_finMap, moon_far_finMapLen / 2);
-    // Load hud background tilemap in SBB 23
-    memcpy16(se_mem[23], HUD_1Map, HUD_1MapLen / 2);
-    // Load background palette
-    memcpy16(pal_bg_mem, moon_far_finPal, moon_far_finPalLen / 2);
-    pal_bg_mem[0] = 0x0; // TODO: remove when loading title graphics
-    // Load hud background palette
-    memcpy16(&pal_bg_mem[HUD_BACKGROUND_PAL_BASE], HUD_1Pal, HUD_1PalLen / 2);
-    pal_bg_mem[HUD_SPEED_RULER_PAL_IDX] = 0x0; // Black
+    // Load title screen tiles in CBB2
+    memcpy32(tile8_mem[2], logoTiles, logoTilesLen / 4);
+    // Load title screen tilemap in SBB 23
+    memcpy16(se_mem[29], logoMap, logoMapLen / 2);
+    // Load title screen palette
+    memcpy16(&pal_bg_mem[HUD_SPEED_RULER_PAL_IDX + 1], logoPal, logoPalLen / 2);
+    //pal_bg_mem[HUD_SPEED_RULER_PAL_IDX] = 0x0; // Black
     // Load hud sprites
     hud_load_gfx();
     spotlight_init_gfx();
     // Configure BG1 and priority 0
-    REG_BG1CNT = BG_CBB(2) | BG_SBB(23) | BG_8BPP | BG_REG_32x32 | BG_PRIO(1);
-    // Configure BG2 with wrap on and priority 3
-    REG_BG2CNT = BG_CBB(0) | BG_SBB(28) | BG_AFF_64x64 | BG_WRAP | BG_PRIO(3);
+    REG_BG1CNT = BG_CBB(2) | BG_SBB(29) | BG_8BPP | BG_REG_32x32 | BG_PRIO(1);
     // Set regular background (Mode 1, BG0)
     REG_DISPCNT = DCNT_MODE(1) | DCNT_BG0;
     // Initialize sprites
@@ -120,11 +114,13 @@ int main(void) {
     bool suppress_thrust_until_release = false;
     while(1) {
         GameState cur_state = shell_state(); // Update Current state
+        bool entered_title = (cur_state == STATE_TITLE && prev_state != STATE_TITLE);
+        bool left_title = (cur_state != STATE_TITLE && prev_state == STATE_TITLE);
         // True = in play state coming from title/config/pause screen
         bool entered_gameplay = cur_state == STATE_GAMEPLAY && prev_state != STATE_GAMEPLAY;
         bool fresh_start = entered_gameplay && (prev_state == STATE_CONFIG_SELECTION || last_pause_choice == SUB_RESTART || prev_state == STATE_FIN);
         key_poll(); // Check key status
-        if (cur_state != STATE_TITLE && cur_state != STATE_GAME_MODE_SELECTION) {
+        if (cur_state != STATE_GAME_MODE_SELECTION) {
             REG_DISPCNT |= DCNT_BG1;
         }
         else {
@@ -146,7 +142,9 @@ int main(void) {
         }
         else { // Deactivate hud and level background
             pal_bg_mem[0] = 0x0;
-            pal_bg_mem[HUD_SPEED_RULER_PAL_IDX] = 0x0;
+            if (cur_state != STATE_TITLE) {
+                pal_bg_mem[HUD_SPEED_RULER_PAL_IDX] = 0x0;
+            }
             for (int i = post_fuel_power_idx; i < MAX_SPRITES; i++) {
                 obj_hide(&obj_buffer[i]);
             }
@@ -172,6 +170,37 @@ int main(void) {
             result_sent = false;
         }
 
+        if (entered_title) {
+            REG_BG1CNT &= ~(BG_CBB(2) | BG_SBB(23) | BG_8BPP | BG_REG_32x32 | BG_PRIO(1));
+            memcpy32(tile8_mem[2], logoTiles, logoTilesLen / 4);
+            memcpy16(se_mem[29], logoMap, logoMapLen / 2);
+            memcpy16(&pal_bg_mem[HUD_SPEED_RULER_PAL_IDX + 1], logoPal, logoPalLen / 2);
+            for (int i = 0; i < MAX_SPRITES; i++) {
+                obj_hide(&obj_buffer[i]);
+            }
+            REG_BG1CNT = BG_CBB(2) | BG_SBB(29) | BG_8BPP | BG_REG_32x32 | BG_PRIO(1);
+        }
+        if (left_title) {
+            REG_BG1CNT &= ~(BG_CBB(2) | BG_SBB(29) | BG_8BPP | BG_REG_32x32 | BG_PRIO(1));
+            // Load background tiles in CBB0
+            memcpy32(tile8_mem[0], moon_far_finTiles, moon_far_finTilesLen / 4);
+            // Load background tilemap in SBB 28
+            memcpy16(se_mem[28], moon_far_finMap, moon_far_finMapLen / 2);
+            // Load background palette
+            memcpy16(pal_bg_mem, moon_far_finPal, moon_far_finPalLen / 2);
+            // Load HUD tiles in CBB2
+            memcpy32(tile8_mem[2], HUD_1Tiles, HUD_1TilesLen / 4);
+            // Load HUD tilemap in SBB 23
+            memcpy16(se_mem[23], HUD_1Map, HUD_1MapLen / 2);
+            // Load HUD palette
+            memcpy16(&pal_bg_mem[HUD_BACKGROUND_PAL_BASE], HUD_1Pal, HUD_1PalLen / 2);
+            pal_bg_mem[HUD_SPEED_RULER_PAL_IDX + 1 + 26] = 0x0;
+            pal_bg_mem[HUD_BACKGROUND_PAL_BASE + 1 + 27] = 0x0;
+            REG_BG1CNT = BG_CBB(2) | BG_SBB(23) | BG_8BPP | BG_REG_32x32 | BG_PRIO(1);
+            // Configure BG2 with wrap on and priority 3
+            REG_BG2CNT = BG_CBB(0) | BG_SBB(28) | BG_AFF_64x64 | BG_WRAP | BG_PRIO(3);
+        }
+        
         switch (shell_state()) {
             case STATE_GAMEPLAY: {
                 input = cpit_input();
