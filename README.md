@@ -32,8 +32,9 @@ make clean   # remove build artifacts
 
 **Auxiliary Systems: Radar and Spotlight**
 - B + R: Onboard Radar - Toggles radar scanning for the touchdown pad.
-  CAUTION: The radar engages once you have already entered the landing zone! If you attempt to activate it in orbit or before reaching the area, the sensors will not lock onto the signal.
+  CAUTION: The radar engages as soon as you activate it, both inside and outside the landing zone, but only if you are below 200 metres of altitude.
 - B + L: Landing Lights (Spotlight) - Toggles the high-intensity searchlight illuminating the ground below.
+- Warning Light: When you are outside the landing zone and below the descent procedure starting altitude (200 m), the warning light will illuminate on your screen. Don't get distracted, it's very large.
 
 **Regarding energy consumption:**
 The landing light functions ONLY and EXCLUSIVELY in Night Mode!
