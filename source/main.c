@@ -3,7 +3,7 @@
 #include "cockpit.h"
 #include "game_result.h"
 #include "gameplay.h"
-#include "graphics/moon_far_v3.h"
+#include "graphics/moon_far_fin.h"
 #include "graphics/HUD_1.h"
 #include "affine_background.h"
 #include "hud.h"
@@ -81,15 +81,15 @@ int main(void) {
     shell_render_engine_init();
     PlayerInput input = {0};
     // Load background tiles in CBB0
-    memcpy32(tile8_mem[0], moon_far_v3Tiles, moon_far_v3TilesLen / 4);
+    memcpy32(tile8_mem[0], moon_far_finTiles, moon_far_finTilesLen / 4);
     // Load hud background tiles in CBB2
     memcpy32(tile8_mem[2], HUD_1Tiles, HUD_1TilesLen / 4);
     // Load background tilemap in SBB 28
-    memcpy16(se_mem[28], moon_far_v3Map, moon_far_v3MapLen / 2);
+    memcpy16(se_mem[28], moon_far_finMap, moon_far_finMapLen / 2);
     // Load hud background tilemap in SBB 23
     memcpy16(se_mem[23], HUD_1Map, HUD_1MapLen / 2);
     // Load background palette
-    memcpy16(pal_bg_mem, moon_far_v3Pal, moon_far_v3PalLen / 2);
+    memcpy16(pal_bg_mem, moon_far_finPal, moon_far_finPalLen / 2);
     pal_bg_mem[0] = 0x0; // TODO: remove when loading title graphics
     // Load hud background palette
     memcpy16(&pal_bg_mem[HUD_BACKGROUND_PAL_BASE], HUD_1Pal, HUD_1PalLen / 2);
@@ -158,7 +158,7 @@ int main(void) {
 
         if (entered_gameplay) {
             tte_erase_screen(); // Hide menu
-            pal_bg_mem[0] = is_night_mode() ? 0x0 : moon_far_v3Pal[0];
+            pal_bg_mem[0] = is_night_mode() ? 0x0 : moon_far_finPal[0];
             pal_bg_mem[HUD_SPEED_RULER_PAL_IDX] = HUD_1Pal[25];
             for (int i = 0; i < digit_sprite_idx_end; i++) {
                 obj_unhide(&obj_buffer[i], ATTR0_REG);
