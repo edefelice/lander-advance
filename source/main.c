@@ -1,6 +1,7 @@
 #include <stdint.h>
 #include <tonc.h>
 #include "cockpit.h"
+#include "fixedpoint32.h"
 #include "game_result.h"
 #include "gameplay.h"
 #include "graphics/moon_far_fin.h"
@@ -12,6 +13,8 @@
 #include "sfx_psg.h"
 #include "landing_area.h"
 #include "game_score.h"
+#include "graphics/logo.h"
+#include "graphics/ScratchLogoSmall1.h"
 
 static OBJ_ATTR obj_buffer[MAX_SPRITES];
 
@@ -72,35 +75,62 @@ int main(void) {
     int digit_sprite_idx_end = hud_digit_slot_end();
     bool lander_light_prev = false;
     bool radar_on_prev = false;
+    bool warning_prev = false;
     // Initialization
     BG_AFFINE affine_bg = {0};
     AFF_SRC_EX affine_src = {0};
     Lander lander;
+
+    irq_init(NULL);
+    irq_add(II_VBLANK, NULL);
+    // Load title screen tiles in CBB2
+    memcpy32(tile8_mem[2], ScratchLogoSmall1Tiles, ScratchLogoSmall1TilesLen / 4);
+    // Load title screen tilemap in SBB 23
+    memcpy16(se_mem[29], ScratchLogoSmall1Map, ScratchLogoSmall1MapLen / 2);
+    // Load title screen palette
+    memcpy16(pal_bg_mem, ScratchLogoSmall1Pal, ScratchLogoSmall1PalLen / 2);
+    // Configure BG1 and priority 0
+    REG_BG1CNT = BG_CBB(2) | BG_SBB(29) | BG_8BPP | BG_REG_32x32 | BG_PRIO(1);
+    // Set regular background (Mode 1, BG0)
+    REG_DISPCNT = DCNT_MODE(1) | DCNT_BG1;
+    REG_BLDCNT = BLD_BG1 | BLD_BLACK;
+    for (int frame = 16; frame >= 0; frame--) {
+        REG_BLDY = BLDY_BUILD(frame); 
+        for (int j = 0; j < 4; j++) {    
+            VBlankIntrWait();  
+        }
+    }
+    for (int i = 0; i < 180; i++) {
+        VBlankIntrWait();
+    }
+    for (int frame = 0; frame <= 16; frame++) {
+        REG_BLDY = BLDY_BUILD(frame); 
+        for (int j = 0; j < 4; j++) {    
+            VBlankIntrWait();  
+        }
+    }
+    REG_BLDCNT = 0;
+    REG_BLDY = 0;
+    REG_BG1CNT &= ~(BG_CBB(2) | BG_SBB(29) | BG_8BPP | BG_REG_32x32 | BG_PRIO(1));
+    REG_DISPCNT &= ~(DCNT_MODE(1) | DCNT_BG1);    
+
+
     shell_init();
     GameState prev_state = shell_state();
     shell_render_engine_init();
     PlayerInput input = {0};
-    // Load background tiles in CBB0
-    memcpy32(tile8_mem[0], moon_far_finTiles, moon_far_finTilesLen / 4);
-    // Load hud background tiles in CBB2
-    memcpy32(tile8_mem[2], HUD_1Tiles, HUD_1TilesLen / 4);
-    // Load background tilemap in SBB 28
-    memcpy16(se_mem[28], moon_far_finMap, moon_far_finMapLen / 2);
-    // Load hud background tilemap in SBB 23
-    memcpy16(se_mem[23], HUD_1Map, HUD_1MapLen / 2);
-    // Load background palette
-    memcpy16(pal_bg_mem, moon_far_finPal, moon_far_finPalLen / 2);
-    pal_bg_mem[0] = 0x0; // TODO: remove when loading title graphics
-    // Load hud background palette
-    memcpy16(&pal_bg_mem[HUD_BACKGROUND_PAL_BASE], HUD_1Pal, HUD_1PalLen / 2);
-    pal_bg_mem[HUD_SPEED_RULER_PAL_IDX] = 0x0; // Black
+    // Load title screen tiles in CBB2
+    memcpy32(tile8_mem[2], logoTiles, logoTilesLen / 4);
+    // Load title screen tilemap in SBB 23
+    memcpy16(se_mem[29], logoMap, logoMapLen / 2);
+    // Load title screen palette
+    memcpy16(&pal_bg_mem[HUD_SPEED_RULER_PAL_IDX + 1], logoPal, logoPalLen / 2);
+    //pal_bg_mem[HUD_SPEED_RULER_PAL_IDX] = 0x0; // Black TODO: Check if still needed 
     // Load hud sprites
     hud_load_gfx();
     spotlight_init_gfx();
     // Configure BG1 and priority 0
-    REG_BG1CNT = BG_CBB(2) | BG_SBB(23) | BG_8BPP | BG_REG_32x32 | BG_PRIO(1);
-    // Configure BG2 with wrap on and priority 3
-    REG_BG2CNT = BG_CBB(0) | BG_SBB(28) | BG_AFF_64x64 | BG_WRAP | BG_PRIO(3);
+    REG_BG1CNT = BG_CBB(2) | BG_SBB(29) | BG_8BPP | BG_REG_32x32 | BG_PRIO(1);
     // Set regular background (Mode 1, BG0)
     REG_DISPCNT = DCNT_MODE(1) | DCNT_BG0;
     // Initialize sprites
@@ -109,8 +139,6 @@ int main(void) {
     int spotlight_slot = n_obj;
     spotlight_init_objs(obj_buffer, spotlight_slot);
     int total_obj = n_obj + SPOTLIGHT_OBJ_COUNT;
-    irq_init(NULL);
-    irq_add(II_VBLANK, NULL);
     sfx_init();
     bool result_sent = false;
     uint16_t action = 0;
@@ -120,11 +148,13 @@ int main(void) {
     bool suppress_thrust_until_release = false;
     while(1) {
         GameState cur_state = shell_state(); // Update Current state
+        bool entered_title = (cur_state == STATE_TITLE && prev_state != STATE_TITLE);
+        bool left_title = (cur_state != STATE_TITLE && prev_state == STATE_TITLE);
         // True = in play state coming from title/config/pause screen
         bool entered_gameplay = cur_state == STATE_GAMEPLAY && prev_state != STATE_GAMEPLAY;
         bool fresh_start = entered_gameplay && (prev_state == STATE_CONFIG_SELECTION || last_pause_choice == SUB_RESTART || prev_state == STATE_FIN);
         key_poll(); // Check key status
-        if (cur_state != STATE_TITLE && cur_state != STATE_GAME_MODE_SELECTION) {
+        if (cur_state != STATE_GAME_MODE_SELECTION) {
             REG_DISPCNT |= DCNT_BG1;
         }
         else {
@@ -146,7 +176,9 @@ int main(void) {
         }
         else { // Deactivate hud and level background
             pal_bg_mem[0] = 0x0;
-            pal_bg_mem[HUD_SPEED_RULER_PAL_IDX] = 0x0;
+            if (cur_state != STATE_TITLE) {
+                pal_bg_mem[HUD_SPEED_RULER_PAL_IDX] = 0x0;
+            }
             for (int i = post_fuel_power_idx; i < MAX_SPRITES; i++) {
                 obj_hide(&obj_buffer[i]);
             }
@@ -172,6 +204,37 @@ int main(void) {
             result_sent = false;
         }
 
+        if (entered_title) {
+            REG_BG1CNT &= ~(BG_CBB(2) | BG_SBB(23) | BG_8BPP | BG_REG_32x32 | BG_PRIO(1));
+            memcpy32(tile8_mem[2], logoTiles, logoTilesLen / 4);
+            memcpy16(se_mem[29], logoMap, logoMapLen / 2);
+            memcpy16(&pal_bg_mem[HUD_SPEED_RULER_PAL_IDX + 1], logoPal, logoPalLen / 2);
+            for (int i = 0; i < MAX_SPRITES; i++) {
+                obj_hide(&obj_buffer[i]);
+            }
+            REG_BG1CNT = BG_CBB(2) | BG_SBB(29) | BG_8BPP | BG_REG_32x32 | BG_PRIO(1);
+        }
+        if (left_title) {
+            REG_BG1CNT &= ~(BG_CBB(2) | BG_SBB(29) | BG_8BPP | BG_REG_32x32 | BG_PRIO(1));
+            // Load background tiles in CBB0
+            memcpy32(tile8_mem[0], moon_far_finTiles, moon_far_finTilesLen / 4);
+            // Load background tilemap in SBB 28
+            memcpy16(se_mem[28], moon_far_finMap, moon_far_finMapLen / 2);
+            // Load background palette
+            memcpy16(pal_bg_mem, moon_far_finPal, moon_far_finPalLen / 2);
+            // Load HUD tiles in CBB2
+            memcpy32(tile8_mem[2], HUD_1Tiles, HUD_1TilesLen / 4);
+            // Load HUD tilemap in SBB 23
+            memcpy16(se_mem[23], HUD_1Map, HUD_1MapLen / 2);
+            // Load HUD palette
+            memcpy16(&pal_bg_mem[HUD_BACKGROUND_PAL_BASE], HUD_1Pal, HUD_1PalLen / 2);
+            pal_bg_mem[HUD_SPEED_RULER_PAL_IDX + 1 + 26] = 0x0;
+            pal_bg_mem[HUD_BACKGROUND_PAL_BASE + 1 + 27] = 0x0;
+            REG_BG1CNT = BG_CBB(2) | BG_SBB(23) | BG_8BPP | BG_REG_32x32 | BG_PRIO(1);
+            // Configure BG2 with wrap on and priority 3
+            REG_BG2CNT = BG_CBB(0) | BG_SBB(28) | BG_AFF_64x64 | BG_WRAP | BG_PRIO(3);
+        }
+        
         switch (shell_state()) {
             case STATE_GAMEPLAY: {
                 input = cpit_input();
@@ -201,12 +264,27 @@ int main(void) {
                     sfx_play(SFX_LIGHT);
                 }
                 lander_light_prev = lander_light;
+
+                bool warning = (get_active_area_idx() == -1) && (lander.z < FIX_FROM_INT(200));
+                if (warning && !warning_prev) {
+                    sfx_play(SFX_WARNING);
+                }
+                warning_prev = warning;
+
                 bool fast_mode = is_fast_mode();
                 GameplayUpdate(&lander, &input, fast_mode, get_active_area_idx(), moon_sites);
                 if (lander.state != LANDER_FLYING && !result_sent) {
                     result = GameScoreCreateResult(&lander);
                     shell_submit_result(&result);
                     result_sent = true;
+                    if (lander.state == LANDER_CRASHED) {
+                        sfx_engine_set(ENGINE_OFF);
+                        sfx_play(SFX_CRASH);
+                    }
+                    else if (lander.state == LANDER_LANDED) {
+                        sfx_engine_set(ENGINE_OFF);
+                        sfx_play(SFX_VICTORY);
+                    }
                 }
                 main_states_management(); // Changes game state to "pause" when Start button is pressed
                 shell_commit_input();

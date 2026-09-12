@@ -87,11 +87,9 @@ static const Ch2Step STEPS_DPAD[] = {
 };
 
 static const Ch2Step STEPS_WARNING[] = {
-    { STEP_TRIGGER, SSQR_ENV_BUILD(15, 0, 2) | SSQR_DUTY1_2, 0x783, 6 },
+    { STEP_TRIGGER, SSQR_ENV_BUILD(15, 0, 1) | SSQR_DUTY1_2, 0x5F4, 30 },
     { STEP_SILENCE, 0, 0, 4 },
-    { STEP_TRIGGER, SSQR_ENV_BUILD(15, 0, 2) | SSQR_DUTY1_2, 0x783, 6 },
-    { STEP_SILENCE, 0, 0, 4 },
-    { STEP_TRIGGER, SSQR_ENV_BUILD(15, 0, 2) | SSQR_DUTY1_2, 0x783, 6 }
+    { STEP_TRIGGER, SSQR_ENV_BUILD(15, 0, 1) | SSQR_DUTY1_2, 0x5F4, 30 }
 };
 
 static const Ch2Step *ch2_steps = NULL;
@@ -240,6 +238,78 @@ static void load_sawtooth_wave(void) {
 #define ENGINE_NOISE_WIDTH 0
 static EngineState engine_state = ENGINE_OFF;
 
+typedef struct {
+    Ch2StepType type;
+    uint8_t ratio;
+    uint8_t shift;
+    uint8_t width;
+    uint8_t vol;
+    uint8_t env_step;
+    uint8_t frames;
+} Ch4Step;
+
+static const Ch4Step STEPS_CRASH[] = {
+    {STEP_TRIGGER, 2, 4, 0, 15, 1, 4},
+    {STEP_TRIGGER, 6, 10, 0, 15, 3, 42},
+    {STEP_SILENCE, 0, 0, 0, 0, 0, 0}
+};
+
+static const Ch4Step STEPS_VICTORY[] = {
+    {STEP_TRIGGER, 3, 4, 1, 12, 1, 3},
+    {STEP_SILENCE,0 , 0, 0, 0, 0, 8},
+    {STEP_TRIGGER, 2, 3, 0, 14, 1, 3},
+    {STEP_SILENCE,0 , 0, 0, 0, 0, 10},
+    {STEP_TRIGGER, 3, 5, 1, 10, 1, 3},
+    {STEP_SILENCE,0 , 0, 0, 0, 0, 7},
+    {STEP_TRIGGER, 2, 4, 0, 13, 1, 3},
+    {STEP_SILENCE,0 , 0, 0, 0, 7},
+    {STEP_TRIGGER, 2, 4, 1, 11, 1, 3},
+    {STEP_SILENCE,0 , 0, 0, 0, 0, 8},
+    {STEP_TRIGGER, 2, 4, 0, 15, 2, 5},
+    {STEP_SILENCE,0 , 0, 0, 0, 0, 0}
+};
+
+static const Ch4Step *ch4_steps = NULL;
+static uint8_t ch4_count = 0;
+static uint8_t ch4_idx = 0;
+static uint8_t ch4_timer = 0;
+
+static void ch4_apply(const Ch4Step *s) {
+    if (s->type == STEP_TRIGGER) {
+        REG_SND4CNT = SSQR_ENV_BUILD(s->vol, 0, s->env_step);
+        REG_SND4FREQ = SFREQ_RESET | ((s->shift & 0xF) << 4) | ((s->width & 1) << 3) | (s->ratio & 0x7);
+    }
+    else {
+        REG_SND4CNT = SSQR_ENV_BUILD(0, 0, 0);
+    }
+}
+
+static void ch4_play(const Ch4Step *steps, uint8_t count) {
+    ch4_steps = steps;
+    ch4_count = count;
+    ch4_idx = 0;
+    ch4_apply(&ch4_steps[0]); // immidiately apply 1st step
+    ch4_timer =ch4_steps[0].frames;
+}
+
+static void ch4_tick(void) {
+    if (ch4_steps == NULL || ch4_idx >= ch4_count) {
+        return;
+    }
+    if (ch4_timer > 0) {
+        ch4_timer--;
+        return;
+    }
+    
+    ch4_idx++;
+    if (ch4_idx >= ch4_count) {
+        ch4_steps = NULL; // finished sequence
+        return;
+    }
+    ch4_apply(&ch4_steps[ch4_idx]);
+    ch4_timer = ch4_steps[ch4_idx].frames;
+}
+
 static void engine_start(uint8_t ivol) {
     REG_SND4CNT  = SSQR_ENV_BUILD(ivol, 0, 0);
     REG_SND4FREQ = (1 << 15) | ((ENGINE_NOISE_SHIFT & 0xF) << 4)
@@ -314,6 +384,12 @@ void sfx_play(SfxId id) {
         case SFX_LIGHT:
             switch_on();
             break;
+        case SFX_CRASH:
+            ch4_play(STEPS_CRASH, ARRAY_LEN(STEPS_CRASH));
+            break;
+        case SFX_VICTORY:
+            ch4_play(STEPS_VICTORY, ARRAY_LEN(STEPS_VICTORY));
+            break;
     }
 }
 
@@ -321,4 +397,5 @@ void sfx_update(void) {
     ch1_tick();
     ch2_tick();
     ch3_tick();
+    ch4_tick();
 }
