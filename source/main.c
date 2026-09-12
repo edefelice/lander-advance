@@ -1,6 +1,7 @@
 #include <stdint.h>
 #include <tonc.h>
 #include "cockpit.h"
+#include "fixedpoint32.h"
 #include "game_result.h"
 #include "gameplay.h"
 #include "graphics/moon_far_fin.h"
@@ -74,6 +75,7 @@ int main(void) {
     int digit_sprite_idx_end = hud_digit_slot_end();
     bool lander_light_prev = false;
     bool radar_on_prev = false;
+    bool warning_prev = false;
     // Initialization
     BG_AFFINE affine_bg = {0};
     AFF_SRC_EX affine_src = {0};
@@ -262,12 +264,27 @@ int main(void) {
                     sfx_play(SFX_LIGHT);
                 }
                 lander_light_prev = lander_light;
+
+                bool warning = (get_active_area_idx() == -1) && (lander.z < FIX_FROM_INT(200));
+                if (warning && !warning_prev) {
+                    sfx_play(SFX_WARNING);
+                }
+                warning_prev = warning;
+
                 bool fast_mode = is_fast_mode();
                 GameplayUpdate(&lander, &input, fast_mode, get_active_area_idx(), moon_sites);
                 if (lander.state != LANDER_FLYING && !result_sent) {
                     result = GameScoreCreateResult(&lander);
                     shell_submit_result(&result);
                     result_sent = true;
+                    if (lander.state == LANDER_CRASHED) {
+                        sfx_engine_set(ENGINE_OFF);
+                        sfx_play(SFX_CRASH);
+                    }
+                    else if (lander.state == LANDER_LANDED) {
+                        sfx_engine_set(ENGINE_OFF);
+                        sfx_play(SFX_VICTORY);
+                    }
                 }
                 main_states_management(); // Changes game state to "pause" when Start button is pressed
                 shell_commit_input();

@@ -8,7 +8,9 @@ typedef enum {
     SFX_WARNING,
     SFX_TRUMPET,
     SFX_RADAR,
-    SFX_LIGHT
+    SFX_LIGHT,
+    SFX_CRASH,
+    SFX_VICTORY
 } SfxId;
 
 typedef enum {
