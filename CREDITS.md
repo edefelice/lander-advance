@@ -31,6 +31,19 @@ All the team contributed to the Game Logic, Game Design and Testing.
   - **Source:** https://fontlibrary.org/en/font/h-h-samuel
   - **License:** SIL Open Font License (OFL)
 
+## itch.io Banner (photo composite)
+- **Apollo 8 Earthrise**
+  - Credit: NASA
+  - Source: https://science.nasa.gov/resource/the-rising-earth-as-seen-by-apollo-8/
+
+- **Mars Perseverance Sol 1301 — Right Navigation Camera (Navcam)**
+  - Credit: NASA/JPL-Caltech
+  - Date: Oct. 17, 2024
+  - Source: https://mars.nasa.gov/mars2020/multimedia/raw-images/NRF_1301_0782440641_817ECM_N0610268NCAM13301_01_195J
+
+Used per NASA's Media Usage Guidelines / JPL Image Use Policy. 
+No endorsement by NASA, JPL, or Caltech implied.
+
 # Third-Party Code, Libraries & Toolchain
 
 ## Tonc & Tonc Text Engine (TTE)
