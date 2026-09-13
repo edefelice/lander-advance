@@ -86,7 +86,6 @@ No endorsement by NASA, JPL, or Caltech implied.
 ## devkitARM & Build Tools
 - **devkitARM (GCC for ARM):** GNU Compiler Collection targeting `arm-none-eabi` (GPL)
 - **Grit (GBA Raster Image Transmogrifier):** Jasper Vijn (Cearn) — Image to GBA graphics converter (MIT)
-- **mmutil:** Mukunda Johnson / devkitPro — Maxmod soundbank compiler (Permissive)
 - **gbafix:** devkitPro — GBA ROM header patching and checksum tool (GPL)
 - **bin2s:** devkitPro — Binary to GNU Assembly conversion utility (GPL)
 
