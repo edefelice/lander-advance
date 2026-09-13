@@ -1,12 +1,11 @@
 # Lander Advance
 
-A Lunar Lander game for the Game Boy Advance — made for [GBA Jam 2026](https://itch.io/jam/gbajam26).
+A first person Lunar Lander-like game for the Game Boy Advance — made for the [GBA Jam 2026](https://itch.io/jam/gbajam26).
 
 ## Requirements
 
 - [devkitARM](https://devkitpro.org/wiki/Getting_Started) (devkitPro)
 - [grit](https://www.coranac.com/projects/grit/) (included with devkitPro)
-- [mmutil](https://maxmod.devkitpro.org/) (included with devkitPro)
 
 ## Build
 
