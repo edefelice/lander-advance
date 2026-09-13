@@ -2,22 +2,34 @@
 
 ## Team
 
-- **Ernesto De Felice** - Project Lead, Core GBA programming (using libtonc), Fixed-Point Math, Audio (SFX & Music)
-- **Pierluca De Felice** - Programming, Graphics, Audio (SFX & Music)
+- **Ernesto De Felice** - Project Lead, Programming, SFX
+- **Pierluca De Felice** - Programming, Graphics, SFX
 - **Raffaele Colamarino** - Lore, Programming, Game Manual
-- **Raffaele Aucelli** - Programming
+- **Raffaele Aucelli** - Game Physics, Programming
 
 
 All the team contributed to the Game Logic, Game Design and Testing.
 
-## Third-party assets
-
-<!-- List any external assets used (graphics, audio, fonts) with author, license and link -->
+## Original assets
 
 - **Visual Assets (Cockpit HUD, Lunar Surface, Gauges, UI Digits)**:
   - Created for *Lander Advance* — Licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)
 - **Audio Assets (SFX, Engine Tones)**:
   - Created for *Lander Advance* — Licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)
+
+# Third-party assets
+
+<!-- List any external assets used (graphics, audio, fonts) with author, license and link -->
+
+- **GBA Jam 2026 Logo** (splash screen):
+  - **Author:** PyroPyro and kva64
+  - **Source:** https://github.com/gbadev-org/gbajam26-assets
+  - **License:** CC BY-NC 4.0 — https://creativecommons.org/licenses/by-nc/4.0/
+
+- **"JAM 2026" logo font — H. H. Samuel**:
+  - **Author:** deFharo
+  - **Source:** https://fontlibrary.org/en/font/h-h-samuel
+  - **License:** SIL Open Font License (OFL)
 
 # Third-Party Code, Libraries & Toolchain
 
@@ -49,29 +61,13 @@ All the team contributed to the Game Logic, Game Design and Testing.
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
   THE SOFTWARE.
 
-## Maxmod
-- **Purpose:** Sound and music playback engine
-- **Author:** Mukunda Johnson (mukunda@maxmod.org)
-- **Source:** https://github.com/devkitPro/maxmod
-- **License:** Permissive License — Copyright (c) 2008, Mukunda Johnson
-
-  Permission to use, copy, modify, and/or distribute this software for any
-  purpose with or without fee is hereby granted, provided that the above
-  copyright notice and this permission notice appear in all copies.
-
-  THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
-  WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
-  MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
-  ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
-  WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
-  ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
-  OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
-
 ## libgba
 - **Purpose:** Low-level GBA register definitions, interrupts, and BIOS call wrappers
 - **Author:** Dave Murphy (WinterMute) / devkitPro
 - **Source:** https://github.com/devkitPro/libgba
-- **License:** Permissive / LGPL
+- **License:** GNU Library General Public License v2 (see `libgba_license.txt`)
+- **Attribution:** This project is based in part on the work of the devkitPro 
+  project (https://github.com/devkitPro/libgba/blob/master/libgba_license.txt)
 
 ## devkitARM & Build Tools
 - **devkitARM (GCC for ARM):** GNU Compiler Collection targeting `arm-none-eabi` (GPL)
@@ -79,3 +75,15 @@ All the team contributed to the Game Logic, Game Design and Testing.
 - **mmutil:** Mukunda Johnson / devkitPro — Maxmod soundbank compiler (Permissive)
 - **gbafix:** devkitPro — GBA ROM header patching and checksum tool (GPL)
 - **bin2s:** devkitPro — Binary to GNU Assembly conversion utility (GPL)
+
+## newlib
+- **Purpose:** C standard library implementation for embedded targets
+- **Author:** Red Hat, Inc. / Cygnus Support and various contributors
+- **Source:** https://sourceware.org/newlib/
+- **Distribution:** devkitARM toolchain
+- **License:** Multiple BSD-style licenses (see `COPYING.NEWLIB`)
+
+## libgcc
+- **Purpose:** GCC runtime support routines (e.g. software integer/float division)
+- **Author:** Free Software Foundation
+- **License:** GPL v3 with GCC Runtime Library Exception

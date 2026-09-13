@@ -1,8 +1,6 @@
 #include <tonc.h>
 #include <stdint.h>
 #include "sfx_psg.h"
-#include "tonc_memdef.h"
-#include "tonc_memmap.h"
 
 typedef enum {
     STEP_SILENCE = 0,
