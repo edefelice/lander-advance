@@ -1,5 +1,7 @@
 # Lander Advance
 
+![Title Screen](pictures/title.png)
+
 A first person Lunar Lander-like game for the Game Boy Advance — made for the [GBA Jam 2026](https://itch.io/jam/gbajam26).
 
 ## Requirements
