@@ -25,7 +25,7 @@ All the team contributed to the Game Logic, Game Design and Testing.
   - **Author:** PyroPyro and kva64
   - **Source:** https://github.com/gbadev-org/gbajam26-assets
   - **License:** CC BY-NC 4.0 — https://creativecommons.org/licenses/by-nc/4.0/
-- **Modifications:** Canvas resized for use in game splash screen
+  - **Modifications:** Canvas resized for use in game splash screen
 
 - **"JAM 2026" logo font — H. H. Samuel**:
   - **Author:** deFharo
