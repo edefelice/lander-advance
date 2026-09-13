@@ -21,10 +21,11 @@ All the team contributed to the Game Logic, Game Design and Testing.
 
 <!-- List any external assets used (graphics, audio, fonts) with author, license and link -->
 
-- **GBA Jam 2026 Logo** (splash screen):
+- **GBA Jam 2026 Logo** (adapted):
   - **Author:** PyroPyro and kva64
   - **Source:** https://github.com/gbadev-org/gbajam26-assets
   - **License:** CC BY-NC 4.0 — https://creativecommons.org/licenses/by-nc/4.0/
+- **Modifications:** Canvas resized for use in game splash screen
 
 - **"JAM 2026" logo font — H. H. Samuel**:
   - **Author:** deFharo
