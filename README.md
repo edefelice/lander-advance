@@ -50,6 +50,7 @@ In selection, configuration, and pause menus:
 - D-PAD Left / Right: Value Adjustment - Toggles Flight Mode (Day Mode / Night Mode), cycles through celestial bodies and landers, adjusts crew headcount.
 - START: Pause - Opens the pause menu during flight.
 
+Check the manual for full information.
 
 ## Team
 
