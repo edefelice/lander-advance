@@ -46,15 +46,6 @@ static const char* const reason_text[] = {
     [GR_REASON_OUT_OF_PAD] = "Out of Pad"
 };
 
-/*
-//GameResult to be replaced with the official one
-struct GameResult {
-    int result;
-    int score;
-    const char* reason;
-};
-*/
-
 static GameResult present_result;
 
 //Switching between the states logic

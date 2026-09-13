@@ -11,11 +11,6 @@
 #include "graphics/digit_big.h"
 #include "cockpit.h"
 #include "graphics/warning.h"
-#include "tonc_core.h"
-#include "tonc_memdef.h"
-#include "tonc_memmap.h"
-#include "tonc_oam.h"
-#include "tonc_types.h"
 
 #define HUD_FUEL_POW_BASE_BAR 0
 #define DIGIT_DOT_GLYPHS 10 // index for dotted numbers
